@@ -1,0 +1,50 @@
+{
+  "login": {
+    "title": "ログイン",
+    "submit": "サインイン",
+    "username": "ユーザー名",
+    "password": "パスワード",
+    "usernameRequired": "ユーザー名を入力してください",
+    "passwordRequired": "パスワードを入力してください",
+    "register": "新規登録",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "success": "ログインに成功しました",
+    "successTitle": "成功",
+    "failed": "ログインに失敗しました",
+    "failedTitle": "ログイン失敗",
+    "invalidCredentials": "ユーザー名またはパスワードが無効です",
+    "networkError": "サーバーに接続できません。インターネット接続またはバックエンドをご確認ください。"
+  },
+  "register": {
+    "title": "アカウント登録",
+    "username": "ユーザー名",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "confirmPassword": "パスワード確認",
+    "submit": "登録する",
+    "toLogin": "すでにアカウントをお持ちですか？ログイン",
+    "usernameRequired": "ユーザー名を入力してください！",
+    "emailRequired": "有効なメールアドレスを入力してください！",
+    "passwordRequired": "パスワードを入力してください！",
+    "confirmPasswordRequired": "パスワード確認を入力してください！",
+    "passwordsMismatch": "パスワードが一致しません！",
+    "successTitle": "登録成功",
+    "success": "メールで送信されたOTPで認証してください。",
+    "failedTitle": "登録失敗",
+    "failed": "登録に失敗しました。",
+    "emailInUse": "このメールアドレスはすでに使用されています。"
+  },
+  "error": {
+    "forbidden": "アクセス拒否",
+    "noPermission": "このリソースへのアクセス権がありません。",
+    "notFound": "見つかりません",
+    "resourceMissing": "リクエストされたリソースが見つかりませんでした。",
+    "serverError": "サーバーエラー",
+    "tryAgainLater": "問題が発生しました。後でもう一度お試しください。",
+    "network": "ネットワークエラー"
+  },
+  "auth": {
+    "sessionExpired": "セッションの有効期限が切れました",
+    "pleaseLoginAgain": "続行するには再度ログインしてください。"
+  }
+}

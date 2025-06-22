@@ -1,0 +1,26 @@
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+.bg-gradient-238 {
+  background: linear-gradient(238deg, #0D0418 30.62%, #160335 100%);
+}
+
+.ant-layout,
+.ant-layout-header,
+.ant-layout-sider,
+.ant-layout-content,
+.ant-layout-footer {
+  background: transparent !important;
+  border: none !important;
+}
+
+.content-glass {
+  border-radius: 32px;
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  box-shadow: -12px 12px 64px 2px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.03); /* để thấy hiệu ứng blur */
+  border: 1px solid rgba(255, 255, 255, 0.05); /* nhẹ, tạo viền sáng */
+}

@@ -1,0 +1,27 @@
+.button-primary {
+  align-items: center;
+  background-color: var(--colors-primary-500);
+  border-radius: 8px;
+  box-shadow: var(--dropshadow-info);
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  overflow: hidden;
+  padding: 16px 24px;
+  position: relative;
+  width: 250px;
+}
+
+.button-primary .large {
+  color: var(--lightmodelightlight);
+  font-family: var(--button-large-font-family);
+  font-size: var(--button-large-font-size);
+  font-style: var(--button-large-font-style);
+  font-weight: var(--button-large-font-weight);
+  letter-spacing: var(--button-large-letter-spacing);
+  line-height: var(--button-large-line-height);
+  margin-top: -1.00px;
+  position: relative;
+  white-space: nowrap;
+  width: fit-content;
+}

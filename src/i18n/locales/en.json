@@ -1,0 +1,98 @@
+{
+  "login": {
+    "title": "Login",
+    "submit": "Sign In",
+    "username": "Username",
+    "password": "Password",
+    "usernameRequired": "Please enter your username",
+    "passwordRequired": "Please enter your password",
+    "register": "Register",
+    "forgotPassword": "Forgot Password?",
+    "success": "Login successful",
+    "successTitle": "Success",
+    "failed": "Login failed",
+    "failedTitle": "Login Failed",
+    "invalidCredentials": "Invalid username or password",
+    "networkError": "Cannot connect to the server. Please check your internet or backend."
+  },
+  "register": {
+    "title": "Register Account",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "description": "Create a new account to get started.",
+    "submit": "Sign Up",
+    "toLogin": "Already have an account? Login",
+    "usernameRequired": "Please enter your username!",
+    "emailRequired": "Please enter a valid email!",
+    "passwordRequired": "Please enter your password!",
+    "confirmPasswordRequired": "Please confirm your password!",
+    "passwordsMismatch": "Passwords do not match!",
+    "successTitle": "Registration Successful",
+    "success": "Registration completed successfully!",
+    "otpSentTitle": "OTP Sent",
+    "otpSent": "A verification code has been sent to your email.",
+    "failedTitle": "Registration Failed",
+    "failed": "An error occurred during registration. Please try again.",
+    "emailInUse": "This email is already registered."
+  },
+  "forgotPassword": {
+    "title": "Forgot Password",
+    "description": "Enter your registered email to receive a password reset OTP.",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "emailRequired": "Please enter a valid email!",
+    "submit": "Send OTP",
+    "toLogin": "Back to Login",
+    "otpSentTitle": "OTP Sent",
+    "otpSent": "A verification code has been sent to your email.",
+    "failedTitle": "Error",
+    "failed": "Failed to send OTP. Please try again."
+  },
+  "resetPassword": {
+    "title": "Reset Password",
+    "description": "Enter your new password below.",
+    "password": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "passwordRequired": "Please enter your new password!",
+    "confirmRequired": "Please confirm your new password!",
+    "passwordsMismatch": "Passwords do not match!",
+    "submit": "Reset Password",
+    "toLogin": "Back to Login",
+    "successTitle": "Password Reset Successful",
+    "success": "Your password has been successfully reset!",
+    "failedTitle": "Password Reset Failed",
+    "failed": "Failed to reset password. Please try again.",
+    "noDataTitle": "Invalid Request",
+    "noData": "Please start the password reset process again."
+  },
+  
+  "otp": {
+    "titleRegister": "Verify Your Email Address",
+    "expirePrefix": "OTP will expire after",
+    "expireSuffix": "seconds",
+    "description": "Enter the verification code we sent to: {{email}}",
+    "enterPrompt": "Type your 6 digit verification code",
+    "notReceived": "Haven’t received the verification code?",
+    "resend": "Resend OTP",
+    "cancel": "Cancel",
+    "submit": "Confirm"
+  },
+
+  "error": {
+    "forbidden": "Access Denied",
+    "noPermission": "You do not have permission to access this resource.",
+    "notFound": "Not Found",
+    "resourceMissing": "The requested resource was not found.",
+    "serverError": "Server Error",
+    "tryAgain": "Something went wrong. Please try again later.",
+    "network": "Network Error",
+    "general": "An error occurred. Please try again."
+  },
+  "auth": {
+    "sessionExpired": "Session Expired",
+    "pleaseLoginAgain": "Please log in again to continue.",
+    "authError": "Authentication error. Please try again."
+  }
+}

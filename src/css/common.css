@@ -1,0 +1,17 @@
+.custom-otp .ant-input-otp-input {
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  font-size: 22px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid #4b3b61;
+}
+
+.custom-otp .ant-input-otp-input-focused {
+  border-color: #985ff6 !important;
+  box-shadow: 0 0 0 2px rgba(152, 95, 246, 0.25);
+}

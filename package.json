@@ -1,0 +1,69 @@
+{
+  "name": "my-app",
+  "private": true,
+  "version": "0.0.0",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "build-electron": "tsc -p tsconfig.electron.json",
+    "dev": "concurrently \"cross-env VITE_DEV_SERVER_URL=http://localhost:5173 vite\" \"wait-on http://localhost:5173 && npm run electron:dev\"",
+    "electron:dev": "npm run build-electron && electron ./dist-electron/main.js",
+    "electron": "electron ./dist-electron/main.js",
+    "build": "vite build && npm run build-electron && electron-builder",
+    "start": "electron ./dist-electron/main.js"
+  },
+  "build": {
+    "appId": "com.yourcompany.yourapp",
+    "files": [
+      "dist",
+      "dist-electron",
+      "node_modules"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
+  },
+  "dependencies": {
+    "@ant-design/icons": "^6.0.0",
+    "@reduxjs/toolkit": "^2.0.1",
+    "@tailwindcss/vite": "^4.1.10",
+    "antd": "^5.26.1",
+    "axios": "^1.9.0",
+    "i18next": "^25.2.1",
+    "i18next-browser-languagedetector": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.522.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-google-recaptcha": "^3.1.0",
+    "react-i18next": "^15.5.2",
+    "react-otp-input": "^3.1.1",
+    "react-redux": "^8.1.3",
+    "react-router-dom": "^6.22.3",
+    "redux-persist": "^6.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "@tailwindcss/postcss": "^4.1.10",
+    "@types/lodash": "^4.17.18",
+    "@types/react": "^18.2.41",
+    "@types/react-dom": "^18.2.17",
+    "@types/react-google-recaptcha": "^2.1.9",
+    "@vitejs/plugin-react": "^4.4.1",
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^9.2.0",
+    "cross-env": "^7.0.3",
+    "electron": "^26.6.10",
+    "electron-builder": "^26.0.12",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.10",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.30.1",
+    "vite": "^6.3.5",
+    "wait-on": "^8.0.3"
+  }
+}
