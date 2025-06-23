@@ -48,7 +48,7 @@ axiosInstance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    config.headers["Accept-Language"] = i18n.language || "en";
+    config.headers["Accept-Language"] = "ja";
 
     // ✅ Lấy thông tin từ preload async
     const device = await (window as any).deviceInfo?.get?.();

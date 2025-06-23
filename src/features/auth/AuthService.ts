@@ -5,7 +5,7 @@ import type { LoginResponseDTO } from "./dto/LoginResponseDTO";
 import type { RegisterRequestDTO } from "./dto/RegisterRequestDTO";
 import type { RegisterResponseDTO } from "./dto/RegisterResponseDTO";
 import type { ResetPasswordRequestDTO } from "./dto/ResetPasswordRequestDTO";
-import type { VerifyOtpRequestDTO } from "./dto/VerifyOtpRequestDTO";
+import type { UserRegisterDTO, VerifyOtpRequestDTO } from "./dto/VerifyOtpRequestDTO";
 
 export const useAuthService = (translate: (key: string) => string) => {
   const loginUser = async (
@@ -24,11 +24,11 @@ export const useAuthService = (translate: (key: string) => string) => {
   };
 
   const registerUser = async (
-    data: RegisterRequestDTO
+    data: UserRegisterDTO
   ): Promise<RegisterResponseDTO> => {
     try {
       const res = await axiosInstance.post<RegisterResponseDTO>(
-        "/auth/register",
+        "/auth/regist",
         data
       );
       sessionStorage.setItem("access_token", res.data.access_token);
@@ -38,9 +38,17 @@ export const useAuthService = (translate: (key: string) => string) => {
     }
   };
 
-  const sendOtp = async (email: string) => {
+  const sendOtp = async (email: string,username:string) => {
     try {
-      await axiosInstance.post("/api/sendotpcode", { email });
+      await axiosInstance.post("/auth/signup", { email,username });
+    } catch (err) {
+      throw handleAxiosError(err, translate, translate("otp.failed"));
+    }
+  };
+
+  const resendOtp = async (otpTokenId: string,email:string) => {
+    try {
+      await axiosInstance.post("/auth/sendotpcode", { otpTokenId,email });
     } catch (err) {
       throw handleAxiosError(err, translate, translate("otp.failed"));
     }
@@ -51,7 +59,7 @@ export const useAuthService = (translate: (key: string) => string) => {
   ): Promise<{ success: boolean }> => {
     try {
       const res = await axiosInstance.post<{ success: boolean }>(
-        "/api/verify-otp",
+        "/auth/verify-otp",
         data
       );
       return res.data;
@@ -71,5 +79,5 @@ export const useAuthService = (translate: (key: string) => string) => {
     }
   };
 
-  return { loginUser, registerUser, verifyOtp, sendOtp, resetPassword };
+  return { loginUser, registerUser, verifyOtp, sendOtp, resetPassword, resendOtp };
 };

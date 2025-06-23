@@ -5,14 +5,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import OtpInput from "react-otp-input";
 
-import { sendOtp, setAuthStatus, verifyOtpThunk } from "../AuthSlice";
+import { resend, sendOtp, setAuthStatus, verifyOtpThunk } from "../AuthSlice";
 import type { RootState, AppDispatch } from "../../../app/store";
 import type { UserRegisterDTO } from "../dto/VerifyOtpRequestDTO";
 
 import "../../../css/common.css";
 import CustomOtpInput from "../../../components/otp";
 
-const OTP_COUNTDOWN_SECONDS = 60;
+const OTP_COUNTDOWN_SECONDS = 600;
 
 const OtpForm = () => {
   const { t } = useTranslation();
@@ -35,20 +35,29 @@ const OtpForm = () => {
     }
   }, [email, flowType, navigate]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const elapsed = Math.floor((Date.now() - otpCountdownStart) / 1000);
-      const remaining = OTP_COUNTDOWN_SECONDS - elapsed;
-      setCountdown(remaining > 0 ? remaining : 0);
-    }, 1000);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     const elapsed = Math.floor((Date.now() - otpCountdownStart) / 1000);
+  //     const remaining = OTP_COUNTDOWN_SECONDS - elapsed;
+  //     setCountdown(remaining > 0 ? remaining : 0);
+  //   }, 1000);
 
-    return () => clearInterval(interval);
-  }, [otpCountdownStart]);
+  //   return () => clearInterval(interval);
+  // }, [otpCountdownStart]);
 
   const handleSubmit = () => {
-    if (status === "loading" || otp.length !== 6 || !user) return;
-
+    console.log("Submitting OTP:", otp, "for user:", user);
+    if ( otp.length !== 6 || !user){
+      notification.warning({
+    message: "OTP không hợp lệ",
+    description: "Vui lòng nhập đủ 6 chữ số OTP.",
+  });
+  return;
+    }
+    user.otpCode = otp;
+    console.log("Submitting OTP:", otp, "for user:", user);
     dispatch(
+      
       verifyOtpThunk({ user, otp }, t, flowType, () => {
         if (flowType === "register") {
           navigate("/", { replace: true });
@@ -66,8 +75,8 @@ const OtpForm = () => {
     if (status === "loading" || countdown > 0 || !email) return;
 
     try {
-      dispatch(setAuthStatus("loading"));
-      dispatch(sendOtp(t, email));
+      const otpTokenId = user?.otpCode ?? otp;
+      dispatch(resend(t, email, otpTokenId));
       notification.success({
         message: t("otp.resendSuccessTitle"),
         description: t("otp.resendSuccess"),
@@ -152,8 +161,8 @@ const OtpForm = () => {
               boxShadow: "0px 4px 12px 0px rgba(114, 57, 234, 0.35)",
             }}
             onClick={handleSubmit}
-            disabled={otp.length !== 6 || status === "loading"}
-            loading={status === "loading"}
+            //disabled={otp.length !== 6 || status === "loading"}
+            //loading={status === "loading"}
           >
             {t("otp.submit")}
           </Button>

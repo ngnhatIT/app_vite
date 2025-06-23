@@ -8,13 +8,14 @@ const CheckMail = () => {
   const user = state?.user;
   const email = user?.email;
   const flowType = state?.flowType;
+  console.log(user);
   useEffect(() => {
     if (!email || !flowType) {
       navigate("/auth/login", { replace: true });
       return;
     }
 
-    if (flowType === "register" && !user?.username) {
+    if (flowType === "register" && !user?.userName) {
       navigate("/auth/register", { replace: true });
     }
 

@@ -30,7 +30,17 @@ export const Login = () => {
   }, [navigate]);
   const onFinish = async (values: LoginRequestDTO) => {
     if (status === "loading") return;
-    dispatch(loginThunk(t, values));
+    try {
+      const payload: LoginRequestDTO = {
+        userName: values.userName, // map từ form field
+        password: values.password,
+      };
+      dispatch(loginThunk(t, payload));
+      navigate("/");
+    } catch (error) {
+      console.error("Login error:", error);
+      // Xử lý lỗi nếu cần
+    }
   };
 
   return (
@@ -68,7 +78,7 @@ export const Login = () => {
           {/* Username */}
           <Form.Item
             label={<LabelComponent label="Username" isDark={isDark} required />}
-            name="username"
+            name="userName"
             rules={[
               { required: true, message: t("Please enter your username") },
             ]}

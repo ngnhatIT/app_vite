@@ -2,7 +2,7 @@ import { AxiosError } from "axios";
 
 // Interface cho server response data
 interface ServerErrorResponse {
-  message?: string;
+  msg?: string;
   errors?: Array<{ field: string; message: string }>;
 }
 
@@ -62,7 +62,7 @@ export const handleAxiosError = (
   let serverMessage =
     typeof res.data === "string"
       ? res.data
-      : res.data?.message ?? null;
+      : res.data?.msg ?? null;
 
   // Xử lý lỗi validation (422)
   if (res.status === 422 && res.data?.errors) {

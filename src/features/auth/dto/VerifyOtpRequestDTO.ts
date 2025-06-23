@@ -1,7 +1,8 @@
 export interface UserRegisterDTO {
   email: string;
-  username: string;
+  userName: string;
   password: string;
+  otpCode:string;
 }
 
 export interface VerifyOtpRequestDTO {

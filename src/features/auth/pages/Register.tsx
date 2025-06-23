@@ -25,7 +25,7 @@ export const Register = () => {
   const status = useSelector((state: RootState) => state.auth.status);
   const handleRegister = async (values: {
     email: string;
-    username: string;
+    userName: string;
     password: string;
     confirmPassword: string;
   }) => {
@@ -39,12 +39,12 @@ export const Register = () => {
     }
 
     dispatch(
-      registerOtpThunk(t, values.email, () => {
+      registerOtpThunk(t, values.email, values.userName, () => {
         navigate("/auth/check-mail", {
           state: {
             user: {
               email: values.email,
-              username: values.username,
+              userName: values.userName,
               password: values.password,
             },
             otpCountdownStart: Date.now(),

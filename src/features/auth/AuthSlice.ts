@@ -102,13 +102,32 @@ export const loginThunk =
   };
 
 export const sendOtp =
-  (t: (key: string) => string, email: string): AppThunk =>
+  (t: (key: string) => string, email: string,username:string): AppThunk =>
   async (dispatch) => {
     console.log("Sending OTP to:", email);
     dispatch(setAuthStatus("loading"));
     try {
       const { sendOtp } = useAuthService(t);
-      await sendOtp(email);
+      await sendOtp(email,username);
+      dispatch(setAuthStatus("succeeded"));
+    } catch (err: any) {
+      notification.error({
+        message: t("otp.resendFailed"),
+        description: getErrorMessage(err, t),
+        placement: "topLeft",
+      });
+      dispatch(setAuthStatus("failed"));
+    }
+  };
+
+  export const resend =
+  (t: (key: string) => string, email: string,otpTokenId:string): AppThunk =>
+  async (dispatch) => {
+    console.log("Sending OTP to:", email);
+    dispatch(setAuthStatus("loading"));
+    try {
+      const { resendOtp } = useAuthService(t);
+      await resendOtp(email,otpTokenId);
       dispatch(setAuthStatus("succeeded"));
     } catch (err: any) {
       notification.error({
@@ -121,12 +140,12 @@ export const sendOtp =
   };
 
 export const registerOtpThunk =
-  (t: (key: string) => string, email: string, onSubmit: () => void): AppThunk =>
+  (t: (key: string) => string, email: string,username:string, onSubmit: () => void): AppThunk =>
   async (dispatch) => {
     dispatch(setAuthStatus("loading"));
     try {
       const { sendOtp } = useAuthService(t);
-      await sendOtp(email);
+      await sendOtp(email,username);
       onSubmit();
     } catch (err: any) {
       notification.error({
@@ -148,12 +167,12 @@ export const verifyOtpThunk =
   async (dispatch) => {
     dispatch(setAuthStatus("loading"));
     try {
-      const { verifyOtp, registerUser } = useAuthService(t);
-      const { success } = await verifyOtp(data);
-      if (!success) throw new Error("OTP failed");
-
+      const { registerUser } = useAuthService(t);
+      
       if (flowType === "register") {
-        const { access_token, user } = await registerUser(data.user);
+        const { access_token, user } = await registerUser({
+          ...data.user, // Ensure username is present
+        });
         dispatch(registerSuccess({ user, token: access_token }));
         notification.success({
           message: t("otp.successTitle"),
