@@ -1,20 +1,18 @@
 import React, { useEffect } from "react";
-import { Form, Input, Button } from "antd";
-import {
-  UserOutlined,
-  LockOutlined,
-  EyeTwoTone,
-  EyeInvisibleOutlined,
-} from "@ant-design/icons";
+import { Form } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../app/store";
-import "../../../css/button.css"; // button-primary đã có
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { setNavigate } from "../../../api/AxiosIntance";
 import { loginThunk } from "../AuthSlice";
 import { useTranslation } from "react-i18next";
 import type { LoginRequestDTO } from "../dto/LoginRequestDTO";
-import { Link } from "react-router-dom";
+
+// 🔽 Component bạn tạo
+import LabelComponent from "../../../components/LabelComponent";
+import InputComponent from "../../../components/InputComponent";
+import PrimaryButton from "../../../components/ButtonPrimary";
 
 export const Login = () => {
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
@@ -23,6 +21,7 @@ export const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const status = useSelector((state: RootState) => state.auth.status);
+
   useEffect(() => {
     const device = (window as any).deviceInfo?.get?.();
     console.log("📱 Device from preload:", device);
@@ -31,7 +30,6 @@ export const Login = () => {
       setNavigate(() => {});
     };
   }, [navigate]);
-
   const onFinish = async (values: LoginRequestDTO) => {
     if (status === "loading") return;
     dispatch(loginThunk(t, values));
@@ -39,10 +37,10 @@ export const Login = () => {
 
   return (
     <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-10 rounded-[32px] border-[#985ff6]/50 bg-[#bfbfbf]/[.6]">
-      {/* TITLE */}
+      {/* Title */}
       <div className="flex flex-col justify-center items-start self-stretch">
         <div
-          className={`font-['Poppins'] text-5xl font-medium leading-[normal] capitalize ${
+          className={`font-['Poppins'] text-5xl font-medium capitalize leading-normal ${
             isDark ? "text-neutral-100" : "text-[#2c2c2c]"
           }`}
         >
@@ -61,7 +59,7 @@ export const Login = () => {
         </div>
       </div>
 
-      {/* FORM */}
+      {/* Form */}
       <div className="flex flex-col items-start w-full gap-6">
         <Form
           form={form}
@@ -69,99 +67,57 @@ export const Login = () => {
           className="w-full"
           onFinish={onFinish}
         >
-          {/* USERNAME */}
+          {/* Username */}
           <Form.Item
-            label={
-              <div className="flex items-start gap-1">
-                <span
-                  className={`${
-                    isDark ? "text-white" : "text-[#2c2c2c]"
-                  } font-['Poppins'] text-sm leading-[1.125rem]`}
-                >
-                  {t("Username")}
-                </span>
-                <span className="text-[#f8285a]">*</span>
-              </div>
-            }
+            label={<LabelComponent label="Username" isDark={isDark} required />}
             name="username"
             rules={[
               { required: true, message: t("Please enter your username") },
             ]}
           >
-            <Input
-              size="large"
+            <InputComponent
+              type="text"
               placeholder={t("Enter your username")}
-              prefix={<UserOutlined className="text-white" />}
-              className="rounded-lg text-white placeholder:text-[#9e9e9e] font-['Poppins'] text-sm"
-              style={{
-                background: "rgba(255,255,255,0.1)",
-                border: "1px solid #4b3b61",
-              }}
+              icon={<UserOutlined />}
+              isDark={isDark}
+              height={48}
             />
           </Form.Item>
 
-          {/* PASSWORD */}
+          {/* Password */}
           <Form.Item
-            label={
-              <div className="flex items-start gap-1">
-                <span
-                  className={`${
-                    isDark ? "text-white" : "text-[#2c2c2c]"
-                  } font-['Poppins'] text-sm leading-[1.125rem]`}
-                >
-                  {t("Password")}
-                </span>
-                <span className="text-[#f8285a]">*</span>
-              </div>
-            }
+            label={<LabelComponent label="Password" isDark={isDark} required />}
             name="password"
             rules={[
               { required: true, message: t("Please enter your password") },
             ]}
           >
-            <Input.Password
-              size="large"
+            <InputComponent
+              type="password"
               placeholder={t("Enter your password")}
-              prefix={<LockOutlined className="text-white" />}
-              iconRender={(visible) =>
-                visible ? (
-                  <EyeTwoTone twoToneColor="#fff" />
-                ) : (
-                  <EyeInvisibleOutlined className="text-white" />
-                )
-              }
-              className="rounded-lg text-white placeholder:text-[#9e9e9e] font-['Poppins'] text-sm"
-              style={{
-                background: "rgba(255,255,255,0.1)",
-                border: "1px solid #4b3b61",
-              }}
+              icon={<LockOutlined />}
+              isDark={isDark}
+              height={48}
             />
           </Form.Item>
 
-          {/* FORGOT PASSWORD */}
-          <div
-            className="text-right text-[#e476ad] font-['Poppins'] text-sm leading-5 mb-4 cursor-pointer"
-            onClick={() => navigate("/auth/forgot-password")}
-          >
-            {t("Forgot password?")}
+          {/* Forgot password */}
+          <div className="w-full flex justify-end mb-4">
+            <div
+              className={`cursor-pointer font-['Poppins'] text-sm leading-5 ${
+                isDark ? "text-[#e476ad]" : "text-[#c61a65]"
+              }`}
+              onClick={() => navigate("/auth/forgot-password")}
+            >
+              {t("Forgot password?")}
+            </div>
           </div>
 
-          {/* SUBMIT */}
+          {/* Submit */}
           <Form.Item className="mb-0">
-            <Button
-              htmlType="submit"
-              size="large"
-              loading={status === "loading"}
-              className="w-full text-white font-['Poppins'] text-[.9375rem] font-medium leading-5 border-none"
-              style={{
-                borderRadius: "8px",
-                background: "var(--Foundation-indigo-indigo-500, #6610F2)",
-                boxShadow: "0px 4px 12px 0px rgba(114, 57, 234, 0.35)",
-                height: "48px",
-              }}
-            >
+            <PrimaryButton htmlType="submit" loading={status === "loading"}>
               {t("Login")}
-            </Button>
+            </PrimaryButton>
           </Form.Item>
         </Form>
       </div>

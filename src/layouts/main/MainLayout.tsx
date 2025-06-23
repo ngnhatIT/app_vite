@@ -62,7 +62,7 @@ const MainLayout = () => {
                   <SubMenuPanel group={activeGroup} submenus={submenusMap} />
                 </div>
               )}
-              <div className={`flex-1 `}>
+              <div className={`flex-1`}>
                 <Outlet />
               </div>
             </div>

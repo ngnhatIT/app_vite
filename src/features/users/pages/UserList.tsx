@@ -10,6 +10,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import type { RootState } from "../../../app/store";
 import { useSelector } from "react-redux";
+import PrimaryButton from "../../../components/ButtonPrimary";
+import InputComponent from "../../../components/InputComponent";
 
 interface User {
   id: number;
@@ -44,6 +46,49 @@ const mockUsers: User[] = [
     role: "Member",
     status: "Active",
   },
+  {
+    id: 4,
+    username: "Nur Aisyah Binti Zainuddin",
+    email: "nuraisyahbintizainuddin@gmail.com",
+    role: "Admin",
+    status: "Inactive",
+  },
+  {
+    id: 5,
+    username: "Ethan Lim Wei Jie",
+    email: "ethanlimweijie@gmail.com",
+    role: "WSP Owner",
+    status: "Inactive",
+  },
+  {
+    id: 6,
+    username: "Chloe Tan Hui Min",
+    email: "chloetanhuimin@gmail.com",
+    role: "Member",
+    status: "Active",
+  },
+  {
+    id: 7,
+    username: "Nur Aisyah Binti Zainuddin",
+    email: "nuraisyahbintizainuddin@gmail.com",
+    role: "Admin",
+    status: "Inactive",
+  },
+  {
+    id: 8,
+    username: "Ethan Lim Wei Jie",
+    email: "ethanlimweijie@gmail.com",
+    role: "WSP Owner",
+    status: "Inactive",
+  },
+  {
+    id: 9,
+    username: "Chloe Tan Hui Min",
+    email: "chloetanhuimin@gmail.com",
+    role: "Member",
+    status: "Active",
+  },
+
   // thêm dữ liệu nếu cần
 ];
 
@@ -69,142 +114,131 @@ const UserList = () => {
     <div>
       <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
         {/* Tiêu đề trái */}
-        <h2 className="text-xl font-semibold text-white">User Listing</h2>
+        <h2 className="text font-semibold text-white">User Listing</h2>
 
         {/* Search + Button xếp hàng ngang bên phải */}
         <div className="flex items-center gap-3">
-          <Input
-            placeholder="Search by Username"
-            allowClear
-            prefix={
-              <SearchOutlined
-                className={`mr-1 ${
-                  isDark ? "text-gray-400" : "text-gray-500"
-                } text-sm`}
-              />
-            }
+          <InputComponent
+            type="text"
+            icon={<SearchOutlined />}
+            placeholder="Search something"
+            isDark={isDark}
+            height="48px"
+            className="w-[440px]"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            className={`w-[240px] text-sm px-3 py-[6px] rounded-md border ${
-              isDark
-                ? "bg-[#1c1c1c] text-white border-[#3a3a3a] placeholder:text-gray-400"
-                : "bg-white text-black border-gray-300 placeholder:text-gray-500"
-            }`}
           />
 
-          <Button
+          <PrimaryButton
             icon={<PlusOutlined />}
-            onClick={() => navigate("/users/new")}
-            className={`h-[36px] px-4 rounded-md border text-sm font-normal flex items-center justify-center ${
-              isDark
-                ? "bg-[#1c1c1c] text-white border-gray-500 hover:!border-white"
-                : "bg-white text-black border-gray-300 hover:!border-black"
-            }`}
+            onClick={() => console.log("clicked")}
           >
             Add New User
-          </Button>
+          </PrimaryButton>
         </div>
       </div>
-
-      <Table
-        dataSource={paginatedUsers}
-        rowKey="id"
-        pagination={false}
-        rowClassName={() => "bg-transparent"}
-        columns={[
-          {
-            title: "",
-            dataIndex: "checkbox",
-            width: 40,
-            render: () => (
-              <input type="checkbox" className="accent-purple-500" />
-            ),
-          },
-          {
-            title: "#",
-            width: 50,
-            render: (_: any, __: any, index: number) => (
-              <span className="text-white">
-                {(currentPage - 1) * pageSize + index + 1}
-              </span>
-            ),
-          },
-          {
-            title: "Name",
-            dataIndex: "username",
-            render: (_: any, record: User) => (
-              <div className="flex items-center gap-3">
-                <Avatar src={record.avatarUrl} />
-                <div>
-                  <div className="font-medium text-white">
-                    {record.username}
+      <div style={{ height: "calc(100vh - 350px)", overflowY: "auto" }}>
+        {" "}
+        <Table
+          dataSource={paginatedUsers}
+          rowKey="id"
+          pagination={false}
+          rowClassName={() => "bg-transparent"}
+          columns={[
+            {
+              title: "",
+              dataIndex: "checkbox",
+              width: 40,
+              render: () => (
+                <input type="checkbox" className="accent-purple-500" />
+              ),
+            },
+            {
+              title: "#",
+              width: 50,
+              render: (_: any, __: any, index: number) => (
+                <span className="text-white">
+                  {(currentPage - 1) * pageSize + index + 1}
+                </span>
+              ),
+            },
+            {
+              title: "Name",
+              dataIndex: "username",
+              render: (_: any, record: User) => (
+                <div className="flex items-center gap-3">
+                  <Avatar src={record.avatarUrl} />
+                  <div>
+                    <div className="font-medium text-white">
+                      {record.username}
+                    </div>
+                    <div className="text-gray-400 text-sm">{record.email}</div>
                   </div>
-                  <div className="text-gray-400 text-sm">{record.email}</div>
                 </div>
-              </div>
-            ),
-          },
-          {
-            title: "Role",
-            dataIndex: "role",
-            render: (role: string) => (
-              <span className="text-white">{role}</span>
-            ),
-          },
-          {
-            title: "Status",
-            dataIndex: "status",
-            render: (status: "Active" | "Inactive") => (
-              <span
-                className={`px-3 py-1 text-xs rounded-full ${
-                  status === "Active"
-                    ? "bg-green-500 text-white"
-                    : "bg-gray-400 text-white"
-                }`}
-              >
-                {status}
-              </span>
-            ),
-          },
-          {
-            title: "Action",
-            render: (_: any, record: User) => (
-              <Space>
-                <Tooltip title="Edit">
-                  <Button
-                    icon={<EditOutlined />}
-                    shape="circle"
-                    className="bg-transparent border border-white text-white hover:!bg-white hover:!text-black"
-                  />
-                </Tooltip>
-                <Tooltip title="Delete">
-                  <Button
-                    icon={<DeleteOutlined />}
-                    shape="circle"
-                    className="bg-transparent border border-red-500 text-red-500 hover:!bg-red-500 hover:!text-white"
-                  />
-                </Tooltip>
-                <Tooltip title="Approve">
-                  <Button
-                    icon={<CheckOutlined />}
-                    shape="circle"
-                    className="bg-transparent border border-green-500 text-green-500 hover:!bg-green-500 hover:!text-white"
-                  />
-                </Tooltip>
-              </Space>
-            ),
-          },
-        ]}
-        className="!bg-transparent 
+              ),
+            },
+            {
+              title: "Role",
+              dataIndex: "role",
+              render: (role: string) => (
+                <span className="text-white">{role}</span>
+              ),
+            },
+            {
+              title: "Status",
+              dataIndex: "status",
+              render: (status: "Active" | "Inactive") => (
+                <span
+                  className={`px-3 py-1 text-xs rounded-full ${
+                    status === "Active"
+                      ? "bg-green-500 text-white"
+                      : "bg-gray-400 text-white"
+                  }`}
+                >
+                  {status}
+                </span>
+              ),
+            },
+            {
+              title: "Action",
+              render: (_: any, record: User) => (
+                <Space>
+                  <Tooltip title="Edit">
+                    <Button
+                      icon={<EditOutlined />}
+                      shape="circle"
+                      className="bg-transparent border border-white text-white hover:!bg-white hover:!text-black"
+                    />
+                  </Tooltip>
+                  <Tooltip title="Delete">
+                    <Button
+                      icon={<DeleteOutlined />}
+                      shape="circle"
+                      className="bg-transparent border border-red-500 text-red-500 hover:!bg-red-500 hover:!text-white"
+                    />
+                  </Tooltip>
+                  <Tooltip title="Approve">
+                    <Button
+                      icon={<CheckOutlined />}
+                      shape="circle"
+                      className="bg-transparent border border-green-500 text-green-500 hover:!bg-green-500 hover:!text-white"
+                    />
+                  </Tooltip>
+                </Space>
+              ),
+            },
+          ]}
+          className="!bg-transparent 
     [&_.ant-table]:!bg-transparent 
     [&_.ant-table-container]:!bg-transparent 
     [&_.ant-table-content]:!bg-transparent 
     [&_.ant-table-thead_th]:!bg-transparent 
     [&_.ant-table-tbody_td]:!bg-transparent 
     [&_.ant-table-cell]:!text-white"
-      />
+        />
+      </div>
 
-      <div className="mt-6 flex items-center justify-between w-full">
+      <div className="mt-2 flex items-center justify-between w-full">
         {/* Dropdown chọn số dòng hiển thị */}
         <div className="text-white text-sm">
           <select
@@ -230,7 +264,12 @@ const UserList = () => {
           total={filteredUsers.length}
           onChange={(page) => setCurrentPage(page)}
           showSizeChanger={false}
-          className="text-white [&_.ant-pagination-item-active]:!bg-[#9747FF] [&_.ant-pagination-item-active]:!border-none [&_.ant-pagination-item-active>a]:!text-white"
+          prevIcon={null}
+          nextIcon={null}
+          className="text-white 
+    [&_.ant-pagination-item-active]:!bg-[#9747FF] 
+    [&_.ant-pagination-item-active]:!border-none 
+    [&_.ant-pagination-item-active>a]:!text-white"
         />
 
         {/* Pagination arrow tuỳ chỉnh */}

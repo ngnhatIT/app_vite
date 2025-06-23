@@ -56,17 +56,27 @@ export default function SystemSettings() {
   };
 
   return (
-    <div className="flex flex-wrap w-full gap-6">
+    <div className="h-full flex flex-wrap w-full gap-6 item-center justify-between p-4">
       {/* Privacy Policy Panel */}
       <div style={{ ...panelStyle, flex: 1, minWidth: 300, maxWidth: "48%" }}>
         <Title level={4} className="text-white m-0">
           Privacy Policy
         </Title>
 
-        <Form layout="vertical" form={form} onFinish={onFinish} className="w-full">
+        <Form
+          layout="vertical"
+          form={form}
+          onFinish={onFinish}
+          className="w-full"
+        >
           <Form.Item
             name="passwordExpirationDays"
-            label={<span className="text-white">Password Expiration Date (Day) <span className="text-red-500">*</span></span>}
+            label={
+              <span className="text-white">
+                Password Expiration Date (Day){" "}
+                <span className="text-red-500">*</span>
+              </span>
+            }
             rules={[{ required: true, type: "number", min: 1 }]}
           >
             <InputNumber className="w-full" />
@@ -74,7 +84,12 @@ export default function SystemSettings() {
 
           <Form.Item
             name="maxFailedLoginAttempts"
-            label={<span className="text-white">Maximum Number Of Failed Login Attempts <span className="text-red-500">*</span></span>}
+            label={
+              <span className="text-white">
+                Maximum Number Of Failed Login Attempts{" "}
+                <span className="text-red-500">*</span>
+              </span>
+            }
             rules={[{ required: true, type: "number", min: 1 }]}
           >
             <InputNumber className="w-full" />
@@ -82,7 +97,11 @@ export default function SystemSettings() {
 
           <Form.Item
             name="autoLogoutMinutes"
-            label={<span className="text-white">Auto logout (Minute) <span className="text-red-500">*</span></span>}
+            label={
+              <span className="text-white">
+                Auto logout (Minute) <span className="text-red-500">*</span>
+              </span>
+            }
             rules={[{ required: true, type: "number", min: 1 }]}
           >
             <InputNumber className="w-full" />
@@ -96,10 +115,19 @@ export default function SystemSettings() {
           Setting Email System
         </Title>
 
-        <Form layout="vertical" form={form} onFinish={onFinish} className="w-full">
+        <Form
+          layout="vertical"
+          form={form}
+          onFinish={onFinish}
+          className="w-full"
+        >
           <Form.Item
             name="smtpServer"
-            label={<span className="text-white">SMTP Server <span className="text-red-500">*</span></span>}
+            label={
+              <span className="text-white">
+                SMTP Server <span className="text-red-500">*</span>
+              </span>
+            }
             rules={[{ required: true }]}
           >
             <Input />
@@ -107,7 +135,11 @@ export default function SystemSettings() {
 
           <Form.Item
             name="alertEmail"
-            label={<span className="text-white">Email System <span className="text-red-500">*</span></span>}
+            label={
+              <span className="text-white">
+                Email System <span className="text-red-500">*</span>
+              </span>
+            }
             rules={[{ required: true, type: "email" }]}
           >
             <Input />
@@ -117,7 +149,11 @@ export default function SystemSettings() {
             <Col span={12}>
               <Form.Item
                 name="smtpPort"
-                label={<span className="text-white">Port <span className="text-red-500">*</span></span>}
+                label={
+                  <span className="text-white">
+                    Port <span className="text-red-500">*</span>
+                  </span>
+                }
                 rules={[{ required: true, type: "number" }]}
               >
                 <InputNumber className="w-full" min={1} max={65535} />
@@ -126,7 +162,11 @@ export default function SystemSettings() {
             <Col span={12}>
               <Form.Item
                 name="mailPassword"
-                label={<span className="text-white">Mail Password <span className="text-red-500">*</span></span>}
+                label={
+                  <span className="text-white">
+                    Mail Password <span className="text-red-500">*</span>
+                  </span>
+                }
                 rules={[{ required: true }]}
               >
                 <Input.Password />

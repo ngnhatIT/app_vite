@@ -3,11 +3,16 @@ import { authRoutes } from "./authRoutes";
 
 import MainLayout from "../../layouts/main/MainLayout";
 import { securityRoutes, systemRoutes, userRoutes } from "./mainRoutes";
+import { ProtectedRoute } from "./protectedRoute";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <MainLayout />,
+    element: (
+      <ProtectedRoute>
+        <MainLayout />
+      </ProtectedRoute>
+    ),
     children: [securityRoutes, userRoutes, systemRoutes],
   },
   authRoutes,

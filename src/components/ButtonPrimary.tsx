@@ -1,27 +1,46 @@
 import { Button } from "antd";
+import type { ReactNode } from "react";
 
-interface ButtonPrimaryProps {
+interface PrimaryButtonProps {
+  children?: ReactNode;
+  htmlType?: "button" | "submit" | "reset";
+  loading?: boolean;
+  onClick?: () => void;
   className?: string;
-  property1?: "default" | "DF-hover";
-  text: string;
-  onClick?: (e: React.MouseEvent) => void;
+  disabled?: boolean;
+  size?: "small" | "middle" | "large";
+  icon?: ReactNode;
 }
 
-const ButtonPrimary: React.FC<ButtonPrimaryProps> = ({
-  className,
-  property1 = "default",
-  text,
+const PrimaryButton = ({
+  children,
+  htmlType = "button",
+  loading = false,
   onClick,
-}) => (
-  <Button
-    className={`button-primary ${
-      property1 === "DF-hover" ? "hover:bg-indigo-600" : ""
-    } ${className}`}
-    type="primary"
-    onClick={onClick}
-  >
-    <span className="large">{text}</span>
-  </Button>
-);
+  className = "",
+  disabled = false,
+  size = "large",
+  icon,
+}: PrimaryButtonProps) => {
+  return (
+    <Button
+      icon={icon}
+      htmlType={htmlType}
+      size={size}
+      loading={loading}
+      onClick={onClick}
+      disabled={disabled}
+      className={`w-full text-white font-['Poppins'] text-[.9375rem] font-medium leading-5 border-none ${className}`}
+      style={{
+        borderRadius: "8px",
+        background: "var(--Foundation-indigo-indigo-500, #6610F2)",
+        boxShadow: "0px 4px 12px 0px rgba(114, 57, 234, 0.35)",
+        height: "48px",
+      }}
+    >
+      {children}
+    </Button>
+  );
+};
 
-export default ButtonPrimary;
+export default PrimaryButton;
