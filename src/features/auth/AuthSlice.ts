@@ -84,7 +84,7 @@ export const {
 export default authSlice.reducer;
 
 export const loginThunk =
-  (t: (key: string) => string,payload: LoginRequestDTO): AppThunk =>
+  (t: (key: string) => string, payload: LoginRequestDTO): AppThunk =>
   async (dispatch) => {
     dispatch(setAuthStatus("loading"));
     try {
@@ -102,25 +102,26 @@ export const loginThunk =
   };
 
 export const sendOtp =
-  (t: (key: string) => string,email: string): AppThunk =>
+  (t: (key: string) => string, email: string): AppThunk =>
   async (dispatch) => {
+    console.log("Sending OTP to:", email);
     dispatch(setAuthStatus("loading"));
     try {
       const { sendOtp } = useAuthService(t);
       await sendOtp(email);
       dispatch(setAuthStatus("succeeded"));
     } catch (err: any) {
-      dispatch(setAuthStatus("failed"));
       notification.error({
         message: t("otp.resendFailed"),
         description: getErrorMessage(err, t),
         placement: "topLeft",
       });
+      dispatch(setAuthStatus("failed"));
     }
   };
 
 export const registerOtpThunk =
-  (t: (key: string) => string,email: string, onSubmit: () => void): AppThunk =>
+  (t: (key: string) => string, email: string, onSubmit: () => void): AppThunk =>
   async (dispatch) => {
     dispatch(setAuthStatus("loading"));
     try {
@@ -137,7 +138,7 @@ export const registerOtpThunk =
     }
   };
 
-  export const verifyOtpThunk =
+export const verifyOtpThunk =
   (
     data: VerifyOtpRequestDTO,
     t: (key: string) => string,
@@ -147,7 +148,7 @@ export const registerOtpThunk =
   async (dispatch) => {
     dispatch(setAuthStatus("loading"));
     try {
-      const { verifyOtp,registerUser } = useAuthService(t);
+      const { verifyOtp, registerUser } = useAuthService(t);
       const { success } = await verifyOtp(data);
       if (!success) throw new Error("OTP failed");
 
@@ -175,15 +176,16 @@ export const registerOtpThunk =
     }
   };
 export const resetPasswordThunk =
-  ( t: (key: string) => string,
+  (
+    t: (key: string) => string,
     payload: ResetPasswordRequestDTO,
-   
+
     onSuccess: () => void
   ): AppThunk =>
   async (dispatch) => {
     dispatch(setAuthStatus("loading"));
     try {
-       const { resetPassword } = useAuthService(t);
+      const { resetPassword } = useAuthService(t);
       const { success } = await resetPassword(payload);
       if (success) {
         notification.success({
@@ -193,10 +195,12 @@ export const resetPasswordThunk =
         onSuccess();
       }
     } catch (err: any) {
+      console.error("Reset password failed:", err);
       dispatch(setAuthStatus("failed"));
       notification.error({
         message: t("reset.failedTitle"),
-        description: err?.response?.data?.message ?? t("reset.failedDescription"),
+        description:
+          err?.response?.data?.message ?? t("reset.failedDescription"),
       });
     }
   };

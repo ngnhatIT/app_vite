@@ -40,7 +40,7 @@ export const Register = () => {
 
     dispatch(
       registerOtpThunk(t, values.email, () => {
-        navigate("/auth/verify-otp", {
+        navigate("/auth/check-mail", {
           state: {
             user: {
               email: values.email,
@@ -134,7 +134,8 @@ export const Register = () => {
             rules={[
               { required: true, message: "Please enter your password" },
               {
-                pattern: /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,12}$/,
+                pattern:
+                  /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,12}$/,
                 message:
                   "Password must be 8-12 characters, include an uppercase letter and a special character.",
               },
@@ -214,6 +215,8 @@ export const Register = () => {
                 htmlType="submit"
                 size="large"
                 type="primary"
+                loading={status === "loading"}
+                disabled={status === "loading"}
                 className="flex-5 text-white font-['Poppins'] text-sm font-medium leading-5 border-none"
                 style={{
                   borderRadius: "8px",

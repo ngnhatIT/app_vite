@@ -1,30 +1,29 @@
 import React, { useRef, useState } from "react";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, notification } from "antd";
 import { MailOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { useAuthService } from "../AuthService";
-import { setAuthStatus } from "../AuthSlice";
+import { sendOtp, setAuthStatus } from "../AuthSlice";
 import type { RootState, AppDispatch } from "../../../app/store";
 import ReCAPTCHA from "react-google-recaptcha";
+import { getErrorMessage } from "../../../utils/errorUtil";
 
 const ForgotPassword = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const { sendOtp } = useAuthService(t);
   const [form] = Form.useForm();
   const status = useSelector((state: RootState) => state.auth.status);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
 
-  const handleSubmit = async (values: { email: string }) => {
+  const handleSubmit = (values: { email: string }) => {
     try {
-      dispatch(setAuthStatus("loading"));
-      await sendOtp(values.email);
-      navigate("/auth/verify-otp", {
+      dispatch(sendOtp(t, values.email));
+      navigate("/auth/check-mail", {
         state: {
           user: { email: values.email },
           otpCountdownStart: Date.now(),
@@ -32,6 +31,11 @@ const ForgotPassword = () => {
         },
       });
     } catch (err: any) {
+      notification.error({
+        message: t("otp.resendFailed"),
+        description: getErrorMessage(err, t),
+        placement: "topLeft",
+      });
       dispatch(setAuthStatus("failed"));
     }
   };
@@ -40,9 +44,11 @@ const ForgotPassword = () => {
     <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-10 rounded-[32px] border-[#985ff6]/50 bg-[#bfbfbf]/[.6] px-[5.5rem] py-[4.25rem] w-[600px]">
       {/* TITLE */}
       <div className="flex flex-col justify-center items-start self-stretch">
-        <h2 className={`font-['Poppins'] text-5xl font-medium leading-[normal] capitalize ${
+        <h2
+          className={`font-['Poppins'] text-5xl font-medium leading-[normal] capitalize ${
             isDark ? "text-neutral-100" : "text-[#2c2c2c]"
-          }`}>
+          }`}
+        >
           Forgot Password
         </h2>
         <div className="flex items-center gap-2 mt-2">
@@ -62,7 +68,7 @@ const ForgotPassword = () => {
         >
           {/* EMAIL */}
           <Form.Item
-             label={
+            label={
               <div className="flex items-start gap-1">
                 <span
                   className={`${
@@ -75,7 +81,9 @@ const ForgotPassword = () => {
               </div>
             }
             name="email"
-            rules={[{ required: true, type: "email", message: "Invalid email" }]}
+            rules={[
+              { required: true, type: "email", message: "Invalid email" },
+            ]}
           >
             <Input
               size="large"
@@ -89,7 +97,7 @@ const ForgotPassword = () => {
             />
           </Form.Item>
 
-           <div className="w-full mt-1 mb-4">
+          <div className="w-full mt-1 mb-4">
             <ReCAPTCHA
               sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
               onChange={(token) => setRecaptchaToken(token)}
@@ -117,6 +125,7 @@ const ForgotPassword = () => {
                 size="large"
                 type="primary"
                 loading={status === "loading"}
+                disabled={status === "loading"}
                 className="flex-5 text-white font-['Poppins'] text-sm font-medium leading-5 border-none"
                 style={{
                   borderRadius: "8px",
@@ -133,12 +142,5 @@ const ForgotPassword = () => {
     </div>
   );
 };
-
-const Label = ({ text }: { text: string }) => (
-  <div className="flex items-start gap-1 self-stretch">
-    <span className="text-white font-['Poppins'] text-sm leading-[1.125rem]">{text}</span>
-    <span className="text-[#f8285a] font-['Poppins'] text-sm leading-[1.125rem]">*</span>
-  </div>
-);
 
 export default ForgotPassword;

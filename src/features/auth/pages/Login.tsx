@@ -23,8 +23,6 @@ export const Login = () => {
   const status = useSelector((state: RootState) => state.auth.status);
 
   useEffect(() => {
-    const device = (window as any).deviceInfo?.get?.();
-    console.log("📱 Device from preload:", device);
     setNavigate(navigate);
     return () => {
       setNavigate(() => {});
