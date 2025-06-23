@@ -194,6 +194,7 @@ export const Register = () => {
                 htmlType="submit"
                 loading={status === "loading"}
                 disabled={status === "loading"}
+                className="flex-2"
               >
                 {t("Register")}
               </ButtonComponent>
