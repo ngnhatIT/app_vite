@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Form } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,12 +7,10 @@ import { useNavigate, Link } from "react-router-dom";
 import { setNavigate } from "../../../api/AxiosIntance";
 import { loginThunk } from "../AuthSlice";
 import { useTranslation } from "react-i18next";
-import type { LoginRequestDTO } from "../dto/LoginRequestDTO";
-
-// 🔽 Component bạn tạo
-import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
-import PrimaryButton from "../../../components/ButtonPrimary";
+import PrimaryButton from "../../../components/ButtonComponent";
+import type { SignInRequestDTO } from "../dto/SignInRequestDTO";
+import LabelComponent from "../../../components/LabelComponent";
 
 export const Login = () => {
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
@@ -28,23 +26,18 @@ export const Login = () => {
       setNavigate(() => {});
     };
   }, [navigate]);
-  const onFinish = async (values: LoginRequestDTO) => {
-    if (status === "loading") return;
-    try {
-      const payload: LoginRequestDTO = {
-        userName: values.userName, // map từ form field
-        password: values.password,
-      };
-      dispatch(loginThunk(t, payload));
-      navigate("/");
-    } catch (error) {
-      console.error("Login error:", error);
-      // Xử lý lỗi nếu cần
-    }
+
+  const onFinish = async (values: SignInRequestDTO) => {
+    const payload: SignInRequestDTO = {
+      userName: values.userName,
+      password: values.password,
+    };
+    dispatch(loginThunk(t, payload));
+    navigate("/");
   };
 
   return (
-    <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-10 rounded-[32px] border-[#985ff6]/50 bg-[#bfbfbf]/[.6]">
+    <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-10 rounded-[32px] border border-[#4b3b61] bg-[rgba(255,255,255,0.1)] px-[5.5rem] py-[4.25rem] w-[600px]">
       {/* Title */}
       <div className="flex flex-col justify-center items-start self-stretch">
         <div
@@ -52,17 +45,17 @@ export const Login = () => {
             isDark ? "text-neutral-100" : "text-[#2c2c2c]"
           }`}
         >
-          login
+          {t("Login")}
         </div>
         <div className="flex justify-start items-center gap-2 mt-2">
           <div className="text-[#9e9e9e] font-['Poppins'] text-sm leading-5">
-            Don’t have an account?
+            {t("Don’t have an account?")}
           </div>
           <Link
             to="/auth/register"
             className="text-[#e476ad] font-['Poppins'] text-sm leading-5 cursor-pointer"
           >
-            Sign Up
+            {t("Sign Up")}
           </Link>
         </div>
       </div>
@@ -77,11 +70,9 @@ export const Login = () => {
         >
           {/* Username */}
           <Form.Item
-            label={<LabelComponent label="Username" isDark={isDark} required />}
+            label={<LabelComponent label="Username" isDark={isDark} />}
             name="userName"
-            rules={[
-              { required: true, message: t("Please enter your username") },
-            ]}
+            rules={[{ required: true, message: t("Please enter your username") }]}
           >
             <InputComponent
               type="text"
@@ -94,11 +85,9 @@ export const Login = () => {
 
           {/* Password */}
           <Form.Item
-            label={<LabelComponent label="Password" isDark={isDark} required />}
+            label={<LabelComponent label="Password" isDark={isDark} />}
             name="password"
-            rules={[
-              { required: true, message: t("Please enter your password") },
-            ]}
+            rules={[{ required: true, message: t("Please enter your password") }]}
           >
             <InputComponent
               type="password"

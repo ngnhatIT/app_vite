@@ -1,6 +1,4 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { UserDTO } from "./dto/LoginResponseDTO";
-import type { LoginRequestDTO } from "./dto/LoginRequestDTO";
 import type { AppThunk } from "../../app/store";
 import i18n from "../../i18n/i18n";
 import { notification } from "antd";
@@ -8,6 +6,16 @@ import { getErrorMessage } from "../../utils/errorUtil";
 import { useAuthService } from "./AuthService";
 import type { VerifyOtpRequestDTO } from "./dto/VerifyOtpRequestDTO";
 import type { ResetPasswordRequestDTO } from "./dto/ResetPasswordRequestDTO";
+import type { SignInRequestDTO } from "./dto/SignInRequestDTO";
+import type { SendOtpRequestDTO } from "./dto/SendOtpRequestDTO";
+import type { ResendOtpRequestDTO } from "./dto/ResendOtpRequestDTO";
+import type { SignUpRequestDTO } from "./dto/SignUpRequestDTO";
+import type { App } from "electron";
+
+interface UserDTO {
+  username: string;
+  email: string;
+}
 
 interface AuthState {
   user: UserDTO | null;
@@ -84,12 +92,17 @@ export const {
 export default authSlice.reducer;
 
 export const loginThunk =
-  (t: (key: string) => string, payload: LoginRequestDTO): AppThunk =>
+  (t: (key: string) => string, payload: SignInRequestDTO): AppThunk =>
   async (dispatch) => {
     dispatch(setAuthStatus("loading"));
     try {
       const { loginUser } = useAuthService(t);
-      const { access_token, user } = await loginUser(payload);
+      const access_token = await loginUser(payload);
+      sessionStorage.setItem("access_token", access_token);
+      const user = {
+        username: payload.userName,
+        email: "",
+      };
       dispatch(loginSuccess({ user, token: access_token }));
     } catch (err: any) {
       dispatch(setAuthStatus("failed"));
@@ -101,125 +114,52 @@ export const loginThunk =
     }
   };
 
-export const sendOtp =
-  (t: (key: string) => string, email: string,username:string): AppThunk =>
+export const sendOtpThunk =
+  (t: (key: string) => string, payload: SendOtpRequestDTO,onSubmit:()=>void): AppThunk =>
   async (dispatch) => {
-    console.log("Sending OTP to:", email);
     dispatch(setAuthStatus("loading"));
     try {
       const { sendOtp } = useAuthService(t);
-      await sendOtp(email,username);
+      await sendOtp(payload);
       dispatch(setAuthStatus("succeeded"));
+      onSubmit();
     } catch (err: any) {
-      notification.error({
-        message: t("otp.resendFailed"),
-        description: getErrorMessage(err, t),
-        placement: "topLeft",
-      });
       dispatch(setAuthStatus("failed"));
     }
   };
 
-  export const resend =
-  (t: (key: string) => string, email: string,otpTokenId:string): AppThunk =>
+export const resendOtpThunk =
+  (t: (key: string) => string, payload: ResendOtpRequestDTO): AppThunk =>
   async (dispatch) => {
-    console.log("Sending OTP to:", email);
     dispatch(setAuthStatus("loading"));
     try {
       const { resendOtp } = useAuthService(t);
-      await resendOtp(email,otpTokenId);
+      await resendOtp(payload);
       dispatch(setAuthStatus("succeeded"));
     } catch (err: any) {
-      notification.error({
-        message: t("otp.resendFailed"),
-        description: getErrorMessage(err, t),
-        placement: "topLeft",
-      });
       dispatch(setAuthStatus("failed"));
     }
   };
 
-export const registerOtpThunk =
-  (t: (key: string) => string, email: string,username:string, onSubmit: () => void): AppThunk =>
-  async (dispatch) => {
-    dispatch(setAuthStatus("loading"));
-    try {
-      const { sendOtp } = useAuthService(t);
-      await sendOtp(email,username);
-      onSubmit();
-    } catch (err: any) {
-      notification.error({
-        message: t("register.failedTitle"),
-        description: err?.response?.data?.message ?? t("register.failed"),
-        placement: "topLeft",
-      });
-      dispatch(setAuthStatus("failed"));
-    }
-  };
-
-export const verifyOtpThunk =
+export const registerThunk =
   (
-    data: VerifyOtpRequestDTO,
     t: (key: string) => string,
-    flowType: "register" | "forgot-password",
-    onSuccess: (access_token?: string, user?: any) => void
+    payload: SignUpRequestDTO,
+    onSubmit: () => void
   ): AppThunk =>
   async (dispatch) => {
     dispatch(setAuthStatus("loading"));
     try {
       const { registerUser } = useAuthService(t);
-      
-      if (flowType === "register") {
-        const { access_token, user } = await registerUser({
-          ...data.user, // Ensure username is present
-        });
-        dispatch(registerSuccess({ user, token: access_token }));
-        notification.success({
-          message: t("otp.successTitle"),
-          description: t("otp.successRegister"),
-        });
-        onSuccess(access_token, user);
-      } else {
-        notification.success({
-          message: t("otp.successTitle"),
-          description: t("otp.successForgotPassword"),
-        });
-        onSuccess(); // navigate tới reset-password
-      }
+      await registerUser(payload);
+      onSubmit();
     } catch (err: any) {
       dispatch(setAuthStatus("failed"));
-      notification.error({
-        message: t("otp.failedTitle"),
-        description: getErrorMessage(err, t),
-      });
     }
   };
-export const resetPasswordThunk =
-  (
-    t: (key: string) => string,
-    payload: ResetPasswordRequestDTO,
 
-    onSuccess: () => void
-  ): AppThunk =>
-  async (dispatch) => {
-    dispatch(setAuthStatus("loading"));
-    try {
-      const { resetPassword } = useAuthService(t);
-      const { success } = await resetPassword(payload);
-      if (success) {
-        notification.success({
-          message: t("reset.successTitle"),
-          description: t("reset.successDescription"),
-        });
-        onSuccess();
-      }
-    } catch (err: any) {
-      console.error("Reset password failed:", err);
-      dispatch(setAuthStatus("failed"));
-      notification.error({
-        message: t("reset.failedTitle"),
-        description:
-          err?.response?.data?.message ?? t("reset.failedDescription"),
-      });
-    }
-  };
+export const resetPasswordThunk =():AppThunk => async(dispatch) =>{}
+
+export const verifyOtpThunk =():AppThunk => async(dispatch) => {
+  // Implementation for verifyOtpThunk
+}

@@ -5,9 +5,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import OtpInput from "react-otp-input";
 
-import { resend, sendOtp, setAuthStatus, verifyOtpThunk } from "../AuthSlice";
+import { setAuthStatus, verifyOtpThunk } from "../AuthSlice";
 import type { RootState, AppDispatch } from "../../../app/store";
-import type { UserRegisterDTO } from "../dto/VerifyOtpRequestDTO";
+
 
 import "../../../css/common.css";
 import CustomOtpInput from "../../../components/otp";
@@ -56,19 +56,6 @@ const OtpForm = () => {
     }
     user.otpCode = otp;
     console.log("Submitting OTP:", otp, "for user:", user);
-    dispatch(
-      
-      verifyOtpThunk({ user, otp }, t, flowType, () => {
-        if (flowType === "register") {
-          navigate("/", { replace: true });
-        } else {
-          navigate("/auth/reset-password", {
-            replace: true,
-            state: { email, otp },
-          });
-        }
-      })
-    );
   };
 
   const handleResendOtp = () => {
@@ -76,7 +63,7 @@ const OtpForm = () => {
 
     try {
       const otpTokenId = user?.otpCode ?? otp;
-      dispatch(resend(t, email, otpTokenId));
+     
       notification.success({
         message: t("otp.resendSuccessTitle"),
         description: t("otp.resendSuccess"),

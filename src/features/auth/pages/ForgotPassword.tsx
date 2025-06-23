@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { useAuthService } from "../AuthService";
-import { sendOtp, setAuthStatus } from "../AuthSlice";
+import {  setAuthStatus } from "../AuthSlice";
 import type { RootState, AppDispatch } from "../../../app/store";
 import ReCAPTCHA from "react-google-recaptcha";
 import { getErrorMessage } from "../../../utils/errorUtil";
@@ -22,7 +22,7 @@ const ForgotPassword = () => {
 
   const handleSubmit = (values: { email: string }) => {
     try {
-      dispatch(sendOtp(t, values.email));
+      // dispatch(sendOtp(t, values.email));
       navigate("/auth/check-mail", {
         state: {
           user: { email: values.email },

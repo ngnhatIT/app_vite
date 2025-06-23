@@ -7,7 +7,7 @@ import { theme as antdTheme } from "antd";
 import { useTranslation } from "react-i18next";
 import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
-import PrimaryButton from "../../../components/ButtonPrimary";
+import PrimaryButton from "../../../components/ButtonComponent";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../app/store";
 

@@ -10,7 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import type { RootState } from "../../../app/store";
 import { useSelector } from "react-redux";
-import PrimaryButton from "../../../components/ButtonPrimary";
+import PrimaryButton from "../../../components/ButtonComponent";
 import InputComponent from "../../../components/InputComponent";
 
 interface User {

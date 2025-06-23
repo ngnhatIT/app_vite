@@ -1,7 +1,7 @@
 import { Button } from "antd";
 import type { ReactNode } from "react";
 
-interface PrimaryButtonProps {
+interface ButtonComponentProps {
   children?: ReactNode;
   htmlType?: "button" | "submit" | "reset";
   loading?: boolean;
@@ -12,7 +12,7 @@ interface PrimaryButtonProps {
   icon?: ReactNode;
 }
 
-const PrimaryButton = ({
+const ButtonComponent = ({
   children,
   htmlType = "button",
   loading = false,
@@ -21,7 +21,7 @@ const PrimaryButton = ({
   disabled = false,
   size = "large",
   icon,
-}: PrimaryButtonProps) => {
+}: ButtonComponentProps) => {
   return (
     <Button
       icon={icon}
@@ -43,4 +43,4 @@ const PrimaryButton = ({
   );
 };
 
-export default PrimaryButton;
+export default ButtonComponent;

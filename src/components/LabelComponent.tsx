@@ -7,7 +7,7 @@ interface FormLabelProps {
   className?: string; // bổ sung CSS nếu cần
 }
 
-const FormLabel = ({
+const LabelComponent = ({
   label,
   required = false,
   isDark = false,
@@ -27,4 +27,4 @@ const FormLabel = ({
   );
 };
 
-export default FormLabel;
+export default LabelComponent;

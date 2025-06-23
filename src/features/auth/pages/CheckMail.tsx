@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import PrimaryButton from "../../../components/ButtonPrimary";
+import PrimaryButton from "../../../components/ButtonComponent";
 
 const CheckMail = () => {
   const navigate = useNavigate();

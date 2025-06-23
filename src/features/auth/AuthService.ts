@@ -1,54 +1,55 @@
 import { handleAxiosError } from "../../api/AandleAxiosError";
 import axiosInstance from "../../api/AxiosIntance";
-import type { LoginRequestDTO } from "./dto/LoginRequestDTO";
-import type { LoginResponseDTO } from "./dto/LoginResponseDTO";
-import type { RegisterRequestDTO } from "./dto/RegisterRequestDTO";
-import type { RegisterResponseDTO } from "./dto/RegisterResponseDTO";
+import type { ResendOtpRequestDTO } from "./dto/ResendOtpRequestDTO";
 import type { ResetPasswordRequestDTO } from "./dto/ResetPasswordRequestDTO";
-import type { UserRegisterDTO, VerifyOtpRequestDTO } from "./dto/VerifyOtpRequestDTO";
+import type { SendOtpRequestDTO } from "./dto/SendOtpRequestDTO";
+import type { SignInRequestDTO } from "./dto/SignInRequestDTO";
+import type { SignUpRequestDTO } from "./dto/SignUpRequestDTO";
+import type { VerifyOtpRequestDTO } from "./dto/VerifyOtpRequestDTO";
+
 
 export const useAuthService = (translate: (key: string) => string) => {
   const loginUser = async (
-    payload: LoginRequestDTO
-  ): Promise<LoginResponseDTO> => {
+    payload: SignInRequestDTO
+  ) =>  {
     try {
-      const res = await axiosInstance.post<LoginResponseDTO>(
+      const res = await axiosInstance.post<{ token: string }>(
         "/auth/signin",
         payload
       );
-      sessionStorage.setItem("access_token", res.data.access_token);
-      return res.data;
+      sessionStorage.setItem("access_token", res.data.token);
+      return res.data.token;
     } catch (err) {
       throw handleAxiosError(err, translate, translate("login.failed"));
     }
   };
 
   const registerUser = async (
-    data: UserRegisterDTO
-  ): Promise<RegisterResponseDTO> => {
+    data: SignUpRequestDTO
+  ) => {
     try {
-      const res = await axiosInstance.post<RegisterResponseDTO>(
+      const res = await axiosInstance.post<SignUpRequestDTO>(
         "/auth/regist",
         data
       );
-      sessionStorage.setItem("access_token", res.data.access_token);
       return res.data;
     } catch (err) {
       throw handleAxiosError(err, translate, translate("register.failed"));
     }
   };
 
-  const sendOtp = async (email: string,username:string) => {
+  const sendOtp = async (data : SendOtpRequestDTO) => {
     try {
-      await axiosInstance.post("/auth/signup", { email,username });
+      const res = await axiosInstance.post("/auth/signup", { data });
+      return res.data;
     } catch (err) {
       throw handleAxiosError(err, translate, translate("otp.failed"));
     }
   };
 
-  const resendOtp = async (otpTokenId: string,email:string) => {
+  const resendOtp = async (data:ResendOtpRequestDTO) => {
     try {
-      await axiosInstance.post("/auth/sendotpcode", { otpTokenId,email });
+      await axiosInstance.post("/auth/sendotpcode", { data });
     } catch (err) {
       throw handleAxiosError(err, translate, translate("otp.failed"));
     }
