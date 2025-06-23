@@ -7,6 +7,7 @@ import SiderMenu, { menuItems } from "./SideMenu";
 import PageHeader from "./HeaderMainL";
 import SubMenuPanel from "./SubMenuPanel";
 import "../../css/main_layout.css";
+import "../../css/layout.css";
 
 const { Footer, Sider, Content } = Layout;
 
@@ -42,16 +43,26 @@ const MainLayout = () => {
           <SiderMenu onSelectGroup={(groupKey) => setActiveGroup(groupKey)} />
         </Sider>
 
-        <Layout className="flex flex-col flex-1 bg-transparent">
+        <Layout className="flex flex-col flex-1 ">
           <PageHeader />
-          <Content className="flex-1 overflow-auto p-4 !bg-transparent rounded-[24px]">
-            <div className="content-glass h-full w-full  rounded-[24px] shadow-xl backdrop-blur-lg flex">
+          <Content
+            className="flex-1 overflow-auto p-4 "
+            style={{
+              borderRadius: 24,
+              background: isDark
+                ? "linear-gradient(238deg, [#5b21b6]/30 30.62%, [#5b21b6]/30 100%)"
+                : "#FFFFFFA3",
+              boxShadow: "2px 2px 8px 0px #5b21b6",
+              backdropFilter: "blur(12px)",
+            }}
+          >
+            <div className="content-glass h-full w-full rounded-[24px] shadow-xl backdrop-blur-lg flex">
               {activeGroup && submenusMap[activeGroup] && (
                 <div className="w-1/4 min-w-[200px] max-w-[244px] pr-4">
                   <SubMenuPanel group={activeGroup} submenus={submenusMap} />
                 </div>
               )}
-              <div className="flex-1">
+              <div className={`flex-1 `}>
                 <Outlet />
               </div>
             </div>

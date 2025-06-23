@@ -17,24 +17,11 @@ import { useEffect, useState } from "react";
 
 export const menuItems = [
   { key: "/", icon: <HomeOutlined />, label: "Dashboard" },
-  { key: "/users", icon: <UserOutlined />, label: "Users" },
+  { key: "/users/", icon: <UserOutlined />, label: "Users" },
   {
     key: "/workspace",
     icon: <LockOutlined />,
     label: "Workspace",
-    isGroup: true,
-    submenus: [
-      {
-        key: "workspace-list",
-        icon: <AppstoreOutlined className="text-2xl" />,
-        title: "Workspace List",
-      },
-      {
-        key: "access-control",
-        icon: <ToolOutlined className="text-2xl" />,
-        title: "Access Control",
-      },
-    ],
   },
   {
     key: "/security",
@@ -48,9 +35,9 @@ export const menuItems = [
         title: "Security Events",
       },
       {
-        key: "logs",
+        key: "/security/security-incidents",
         icon: <AppstoreOutlined className="text-2xl" />,
-        title: "Logs",
+        title: "Security Incidents",
       },
     ],
   },
@@ -61,17 +48,17 @@ export const menuItems = [
     isGroup: true,
     submenus: [
       {
-        key: "workspace",
+        key: "/system/workspace",
         icon: <AppstoreOutlined className="text-2xl" />,
         title: "Workspace Management",
       },
       {
-        key: "/security/setting-system",
+        key: "/system/system-setting",
         icon: <SettingOutlined className="text-2xl" />,
         title: "System Settings",
       },
       {
-        key: "device-ip",
+        key: "/system/device-ip",
         icon: <ToolOutlined className="text-2xl" />,
         title: "Device & IP Management",
       },
@@ -93,7 +80,7 @@ const SiderMenu = ({
   const location = useLocation();
   const navigate = useNavigate();
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
-   const [activeGroupKey, setActiveGroupKey] = useState<string | null>(null);
+  const [activeGroupKey, setActiveGroupKey] = useState<string | null>(null);
   const currentRoot = `/${location.pathname.split("/")[1]}`;
 
   useEffect(() => {
@@ -145,18 +132,18 @@ const SiderMenu = ({
       {/* Menu List */}
       <div className="flex flex-col gap-3 w-full px-1 flex-grow py-6 px-7">
         {menuItems.map((item) => {
-          
-         const isActive = item.key === activeGroupKey;
+          const isActive = item.key === activeGroupKey;
           return (
             <div
               key={item.key}
               onClick={() => handleClick(item)}
               className={`relative flex flex-col items-center justify-center py-2 rounded-xl cursor-pointer transition
     ${
-    isActive
-  ? `${isDark ? "bg-[#5b21b6]/30" : "#FFFFFF"} text-[#a855f7] font-medium shadow-[0_4px_12px_rgba(100,35,216,0.08)]`
-  : `${isDark ? "text-white" : "text-gray-700"} hover:text-[#a855f7]`
-
+      isActive
+        ? `${
+            isDark ? "bg-[#5b21b6]/30" : "#FFFFFF"
+          } text-[#a855f7] font-medium shadow-[0_4px_12px_rgba(100,35,216,0.08)]`
+        : `${isDark ? "text-white" : "text-gray-700"} hover:text-[#a855f7]`
     }`}
             >
               {/* Left border line when active */}
@@ -187,8 +174,9 @@ const SiderMenu = ({
         onClick={() => navigate("/auth/login")}
         className="mb-4 flex flex-col items-center justify-center cursor-pointer text-white hover:text-red-400"
       >
-        <LogoutOutlined className="text-xl" style={{ color: '#6B7280' }} />  {/* Tailwind: gray-500 */}
-<span className="text-xs mt-1 text-gray-500">Logout</span>
+        <LogoutOutlined className="text-xl" style={{ color: "#6B7280" }} />{" "}
+        {/* Tailwind: gray-500 */}
+        <span className="text-xs mt-1 text-gray-500">Logout</span>
       </div>
     </div>
   );
