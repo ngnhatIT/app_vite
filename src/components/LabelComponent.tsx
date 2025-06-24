@@ -16,14 +16,14 @@ const LabelComponent = ({
   const { t } = useTranslation();
 
   return (
-    <span
+    <div
       className={`${
         isDark ? "text-white" : "text-[#2c2c2c]"
       } font-['Poppins'] text-sm leading-[1.125rem] ${className}`}
     >
       {t(label)}
       {required && <span className="text-red-500 ml-[2px]">*</span>}
-    </span>
+    </div>
   );
 };
 

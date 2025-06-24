@@ -5,12 +5,13 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../app/store";
 import { useNavigate, Link } from "react-router-dom";
 import { setNavigate } from "../../../api/AxiosIntance";
-import { loginThunk } from "../AuthSlice";
 import { useTranslation } from "react-i18next";
-import InputComponent from "../../../components/InputComponent";
-import PrimaryButton from "../../../components/ButtonComponent";
-import type { SignInRequestDTO } from "../dto/SignInRequestDTO";
+
 import LabelComponent from "../../../components/LabelComponent";
+import InputComponent from "../../../components/InputComponent";
+import ButtonComponent from "../../../components/ButtonComponent";
+import type { SignInRequestDTO } from "../dto/SignInDTO";
+import { loginThunk } from "../AuthThunk";
 
 export const Login = () => {
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
@@ -32,12 +33,13 @@ export const Login = () => {
       userName: values.userName,
       password: values.password,
     };
-    dispatch(loginThunk(t, payload));
-    navigate("/");
+    await dispatch(
+      loginThunk({ payload: payload, t, onSuccess: () => navigate("/") })
+    );
   };
 
   return (
-    <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-10 rounded-[32px] border border-[#4b3b61] bg-[rgba(255,255,255,0.1)] px-[5.5rem] py-[4.25rem] w-[600px]">
+    <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-10 rounded-[32px] border-[#4b3b61] bg-[rgba(255,255,255,0.1)] px-[5.5rem] py-[4.25rem] w-[600px]">
       {/* Title */}
       <div className="flex flex-col justify-center items-start self-stretch">
         <div
@@ -45,17 +47,17 @@ export const Login = () => {
             isDark ? "text-neutral-100" : "text-[#2c2c2c]"
           }`}
         >
-          {t("Login")}
+          {t("login.title")}
         </div>
         <div className="flex justify-start items-center gap-2 mt-2">
           <div className="text-[#9e9e9e] font-['Poppins'] text-sm leading-5">
-            {t("Don’t have an account?")}
+            {t("login.noAccount")}
           </div>
           <Link
             to="/auth/register"
             className="text-[#e476ad] font-['Poppins'] text-sm leading-5 cursor-pointer"
           >
-            {t("Sign Up")}
+            {t("login.signUp")}
           </Link>
         </div>
       </div>
@@ -67,34 +69,39 @@ export const Login = () => {
           layout="vertical"
           className="w-full"
           onFinish={onFinish}
+          autoComplete="off"
         >
           {/* Username */}
           <Form.Item
-            label={<LabelComponent label="Username" isDark={isDark} />}
+            label={
+              <LabelComponent label="login.username" isDark={isDark} required />
+            }
             name="userName"
-            rules={[{ required: true, message: t("Please enter your username") }]}
+            rules={[{ required: true, message: t("login.usernameRequired") }]}
           >
             <InputComponent
               type="text"
-              placeholder={t("Enter your username")}
+              placeholder={t("login.usernamePlaceholder")}
               icon={<UserOutlined />}
               isDark={isDark}
-              height={48}
+              height="48px"
             />
           </Form.Item>
 
           {/* Password */}
           <Form.Item
-            label={<LabelComponent label="Password" isDark={isDark} />}
+            label={
+              <LabelComponent label="login.password" isDark={isDark} required />
+            }
             name="password"
-            rules={[{ required: true, message: t("Please enter your password") }]}
+            rules={[{ required: true, message: t("login.passwordRequired") }]}
           >
             <InputComponent
               type="password"
-              placeholder={t("Enter your password")}
+              placeholder={t("login.passwordPlaceholder")}
               icon={<LockOutlined />}
               isDark={isDark}
-              height={48}
+              height="48px"
             />
           </Form.Item>
 
@@ -106,15 +113,15 @@ export const Login = () => {
               }`}
               onClick={() => navigate("/auth/forgot-password")}
             >
-              {t("Forgot password?")}
+              {t("login.forgotPassword")}
             </div>
           </div>
 
           {/* Submit */}
           <Form.Item className="mb-0">
-            <PrimaryButton htmlType="submit" loading={status === "loading"}>
-              {t("Login")}
-            </PrimaryButton>
+            <ButtonComponent htmlType="submit" loading={status === "loading"}>
+              {t("login.submit")}
+            </ButtonComponent>
           </Form.Item>
         </Form>
       </div>

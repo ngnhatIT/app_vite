@@ -1,34 +1,48 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import PrimaryButton from "../../../components/ButtonComponent";
+import { useTranslation } from "react-i18next";
+import ButtonComponent from "../../../components/ButtonComponent";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../../../app/store";
+import { sendOtpThunk } from "../AuthThunk";
 
 const CheckMail = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
+  const { t } = useTranslation();
   const user = state?.user;
   const email = user?.email;
   const flowType = state?.flowType;
-  console.log(user);
+  const isDark = useSelector((state: RootState) => state.theme.darkMode);
+  const dispatch = useDispatch<AppDispatch>();
+
   useEffect(() => {
     if (!email || !flowType) {
       navigate("/auth/login", { replace: true });
       return;
     }
-
     if (flowType === "register" && !user?.userName) {
       navigate("/auth/register", { replace: true });
     }
-
     if (flowType === "forgot-password") {
       navigate("/auth/forgot-password", { replace: true });
     }
   }, [email, flowType, navigate, user]);
+
+  const handleResendOtp = async () => {
+    const payload = {
+      email: email,
+      flowType: flowType,
+    };
+    await dispatch(sendOtpThunk({ payload, t })).unwrap();
+  };
+
   return (
-    <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-start gap-6 pt-[4.25rem] pb-[4.25rem] px-[5.5rem] h-[606px] rounded-[32px] border-2 border-[#985ff6]/50 bg-[#bfbfbf]/[.6] w-[600px]">
+    <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-start gap-6 pt-[4.25rem] pb-[4.25rem] px-[5.5rem] h-[606px] rounded-[32px]  border-[#985ff6]/50 bg-[#bfbfbf]/[.6] w-[600px]">
       {/* ICON */}
       <svg
-        width={200}
-        height={200}
+        width={100}
+        height={100}
         viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -48,17 +62,20 @@ const CheckMail = () => {
 
       {/* TITLE */}
       <div className="flex flex-col justify-center items-start self-stretch">
-        <h2 className="text-[#f8f9fa] font-['Poppins'] text-5xl font-medium leading-[normal] capitalize">
-          Check Your Email
+        <h2
+          className={`${
+            isDark ? "text-[#f8f9fa]" : "text-black"
+          } font-['Poppins'] text-5xl font-medium leading-[normal] capitalize`}
+        >
+          {t("otp.titleCheckMail")}
         </h2>
         <p className="text-[#9e9e9e] font-['Poppins'] text-sm leading-5 mt-2">
-          A confirmation email has been sent to your email address. Please check
-          your inbox to verify your account. Thank you!
+          {t("otp.checkmailDescription")}
         </p>
       </div>
 
       {/* ACTION */}
-      <PrimaryButton
+      <ButtonComponent
         htmlType="submit"
         onClick={() =>
           navigate("/auth/verify-otp", {
@@ -67,22 +84,22 @@ const CheckMail = () => {
             },
           })
         }
-        className="px-10 max-w-[160px]"
+        className="px-10 w-full"
       >
         Skip for now
-      </PrimaryButton>
+      </ButtonComponent>
 
       {/* FOOTER */}
       <div className="flex justify-center items-center gap-2">
-        <span className="text-[#9e9e9e] font-['Poppins'] text-sm leading-5">
-          Didn't receive an email?
-        </span>
-        <button
-          onClick={() => console.log("Resend clicked")}
-          className="text-[#e476ad] font-['Poppins'] text-sm leading-5 underline"
-        >
-          Resend
-        </button>
+        <div className="flex justify-center items-center gap-2 pt-4">
+          <span className="text-[#9e9e9e] text-sm">{t("otp.notReceived")}</span>
+          <span
+            onClick={handleResendOtp}
+            className="text-[#e476ad] text-sm cursor-pointer hover:underline"
+          >
+            {t("otp.resend")}
+          </span>
+        </div>
       </div>
     </div>
   );

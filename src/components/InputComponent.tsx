@@ -8,17 +8,28 @@ interface CommonInputProps extends Omit<InputProps, "type"> {
   isDark?: boolean;
   icon?: ReactNode;
   prefix?: ReactNode;
-  height?: string | number; // ✅ thêm vào đây
+  height?: string | number;
+  width?: string | number;
+  allowClear?: boolean;
 }
+
+const normalizeSize = (value?: string | number): string | undefined => {
+  if (typeof value === "number") return `${value}px`;
+  if (typeof value === "string") {
+    return /^\d+$/.test(value.trim()) ? `${value}px` : value;
+  }
+  return undefined;
+};
 
 const InputComponent = ({
   type = "text",
   isDark = false,
+  allowClear = false,
   icon,
   prefix,
   className = "",
   style,
-  height,
+  height = "48px",
   width,
   ...rest
 }: CommonInputProps) => {
@@ -31,8 +42,8 @@ const InputComponent = ({
   const sharedStyle: React.CSSProperties = {
     background: isDark ? "rgba(255,255,255,0.05)" : "white",
     border: "1px solid",
-    height,
-    width,
+    width: normalizeSize(width),
+    height: normalizeSize(height),
     ...style,
   };
 
@@ -49,6 +60,7 @@ const InputComponent = ({
   if (type === "password") {
     return (
       <Input.Password
+        allowClear
         prefix={effectivePrefix}
         iconRender={(visible) =>
           visible ? (
@@ -68,6 +80,7 @@ const InputComponent = ({
 
   return (
     <Input
+      allowClear
       prefix={effectivePrefix}
       className={combinedClassName}
       style={sharedStyle}

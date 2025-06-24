@@ -48,7 +48,7 @@ export const handleAxiosError = (
     };
   }
 
-  // Xử lý lỗi mạng
+  // Xử lý lỗi mạng (không có response)
   if (!res) {
     return {
       code: "NETWORK",
@@ -58,17 +58,17 @@ export const handleAxiosError = (
 
   status = res.status;
 
-  // Ưu tiên dùng message từ server
-  let serverMessage =
-    typeof res.data === "string"
-      ? res.data
-      : res.data?.msg ?? null;
+  // Ưu tiên dùng message từ server nếu có
+  let serverMessage: string | null = null;
 
-  // Xử lý lỗi validation (422)
-  if (res.status === 422 && res.data?.errors) {
+  if (typeof res.data === "string") {
+    serverMessage = res.data;
+  } else if (res.status === 422 && res.data?.errors) {
     serverMessage = res.data.errors
       .map((e) => `${e.field}: ${e.message}`)
       .join("; ");
+  } else if (res.data?.msg) {
+    serverMessage = res.data.msg;
   }
 
   message = serverMessage ?? res.statusText ?? defaultMessage;
