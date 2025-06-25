@@ -9,13 +9,16 @@ const createWindow = () => {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-
+    autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
     },
   });
+
+  mainWindow.setMenuBarVisibility(false); // Ẩn luôn cả khi nhấn Alt
+  mainWindow.removeMenu(); // Xóa luôn menu nếu không cần Menu API
   // const fsPath = path.resolve(__dirname, "../dist/index.html");
   // const fileUrl = `file://${fsPath}`;
 
