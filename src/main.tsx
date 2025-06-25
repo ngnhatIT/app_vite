@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
-import { Provider, useSelector } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 
 import "./i18n/i18n";
 
@@ -9,12 +9,16 @@ import "antd/dist/reset.css";
 import "./index.css";
 import { PersistGate } from "redux-persist/integration/react";
 import { ConfigProvider, theme as antdTheme } from "antd";
-import { store, persistor, type RootState } from "./app/store";
+import { store, persistor, type RootState, type AppDispatch } from "./app/store";
 import { router } from "./app/routes";
+import { resetAuth } from "./features/auth/AuthSlice";
 
 const ThemedApp = () => {
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
-
+  const dispatch = useDispatch<AppDispatch>();
+ useEffect(() => {
+    dispatch(resetAuth()); // ✅ Reset auth state mỗi lần app khởi chạy
+  }, []);
   return (
     <ConfigProvider
       theme={{

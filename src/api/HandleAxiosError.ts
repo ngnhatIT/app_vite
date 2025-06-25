@@ -1,9 +1,13 @@
 import { AxiosError } from "axios";
 
-// Interface cho server response data
 interface ServerErrorResponse {
   msg?: string;
+  message?: string;
+  error?: string;
   errors?: Array<{ field: string; message: string }>;
+  code?: number;
+  statusCode?: number;
+  data?: any;
 }
 
 interface ErrorDetails {
@@ -13,34 +17,24 @@ interface ErrorDetails {
   raw?: any;
 }
 
-/**
- * Chuẩn hoá AxiosError thành object rõ ràng
- * @param err Lỗi cần xử lý
- * @param translate Hàm dịch văn bản
- * @param fallbackMessage Thông báo lỗi mặc định
- */
 export const handleAxiosError = (
   err: unknown,
-  translate: (key: string) => string,
-  fallbackMessage: string
+  translate: (key: string) => string
 ): ErrorDetails => {
-  const defaultMessage = fallbackMessage;
   let code = "UNKNOWN";
   let status: number | undefined;
-  let message = defaultMessage;
+  let message = "";
 
-  // Xử lý lỗi không phải AxiosError
   if (!(err instanceof AxiosError)) {
     return {
       code: "RUNTIME_ERROR",
-      message: err instanceof Error ? err.message : defaultMessage,
+      message: err instanceof Error ? err.message : translate("error.unknown"),
     };
   }
 
   const axiosErr = err as AxiosError<ServerErrorResponse>;
   const res = axiosErr.response;
 
-  // Xử lý lỗi timeout
   if (axiosErr.code === "ECONNABORTED") {
     return {
       code: "TIMEOUT",
@@ -48,7 +42,6 @@ export const handleAxiosError = (
     };
   }
 
-  // Xử lý lỗi mạng (không có response)
   if (!res) {
     return {
       code: "NETWORK",
@@ -58,8 +51,7 @@ export const handleAxiosError = (
 
   status = res.status;
 
-  // Ưu tiên dùng message từ server nếu có
-  let serverMessage: string | null = null;
+  let serverMessage: string | undefined;
 
   if (typeof res.data === "string") {
     serverMessage = res.data;
@@ -69,11 +61,19 @@ export const handleAxiosError = (
       .join("; ");
   } else if (res.data?.msg) {
     serverMessage = res.data.msg;
+  } else if (res.data?.message) {
+    serverMessage = res.data.message;
+  } else if (res.data?.error) {
+    serverMessage = res.data.error;
   }
 
-  message = serverMessage ?? res.statusText ?? defaultMessage;
+  message =
+    typeof serverMessage === "string" && serverMessage.trim()
+      ? serverMessage.trim()
+      : res.statusText?.trim() || translate("error.unknown");
 
-  // Gán code theo status
+  console.log("🔍 Final message:", message);
+
   switch (res.status) {
     case 400:
       code = "BAD_REQUEST";
@@ -100,10 +100,14 @@ export const handleAxiosError = (
       code = `HTTP_${res.status}`;
   }
 
-  return {
+  const result = {
     code,
     message,
     status,
     raw: res.data,
   };
+
+  console.log("✅ return from handleAxiosError:", result); // THÊM LOG QUAN TRỌNG
+
+  return result;
 };

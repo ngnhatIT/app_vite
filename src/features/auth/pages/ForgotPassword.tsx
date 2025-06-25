@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import type { RootState, AppDispatch } from "../../../app/store";
 import ReCAPTCHA from "react-google-recaptcha";
-import { getErrorMessage } from "../../../utils/errorUtil";
 import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
@@ -26,19 +25,20 @@ const ForgotPassword = () => {
     try {
       await dispatch(
         sendOtpThunk({
-          payload: { email: values.email, flowType: "forgotPassword" },
+          payload: { email: values.email, flowType: "forgot-password" },
           t,
           onSuccess: () => {
-            navigate("/auth/check-mail", {
-              state: {
-                user: { email: values.email },
-                otpCountdownStart: Date.now(),
-                flowType: "forgotPassword",
-              },
-            });
+           
           },
         })
       ).unwrap();
+       navigate("/auth/check-mail", {
+              state: {
+                user: { email: values.email },
+                otpCountdownStart: Date.now(),
+                flowType: "forgot-password",
+              },
+            });
     } catch (err: any) {
       notification.error({
         message: t("otp.resendFailed"),

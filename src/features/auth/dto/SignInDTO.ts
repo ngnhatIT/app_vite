@@ -4,7 +4,11 @@ export interface SignInRequestDTO {
 }
 
 export interface SignInResponseDTO {
-  success: boolean;
-  token: string;
-  message?: string;
+  code: number;
+  msg: string;
+  data: {
+    token: string;
+    username: string;
+    email?: string;
+  };
 }

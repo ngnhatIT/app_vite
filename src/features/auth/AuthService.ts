@@ -16,19 +16,20 @@ export const authService = {
   loginUser: async (
     payload: SignInRequestDTO,
     t: (key: string) => string
-  ): Promise<SignInResponseDTO> => {
+  ): Promise<string> => {
     try {
       const res = await axiosInstance.post<SignInResponseDTO>(
-        "/auth/sign-in",
+        "/auth/signin",
         payload
       );
-      const { success, token } = res.data;
-      if (success && token) {
+      const { token } = res.data.data;
+      console.log(token);
+      if ( token) {
         sessionStorage.setItem("access_token", token);
       }
-      return res.data;
+      return token;
     } catch (err) {
-      throw handleAxiosError(err, t, t("login.failed"));
+      throw handleAxiosError(err, t);
     }
   },
 
@@ -38,12 +39,12 @@ export const authService = {
   ): Promise<SignUpResponseDTO> => {
     try {
       const res = await axiosInstance.post<SignUpResponseDTO>(
-        "/auth/sign-up",
+        "/auth/signup",
         data
       );
       return res.data;
     } catch (err) {
-      throw handleAxiosError(err, t, t("register.failed"));
+      throw handleAxiosError(err, t);
     }
   },
 
@@ -52,10 +53,10 @@ export const authService = {
     t: (key: string) => string
   ): Promise<SendOtpResponseDTO> => {
     try {
-      const res = await axiosInstance.post("/auth/signup", { data });
+      const res = await axiosInstance.post("/auth/send-otp", data );
       return res.data;
     } catch (err) {
-      throw handleAxiosError(err, t, t("otp.failed"));
+      throw handleAxiosError(err, t);
     }
   },
 
@@ -70,7 +71,7 @@ export const authService = {
       );
       return res.data;
     } catch (err) {
-      throw handleAxiosError(err, t, t("otp.failed"));
+      throw handleAxiosError(err, t);
     }
   },
 
@@ -82,7 +83,7 @@ export const authService = {
       const res = await axiosInstance.post("/auth/reset-password", payload);
       return res.data;
     } catch (err) {
-      throw handleAxiosError(err, t, t("otp.failed"));
+      throw handleAxiosError(err, t);
     }
   },
 };

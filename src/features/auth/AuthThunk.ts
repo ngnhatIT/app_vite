@@ -6,7 +6,8 @@ import type { SignUpRequestDTO } from "./dto/SignUpDTO";
 import type { VerifyOtpRequestDTO } from "./dto/VerifyOtpDTO";
 import type { ResetPasswordRequestDTO } from "./dto/ResetPasswordDTO";
 import type { SendOtpRequestDTO } from "./dto/SendOtpDTO";
-import { useNavigate } from "react-router-dom";
+import { showDialog } from "../../components/DialogService";
+
 
 interface WithT<T> {
   payload: T;
@@ -22,13 +23,23 @@ export const loginThunk = createAsyncThunk<
   { rejectValue: string }
 >("auth/login", async ({ payload, t }, { rejectWithValue }) => {
   try {
-    const { token } = await authService.loginUser(payload, t);
-    const user = { username: payload.userName, email: "" };
-    return { token, user };
+    const  token = await authService.loginUser(payload, t);
+    return { token, user: { username: payload.userName, email: "" } };
   } catch (error: any) {
-    return rejectWithValue(getErrorMessage(error, t));
+   
+    const errMsg =
+      error?.message && typeof error.message === "string"
+        ? error.message
+        : getErrorMessage(error, t);
+
+    showDialog({
+        title: t("common.error"),
+        content: errMsg,
+      });
+    return rejectWithValue(errMsg);
   }
 });
+
 
 // ========== REGISTER ==========
 export const registerThunk = createAsyncThunk<
@@ -81,6 +92,7 @@ export const sendOtpThunk = createAsyncThunk<
   try {
     await authService.sendOtp(payload, t);
   } catch (error: any) {
+    console.log(getErrorMessage(error, t));
     return rejectWithValue(getErrorMessage(error, t));
   }
 });

@@ -93,7 +93,7 @@ const OtpForm = () => {
   };
 
   const handleResendOtp = async () => {
-    if (status === "loading" || countdown > 0 || !email) return;
+    //if (status === "loading" || countdown > 0 || !email) return;
     const payload = {
       userName: user?.userName ?? "",
       email: email,

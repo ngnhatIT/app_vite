@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Form } from "antd";
+import { Form, notification } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../app/store";
@@ -29,14 +29,19 @@ export const Login = () => {
   }, [navigate]);
 
   const onFinish = async (values: SignInRequestDTO) => {
-    const payload: SignInRequestDTO = {
-      userName: values.userName,
-      password: values.password,
-    };
-    await dispatch(
-      loginThunk({ payload: payload, t, onSuccess: () => navigate("/") })
-    );
+  const payload: SignInRequestDTO = {
+    userName: values.userName,
+    password: values.password,
   };
+
+  try {
+    await dispatch(loginThunk({ payload, t })).unwrap();
+    navigate("/");
+  } catch (errMsg: any) {
+   
+   
+  }
+};
 
   return (
     <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-10 rounded-[32px] border-[#4b3b61] bg-[rgba(255,255,255,0.1)] px-[5.5rem] py-[4.25rem] w-[600px]">
