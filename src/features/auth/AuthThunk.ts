@@ -1,5 +1,4 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { getErrorMessage } from "../../utils/errorUtil";
 import { authService } from "./AuthService";
 import type { SignInRequestDTO } from "./dto/SignInDTO";
 import type { SignUpRequestDTO } from "./dto/SignUpDTO";

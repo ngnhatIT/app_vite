@@ -1,16 +1,15 @@
-// ✅ Refactored ForgotPassword.tsx to use local state for loading while keeping Redux dispatch
-
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Form } from "antd";
 import { MailOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import type { RootState, AppDispatch } from "../../../app/store";
-import ReCAPTCHA from "react-google-recaptcha";
+
 import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
+import SliderCaptcha from "../../../components/SliderCaptcha";
 import { sendOtpThunk } from "../AuthThunk";
 import { showDialog } from "../../../components/DialogService";
 
@@ -19,10 +18,9 @@ const ForgotPassword = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
-  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [captchaVerified, setCaptchaVerified] = useState(false);
 
   const handleSubmit = async (values: { email: string }) => {
     setIsSubmitting(true);
@@ -56,7 +54,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-10 rounded-[32px]  border-[#4b3b61]  px-[5.5rem] py-[4.25rem] w-[600px]">
+    <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-10 rounded-[32px] border-[#4b3b61] px-[5.5rem] py-[4.25rem] w-[600px]">
       {/* TITLE */}
       <div className="flex flex-col justify-center items-start self-stretch">
         <h2
@@ -73,7 +71,6 @@ const ForgotPassword = () => {
         </div>
       </div>
 
-      {/* FORM */}
       <div className="flex flex-col items-start w-full gap-6">
         <Form
           layout="vertical"
@@ -104,17 +101,19 @@ const ForgotPassword = () => {
             />
           </Form.Item>
 
-          <div className="w-full mt-1 mb-4">
-            <ReCAPTCHA
-              sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
-              onChange={(token) => setRecaptchaToken(token)}
-              ref={recaptchaRef}
-            />
-          </div>
+          {/* SLIDER CAPTCHA */}
+          <Form.Item className="mt-9 mb-4 px-4">
+            <div className="w-full rounded-xl">
+              <SliderCaptcha
+                onSuccess={(status) => setCaptchaVerified(status)}
+                isDark={isDark}
+              />
+            </div>
+          </Form.Item>
 
           {/* BUTTONS */}
-          <Form.Item className="mb-0 pt-6">
-            <div className="flex justify-between gap-4">
+          <Form.Item>
+            <div className="flex justify-between gap-4 mt-4">
               <ButtonComponent
                 onClick={() => navigate("/auth/login")}
                 icon={<ArrowLeftOutlined />}
@@ -127,9 +126,9 @@ const ForgotPassword = () => {
               <ButtonComponent
                 htmlType="submit"
                 loading={isSubmitting}
-                disabled={isSubmitting || !recaptchaToken}
+                disabled={isSubmitting || !captchaVerified}
                 className="flex-2"
-                tooltip={!recaptchaToken ? "Bạn chưa điền đủ thông tin" : ""}
+                tooltip={!captchaVerified ? t("captcha.tooltip") : ""}
               >
                 {t("forgot.submit")}
               </ButtonComponent>

@@ -81,5 +81,11 @@
     "ok": "OK",
     "yes": "はい",
     "no": "いいえ"
+  },
+   "captcha": {
+    "label": "スライダーで認証",
+    "slideToVerify": "スライドして認証を完了",
+    "verified": "認証済み",
+    "reset": "リセット"
   }
 }

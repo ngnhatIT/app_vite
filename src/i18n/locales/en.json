@@ -95,5 +95,11 @@
     "tryAgain": "Something went wrong. Please try again later.",
     "network": "Network Error",
     "general": "An error occurred. Please try again."
+  },
+   "captcha": {
+    "label": "Slide to verify",
+    "slideToVerify": "Swipe to complete verification",
+    "verified": "Verified",
+    "reset": "Reset"
   }
 }
