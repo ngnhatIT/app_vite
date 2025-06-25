@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, Menu } from "electron";
 import path from "path";
 import si from "systeminformation"; // Thêm dòng này
 import fs from "fs";
@@ -49,10 +49,14 @@ const createWindow = () => {
 app.whenReady().then(() => {
   createWindow();
 
+  // ✅ Xoá toàn bộ menu macOS, bao gồm cả Developer Tools
+  Menu.setApplicationMenu(Menu.buildFromTemplate([]));
+
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
+
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
