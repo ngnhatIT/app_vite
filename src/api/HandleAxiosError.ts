@@ -72,8 +72,6 @@ export const handleAxiosError = (
       ? serverMessage.trim()
       : res.statusText?.trim() || translate("error.unknown");
 
-  console.log("🔍 Final message:", message);
-
   switch (res.status) {
     case 400:
       code = "BAD_REQUEST";
@@ -106,8 +104,5 @@ export const handleAxiosError = (
     status,
     raw: res.data,
   };
-
-  console.log("✅ return from handleAxiosError:", result); // THÊM LOG QUAN TRỌNG
-
   return result;
 };

@@ -6,8 +6,6 @@ import type { SignUpRequestDTO } from "./dto/SignUpDTO";
 import type { VerifyOtpRequestDTO } from "./dto/VerifyOtpDTO";
 import type { ResetPasswordRequestDTO } from "./dto/ResetPasswordDTO";
 import type { SendOtpRequestDTO } from "./dto/SendOtpDTO";
-import { showDialog } from "../../components/DialogService";
-
 
 interface WithT<T> {
   payload: T;
@@ -23,23 +21,12 @@ export const loginThunk = createAsyncThunk<
   { rejectValue: string }
 >("auth/login", async ({ payload, t }, { rejectWithValue }) => {
   try {
-    const  token = await authService.loginUser(payload, t);
+    const token = await authService.loginUser(payload, t);
     return { token, user: { username: payload.userName, email: "" } };
   } catch (error: any) {
-   
-    const errMsg =
-      error?.message && typeof error.message === "string"
-        ? error.message
-        : getErrorMessage(error, t);
-
-    showDialog({
-        title: t("common.error"),
-        content: errMsg,
-      });
-    return rejectWithValue(errMsg);
+    return rejectWithValue(error?.message ?? t("error.general"));
   }
 });
-
 
 // ========== REGISTER ==========
 export const registerThunk = createAsyncThunk<
@@ -52,7 +39,7 @@ export const registerThunk = createAsyncThunk<
     const user = { username: payload.userName, email: payload.email };
     return { user, token: "dummy-token" };
   } catch (error: any) {
-    return rejectWithValue(getErrorMessage(error, t));
+    return rejectWithValue(error?.message ?? t("error.general"));
   }
 });
 
@@ -65,7 +52,7 @@ export const verifyOtpThunk = createAsyncThunk<
   try {
     return await authService.verifyOtp(payload, t);
   } catch (error: any) {
-    return rejectWithValue(getErrorMessage(error, t));
+    return rejectWithValue(error?.message ?? t("error.general"));
   }
 });
 
@@ -79,7 +66,7 @@ export const resetPasswordThunk = createAsyncThunk<
     const result = await authService.resetPassword(payload, t);
     if (!result.success) throw new Error("Reset password failed");
   } catch (error: any) {
-    return rejectWithValue(getErrorMessage(error, t));
+    return rejectWithValue(error?.message ?? t("error.general"));
   }
 });
 
@@ -92,7 +79,6 @@ export const sendOtpThunk = createAsyncThunk<
   try {
     await authService.sendOtp(payload, t);
   } catch (error: any) {
-    console.log(getErrorMessage(error, t));
-    return rejectWithValue(getErrorMessage(error, t));
+    return rejectWithValue(error?.message ?? t("error.general"));
   }
 });

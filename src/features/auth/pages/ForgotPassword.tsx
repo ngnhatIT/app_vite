@@ -1,5 +1,7 @@
+// ✅ Refactored ForgotPassword.tsx to use local state for loading while keeping Redux dispatch
+
 import { useRef, useState } from "react";
-import { Form, notification } from "antd";
+import { Form } from "antd";
 import { MailOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,41 +12,46 @@ import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
 import { sendOtpThunk } from "../AuthThunk";
+import { showDialog } from "../../../components/DialogService";
 
 const ForgotPassword = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const status = useSelector((state: RootState) => state.auth.status);
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (values: { email: string }) => {
+    setIsSubmitting(true);
     try {
       await dispatch(
         sendOtpThunk({
           payload: { email: values.email, flowType: "forgot-password" },
           t,
-          onSuccess: () => {
-           
-          },
+          onSuccess: () => {},
         })
       ).unwrap();
-       navigate("/auth/check-mail", {
-              state: {
-                user: { email: values.email },
-                otpCountdownStart: Date.now(),
-                flowType: "forgot-password",
-              },
-            });
-    } catch (err: any) {
-      notification.error({
-        message: t("otp.resendFailed"),
-        description: err || t("error.unknown"),
-        placement: "topLeft",
+
+      navigate("/auth/check-mail", {
+        state: {
+          user: {
+            email: values.email,
+          },
+          otpCountdownStart: Date.now(),
+          flowType: "forgot-password",
+        },
       });
+    } catch (err: any) {
+      showDialog({
+        title: t("common.error"),
+        content: err ?? t("error.general"),
+        isDark: isDark,
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -96,6 +103,7 @@ const ForgotPassword = () => {
               height={48}
             />
           </Form.Item>
+
           <div className="w-full mt-1 mb-4">
             <ReCAPTCHA
               sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
@@ -118,9 +126,10 @@ const ForgotPassword = () => {
               </ButtonComponent>
               <ButtonComponent
                 htmlType="submit"
-                loading={status === "loading"}
-                disabled={status === "loading"}
+                loading={isSubmitting}
+                disabled={isSubmitting || !recaptchaToken}
                 className="flex-2"
+                tooltip={!recaptchaToken ? "Bạn chưa điền đủ thông tin" : ""}
               >
                 {t("forgot.submit")}
               </ButtonComponent>

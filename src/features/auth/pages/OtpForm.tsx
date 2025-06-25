@@ -15,6 +15,7 @@ const OTP_COUNTDOWN_SECONDS = 600;
 
 const OtpForm = () => {
   const { t } = useTranslation();
+  const isDark = useSelector((state: RootState) => state.theme.darkMode);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -44,51 +45,48 @@ const OtpForm = () => {
   }, [otpCountdownStart]);
 
   const handleSubmit = async () => {
-    if (otp.length !== 6 || !user) {
-      notification.warning({
-        message: t("otp.invalidTitle"),
-        description: t("otp.invalidDescription"),
-      });
+    if (otp.length !== 6) {
       return;
     }
-
     try {
       if (flowType === "register") {
         const verifyPayload: VerifyOtpRequestDTO = {
-          email: user.email,
+          email: user!.email,
           otpCode: otp,
           flowType: "register",
         };
 
         const registerPayload: SignUpRequestDTO = {
-          userName: user.userName,
-          email: user.email,
-          password: user.password,
+          userName: user!.userName,
+          email: user!.email,
+          password: user!.password,
         };
 
-        const result = await dispatch(
-          verifyOtpThunk({ payload: verifyPayload, t })
-        ).unwrap();
+        await dispatch(verifyOtpThunk({ payload: verifyPayload, t })).unwrap();
 
         await dispatch(registerThunk({ payload: registerPayload, t })).unwrap();
         navigate("/auth/login");
       }
 
-      if (flowType === "forgotPassword") {
+      if (flowType === "forgot-password") {
         const verifyPayload: VerifyOtpRequestDTO = {
-          email: user.email,
+          email: user!.email,
           otpCode: otp,
-          flowType: "forgotPassword",
+          flowType: "forgot-password",
         };
 
         await dispatch(verifyOtpThunk({ payload: verifyPayload, t })).unwrap();
 
         navigate("/auth/reset-password", {
-          state: { email: user.email, otp },
+          state: { email: user!.email, otp },
         });
       }
-    } catch (error) {
-      showDialog({ title: t("otp.failed"), content: error as string });
+    } catch (error: any) {
+      showDialog({
+        title: t("common.error"),
+        content: error ?? t("error.general"),
+        isDark: isDark,
+      });
     }
   };
 
@@ -146,7 +144,7 @@ const OtpForm = () => {
 
         <div className="text-white text-sm">{t("otp.enterPrompt")}</div>
 
-        <CustomOtpInput value={otp} onChange={setOtp} />
+        <CustomOtpInput value={otp} onChange={setOtp} isDark={isDark} />
 
         <div className="flex justify-end w-full gap-4 pt-4">
           <ButtonComponent

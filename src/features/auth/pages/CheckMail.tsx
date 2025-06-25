@@ -5,6 +5,7 @@ import ButtonComponent from "../../../components/ButtonComponent";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../app/store";
 import { sendOtpThunk } from "../AuthThunk";
+import { showDialog } from "../../../components/DialogService";
 
 const CheckMail = () => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const CheckMail = () => {
     if (flowType === "register" && !user?.userName) {
       navigate("/auth/register", { replace: true });
     }
-    if (flowType === "forgot-password") {
+    if (flowType === "forgot-password" && !user?.email) {
       navigate("/auth/forgot-password", { replace: true });
     }
   }, [email, flowType, navigate, user]);
@@ -34,7 +35,15 @@ const CheckMail = () => {
       email: email,
       flowType: flowType,
     };
-    await dispatch(sendOtpThunk({ payload, t })).unwrap();
+    try {
+      await dispatch(sendOtpThunk({ payload, t })).unwrap();
+    } catch (err: any) {
+      showDialog({
+        title: t("common.error"),
+        content: err ?? t("error.general"),
+        isDark: isDark,
+      });
+    }
   };
 
   return (

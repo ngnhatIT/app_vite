@@ -58,6 +58,7 @@ const authSlice = createSlice({
         state.token = action.payload.token;
         state.isAuthenticated = true;
         state.error = null;
+        sessionStorage.setItem("accessToken", action.payload.token);
       })
       .addCase(loginThunk.rejected, (state, action) => {
         state.status = "failed";
@@ -129,5 +130,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, clearError,resetAuth } = authSlice.actions;
+export const { logout, clearError, resetAuth } = authSlice.actions;
 export default authSlice.reducer;

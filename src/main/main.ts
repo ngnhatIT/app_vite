@@ -7,8 +7,9 @@ let mainWindow: BrowserWindow | null = null;
 
 const createWindow = () => {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
+
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -27,14 +28,14 @@ const createWindow = () => {
   //   console.error("❌ Không tìm thấy dist/index.html:", fsPath);
   // }
 
-  mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
+  mainWindow.loadFile(path.join(__dirname, "../dist/index.html"));
 
-  const devURL = process.env.VITE_DEV_SERVER_URL || 'http://localhost:5173';
-  console.log('Loading from dev:', devURL);
+  const devURL = process.env.VITE_DEV_SERVER_URL;
+  console.log("Loading from dev:", devURL);
   if (devURL) {
-    mainWindow.loadURL(devURL)
+    mainWindow.loadURL(devURL);
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
+    mainWindow.loadFile(path.join(__dirname, "../dist/index.html"));
   }
 
   mainWindow.on("closed", () => {

@@ -1,5 +1,5 @@
-import { Button } from "antd";
-import type { ReactNode } from "react";
+import { Button, Tooltip } from "antd";
+import type { ReactNode, CSSProperties } from "react";
 
 interface ButtonComponentProps {
   children?: ReactNode;
@@ -11,7 +11,9 @@ interface ButtonComponentProps {
   size?: "small" | "middle" | "large";
   icon?: ReactNode;
   variant?: "primary" | "secondary";
-  isDark?: boolean; // ✅ Thêm biến này
+  isDark?: boolean;
+  height?: number | string; // ✅ thêm height tùy chỉnh
+  tooltip?: string; // ✅ thêm tooltip cho trạng thái disabled
 }
 
 const ButtonComponent = ({
@@ -25,15 +27,16 @@ const ButtonComponent = ({
   icon,
   variant = "primary",
   isDark = false,
+  height = "48px",
+  tooltip,
 }: ButtonComponentProps) => {
   const baseClass =
     "w-full font-['Poppins'] text-[.9375rem] font-medium leading-5 border-none";
 
-  // ✅ Style tùy theo variant và theme
-  const styleByVariant = {
+  const styleByVariant: Record<string, CSSProperties> = {
     primary: {
-      background: "var(--Foundation-indigo-indigo-500, #6610F2)",
-      boxShadow: "0px 4px 12px 0px rgba(114, 57, 234, 0.35)",
+      background: "#6610F2",
+      boxShadow: "0px 4px 12px rgba(114, 57, 234, 0.35)",
       color: "#ffffff",
     },
     secondary: isDark
@@ -51,7 +54,21 @@ const ButtonComponent = ({
         },
   };
 
-  return (
+  const disabledStyle: CSSProperties = {
+    opacity: 0.6,
+    cursor: "not-allowed",
+    background: isDark ? "#444" : "#e9ecef",
+    color: isDark ? "#ccc" : "#6c757d",
+    border: isDark ? "1px solid #555" : "1px solid #dee2e6",
+  };
+
+  const finalStyle: CSSProperties = {
+    borderRadius: "8px",
+    height,
+    ...(disabled ? disabledStyle : styleByVariant[variant]),
+  };
+
+  const buttonElement = (
     <Button
       icon={icon}
       htmlType={htmlType}
@@ -60,14 +77,18 @@ const ButtonComponent = ({
       onClick={onClick}
       disabled={disabled}
       className={`${baseClass} ${className}`}
-      style={{
-        borderRadius: "8px",
-        height: "52px",
-        ...styleByVariant[variant],
-      }}
+      style={finalStyle}
     >
       {children}
     </Button>
+  );
+
+  return disabled && tooltip ? (
+    <Tooltip title={tooltip} placement="top">
+      <span className="w-full inline-block">{buttonElement}</span>
+    </Tooltip>
+  ) : (
+    buttonElement
   );
 };
 

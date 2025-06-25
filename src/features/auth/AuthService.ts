@@ -23,10 +23,6 @@ export const authService = {
         payload
       );
       const { token } = res.data.data;
-      console.log(token);
-      if ( token) {
-        sessionStorage.setItem("access_token", token);
-      }
       return token;
     } catch (err) {
       throw handleAxiosError(err, t);
@@ -53,7 +49,7 @@ export const authService = {
     t: (key: string) => string
   ): Promise<SendOtpResponseDTO> => {
     try {
-      const res = await axiosInstance.post("/auth/send-otp", data );
+      const res = await axiosInstance.post("/auth/send-otp", data);
       return res.data;
     } catch (err) {
       throw handleAxiosError(err, t);

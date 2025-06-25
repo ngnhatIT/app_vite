@@ -9,8 +9,8 @@ const systeminformation_1 = __importDefault(require("systeminformation")); // Th
 let mainWindow = null;
 const createWindow = () => {
     mainWindow = new electron_1.BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1200,
+        height: 800,
         webPreferences: {
             preload: path_1.default.join(__dirname, "preload.js"),
             contextIsolation: true,
@@ -26,14 +26,14 @@ const createWindow = () => {
     // } else {
     //   console.error("❌ Không tìm thấy dist/index.html:", fsPath);
     // }
-    mainWindow.loadFile(path_1.default.join(__dirname, '../dist/index.html'));
-    const devURL = process.env.VITE_DEV_SERVER_URL || 'http://localhost:5173';
-    console.log('Loading from dev:', devURL);
+    mainWindow.loadFile(path_1.default.join(__dirname, "../dist/index.html"));
+    const devURL = process.env.VITE_DEV_SERVER_URL;
+    console.log("Loading from dev:", devURL);
     if (devURL) {
         mainWindow.loadURL(devURL);
     }
     else {
-        mainWindow.loadFile(path_1.default.join(__dirname, '../dist/index.html'));
+        mainWindow.loadFile(path_1.default.join(__dirname, "../dist/index.html"));
     }
     mainWindow.on("closed", () => {
         mainWindow = null;

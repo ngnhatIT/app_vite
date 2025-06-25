@@ -32,7 +32,6 @@ const GoogleSheetForm: React.FC = () => {
   }, [sheetId, form]);
 
   const onFinish = (values: GoogleSheet) => {
-    console.log("Submit Google Sheet:", values);
     message.success(
       `${isEditing ? "Cập nhật" : "Thêm"} Google Sheet thành công!`
     );

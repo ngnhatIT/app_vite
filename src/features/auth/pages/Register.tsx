@@ -1,9 +1,10 @@
-import { Form, Input } from "antd";
+// ✅ Refactored Register.tsx to keep dispatch but use local loading state
+
+import { useState } from "react";
+import { Form } from "antd";
 import {
   UserOutlined,
   LockOutlined,
-  EyeTwoTone,
-  EyeInvisibleOutlined,
   MailOutlined,
   ArrowLeftOutlined,
 } from "@ant-design/icons";
@@ -11,43 +12,56 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../../../app/store";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+
 import LabelComponent from "../../../components/LabelComponent";
+import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
 import { sendOtpThunk } from "../AuthThunk";
-import InputComponent from "../../../components/InputComponent";
+import { showDialog } from "../../../components/DialogService";
 
-export const Register = () => {
+const Register = () => {
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const status = useSelector((state: RootState) => state.auth.status);
   const handleRegister = async (values: {
     email: string;
     userName: string;
     password: string;
     confirmPassword: string;
   }) => {
-    const payload = {
-      userName: values.userName,
-      email: values.email,
-      flowType: "register",
-    };
-
-    await dispatch(sendOtpThunk({ payload, t })).unwrap();
-    navigate("/auth/check-mail", {
-      state: {
-        user: {
-          email: values.email,
-          userName: values.userName,
-          password: values.password,
-        },
-        otpCountdownStart: Date.now(),
+    setIsSubmitting(true);
+    try {
+      const payload = {
+        userName: values.userName,
+        email: values.email,
         flowType: "register",
-      },
-    });
+      };
+
+      await dispatch(sendOtpThunk({ payload, t })).unwrap();
+      navigate("/auth/check-mail", {
+        state: {
+          user: {
+            email: values.email,
+            userName: values.userName,
+            password: values.password,
+          },
+          otpCountdownStart: Date.now(),
+          flowType: "register",
+        },
+      });
+    } catch (err: any) {
+      showDialog({
+        title: t("common.error"),
+        content: err ?? t("error.general"),
+        isDark: isDark,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -193,8 +207,8 @@ export const Register = () => {
               <ButtonComponent
                 htmlType="submit"
                 variant="primary"
-                loading={status === "loading"}
-                disabled={status === "loading"}
+                loading={isSubmitting}
+                disabled={isSubmitting}
                 className="flex-2"
               >
                 {t("register.submit")}

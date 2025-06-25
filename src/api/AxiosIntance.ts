@@ -1,6 +1,5 @@
 // 📁 src/api/axiosInstance.ts
 import axios, { type AxiosResponse, AxiosError } from "axios";
-import i18n from "../i18n/i18n";
 import { logout } from "../features/auth/AuthSlice";
 import { store } from "../app/store";
 import type { NavigateFunction } from "react-router-dom";
@@ -33,7 +32,7 @@ const isValidToken = (token: string): boolean => {
 };
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3000",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 15000,
   headers: {
     "Content-Type": "application/json",
@@ -47,23 +46,13 @@ axiosInstance.interceptors.request.use(
     if (token && isValidToken(token)) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
     config.headers["Accept-Language"] = "ja";
-
-    // ✅ Lấy thông tin từ preload async
     const device = await (window as any).deviceInfo?.get?.();
     const ip = device?.ip ?? "unknown";
     const mac = device?.mac ?? "unknown";
 
     config.headers["X-Client-IP"] = ip;
     config.headers["X-Client-MAC"] = mac;
-
-    console.log("Request Config:", {
-      url: config.url,
-      method: config.method,
-      headers: config.headers,
-    });
-
     return config;
   },
   (error) => Promise.reject(new Error(error?.message ?? "Request error"))

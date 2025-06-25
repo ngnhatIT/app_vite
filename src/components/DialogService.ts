@@ -14,11 +14,13 @@ const root = createRoot(container);
 export const showDialog = ({
   title,
   content,
+  isDark,
   onOk,
   onCancel,
 }: {
   title: string;
   content: string;
+  isDark: boolean;
   onOk?: () => void;
   onCancel?: () => void;
 }) => {
@@ -31,6 +33,7 @@ export const showDialog = ({
       open: true,
       title,
       content,
+      isDark,
       confirmText: "Ok",
       cancelText: "Cancel",
       onConfirm: () => {
