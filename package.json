@@ -5,7 +5,7 @@
   "main": "dist-electron/main.js",
   "scripts": {
     "build-electron": "tsc -p tsconfig.electron.json",
-    "dev": "concurrently \"cross-env VITE_DEV_SERVER_URL=http://localhost:5173 vite\" \"wait-on http://localhost:5173 && npm run electron:dev\"",
+    "dev": "concurrently \"cross-env VITE_DEV_SERVER_URL=http://localhost:5173 vite\" \"wait-on http://localhost:5173 && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 npm run electron:dev\"",
     "electron:dev": "npm run build-electron && electron ./dist-electron/main.js",
     "electron": "electron ./dist-electron/main.js",
     "build": "vite build && npm run build-electron && electron-builder",

@@ -38,7 +38,7 @@ const Login = () => {
     } catch (err: any) {
       showDialog({
         title: t("common.error"),
-        content: err?.message ?? t("error.general"),
+        content: err ?? t("error.general"),
         isDark,
       });
     } finally {
