@@ -67,9 +67,9 @@ const SliderCaptcha = ({ onSuccess, isDark = false }: Props) => {
             borderRadius: 9999,
           }}
           handleStyle={{
-            height: 44,
-            width: 44,
-            marginTop: -4,
+            height: 36,
+            width: 36,
+            marginTop: -1,
             backgroundColor: verified ? "#4b0082" : "#9333ea",
             border: "3px solid white",
             boxShadow: verified
@@ -91,16 +91,22 @@ const SliderCaptcha = ({ onSuccess, isDark = false }: Props) => {
         >
           <span
             className={`flex items-center gap-2  font-poppins drop-shadow-md ${
-              verified ? "text-white" : isDark ? "text-white/80" : "text-gray-800"
+              verified
+                ? "text-white"
+                : isDark
+                ? "text-white/80"
+                : "text-gray-800"
             }`}
           >
             {verified ? (
               <>
-                <CheckCircleFilled className="text-white font-poppins" /> {t("captcha.verified")}
+                <CheckCircleFilled className="text-white font-poppins" />{" "}
+                {t("captcha.verified")}
               </>
             ) : (
               <>
-                <LockFilled className="text-sm font-poppins" /> {t("captcha.slideToVerify")}
+                <LockFilled className="text-sm font-poppins" />{" "}
+                {t("captcha.slideToVerify")}
               </>
             )}
           </span>
@@ -108,7 +114,7 @@ const SliderCaptcha = ({ onSuccess, isDark = false }: Props) => {
 
         {verified && (
           <div
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-white/70 hover:text-red-500 transition cursor-pointer z-20"
+            className="absolute right-1 top-1/2 -translate-y-1/2 text-white/70 hover:text-red-500 transition cursor-pointer z-30"
             onClick={reset}
             title={t("captcha.reset")}
           >

@@ -1,7 +1,6 @@
 import { app, BrowserWindow, ipcMain, Menu } from "electron";
 import path from "path";
 import si from "systeminformation"; // Thêm dòng này
-import fs from "fs";
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -9,7 +8,7 @@ const createWindow = () => {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    autoHideMenuBar: true,
+    resizable: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -18,7 +17,7 @@ const createWindow = () => {
   });
 
   mainWindow.setMenuBarVisibility(false); // Ẩn luôn cả khi nhấn Alt
-  mainWindow.removeMenu(); // Xóa luôn menu nếu không cần Menu API
+  // mainWindow.removeMenu(); // Xóa luôn menu nếu không cần Menu API
   // const fsPath = path.resolve(__dirname, "../dist/index.html");
   // const fileUrl = `file://${fsPath}`;
 
@@ -56,7 +55,6 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
-
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();

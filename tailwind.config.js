@@ -1,5 +1,5 @@
 export default {
-  darkMode: "class", // 👈 để hỗ trợ dark mode qua class "dark"
+  darkMode: "class",
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -7,5 +7,8 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require("tailwind-scrollbar")],
+  variants: {
+    scrollbar: ['rounded'], // 👈 dùng nếu bạn muốn bo tròn scrollbar
+  },
 };

@@ -1,12 +1,43 @@
-// ✅ File: features/users/userService.ts - gọi API thật
-import axios from "axios";
-import type { User } from "./userSlice";
+import axiosInstance from "../../api/AxiosIntance";
+import type { RoleDTO } from "./dto/RoleDTO";
+import type {
+  UserCreateRequestDTO,
+  UserCreateResponseDTO,
+} from "./dto/UserCreateDTO";
+import type { UserDTO, UserListResponseDTO } from "./dto/UserDTO";
+import type {
+  UserStatusUpdateDTO,
+  UserUpdateRequestDTO,
+} from "./dto/UserUpdateDTO";
 
-export const getUsers = async (): Promise<User[]> => {
-  const response = await axios.get("/api/users");
-  return response.data;
-};
+export const userService = {
+  fetchUsers: async (): Promise<UserListResponseDTO> => {
+    const res = await axiosInstance.get("/user");
+    return res.data;
+  },
 
-export const deleteUserById = async (id: number): Promise<void> => {
-  await axios.delete(`/api/users/${id}`);
+  createUser: async (
+    payload: UserCreateRequestDTO
+  ): Promise<UserCreateResponseDTO> => {
+    const res = await axiosInstance.post("/user/create", payload);
+    return res.data;
+  },
+
+  updateUser: async (payload: UserUpdateRequestDTO): Promise<UserDTO> => {
+    const res = await axiosInstance.put("/user/update", payload);
+    return res.data;
+  },
+
+  toggleUserStatus: async (payload: UserStatusUpdateDTO): Promise<UserDTO> => {
+    const res = await axiosInstance.put("/user/update_status", payload);
+    return res.data;
+  },
+  getRoles: async (): Promise<RoleDTO[]> => {
+    const res = await axiosInstance.get("/role");
+    return res.data.data; // trả về mảng role
+  },
+  getUserDetail: async (userId: string): Promise<UserDTO> => {
+    const res = await axiosInstance.get(`/user/${userId}`);
+    return res.data;
+  },
 };

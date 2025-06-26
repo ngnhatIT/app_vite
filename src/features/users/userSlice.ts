@@ -1,52 +1,24 @@
-// ✅ File: features/users/userSlice.ts - Redux slice with async fetch/delete and pagination
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
-import type { RootState } from "../../app/store";
-import { deleteUserById, getUsers } from "./userService";
-
-export interface User {
-  id: number;
-  username: string;
-  email: string;
-  role: string;
-  status: string;
-}
+import { createSlice } from "@reduxjs/toolkit";
+import {
+  fetchUsersThunk,
+  getUserDetailThunk,
+  createUserThunk,
+  updateUserThunk,
+  updateUserStatusThunk,
+} from "./userThunk";
+import type { UserDTO } from "./dto/UserDTO";
 
 interface UserState {
-  users: User[];
-  loading: boolean;
-  error: string | null;
+  users: UserDTO[];
+  currentUser: UserDTO | null;
+  status: "idle" | "loading" | "succeeded" | "failed";
 }
 
 const initialState: UserState = {
   users: [],
-  loading: false,
-  error: null,
+  currentUser: null,
+  status: "idle",
 };
-
-export const fetchUsers = createAsyncThunk(
-  "users/fetchUsers",
-  async (_, thunkAPI) => {
-    try {
-      const data = await getUsers();
-      return data;
-    } catch (err: any) {
-      return thunkAPI.rejectWithValue(err.message);
-    }
-  }
-);
-
-export const deleteUser = createAsyncThunk(
-  "users/deleteUser",
-  async (id: number, thunkAPI) => {
-    try {
-      await deleteUserById(id);
-      return id;
-    } catch (err: any) {
-      return thunkAPI.rejectWithValue(err.message);
-    }
-  }
-);
 
 const userSlice = createSlice({
   name: "user",
@@ -54,20 +26,18 @@ const userSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUsers.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+      .addCase(fetchUsersThunk.pending, (state) => {
+        state.status = "loading";
       })
-      .addCase(fetchUsers.fulfilled, (state, action: PayloadAction<User[]>) => {
-        state.users = action.payload;
-        state.loading = false;
+      .addCase(fetchUsersThunk.fulfilled, (state, action) => {
+        state.users = action.payload.data;
+        state.status = "succeeded";
       })
-      .addCase(fetchUsers.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
+      .addCase(fetchUsersThunk.rejected, (state) => {
+        state.status = "failed";
       })
-      .addCase(deleteUser.fulfilled, (state, action: PayloadAction<number>) => {
-        state.users = state.users.filter((user) => user.id !== action.payload);
+      .addCase(getUserDetailThunk.fulfilled, (state, action) => {
+        state.currentUser = action.payload;
       });
   },
 });

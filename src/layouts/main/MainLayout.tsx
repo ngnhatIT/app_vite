@@ -46,11 +46,11 @@ const MainLayout = () => {
         <Layout className="flex flex-col flex-1 ">
           <PageHeader />
           <Content
-            className="flex-1 overflow-auto p-4 "
+            className="flex-1 overflow-auto p-4"
             style={{
               borderRadius: 24,
               background: isDark
-                ? "linear-gradient(238deg, [#5b21b6]/30 30.62%, [#5b21b6]/30 100%)"
+                ? "linear-gradient(238deg, rgba(91,33,182,0.3) 30.62%, rgba(91,33,182,0.3) 100%)"
                 : "#FFFFFFA3",
               boxShadow: "2px 2px 8px 0px #5b21b6",
               backdropFilter: "blur(12px)",
@@ -62,7 +62,7 @@ const MainLayout = () => {
                   <SubMenuPanel group={activeGroup} submenus={submenusMap} />
                 </div>
               )}
-              <div className={`flex-1`}>
+              <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-[#9333ea] scrollbar-track-transparent scrollbar-thumb-rounded-full pr-2">
                 <Outlet />
               </div>
             </div>

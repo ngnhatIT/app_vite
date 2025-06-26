@@ -1,8 +1,14 @@
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
-import { combineReducers, configureStore, type Action, type ThunkAction } from "@reduxjs/toolkit";
+import {
+  combineReducers,
+  configureStore,
+  type Action,
+  type ThunkAction,
+} from "@reduxjs/toolkit";
 import authReducer from "../features/auth/AuthSlice";
 import themeReducer from "../features/setting/ThemeSlice";
+import userReducer from "../features/users/userSlice";
 
 const persistConfig = {
   key: "root",
@@ -10,7 +16,11 @@ const persistConfig = {
   whitelist: ["auth"], // chỉ lưu auth
 };
 
-const rootReducer = combineReducers({ auth: authReducer, theme: themeReducer });
+const rootReducer = combineReducers({
+  auth: authReducer,
+  theme: themeReducer,
+  user: userReducer,
+});
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
