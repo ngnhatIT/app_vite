@@ -1,46 +1,26 @@
 import React, { useEffect, useState } from "react";
-import {
-  Table,
-  Checkbox,
-  Typography,
-  Space,
-  Spin,
-  Button,
-  Modal,
-  Form,
-  Input,
-  Popconfirm,
-  message,
-  theme as antdTheme,
-} from "antd";
+import { Table, Checkbox, Avatar, Tooltip, Button, message, Spin } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 
-const { Text } = Typography;
-const PERMISSIONS = ["edit", "view", "comment", "download", "export", "import","print"];
-
-interface Permission {
-  [key: string]: boolean;
-}
+const PERMISSIONS = ["view", "edit", "download", "export", "import", "print"];
 
 interface RecordType {
-  id: number;
-  sheetName: string;
-  userId: number;
+  key: number;
   username: string;
-  permissions: Permission;
+  email: string;
+  avatar: string;
+  permissions: string[];
 }
 
-const GoogleSheetPermissionMatrix: React.FC = () => {
-  const { token } = antdTheme.useToken();
+const PermissionMatrix = () => {
   const [data, setData] = useState<RecordType[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [form] = Form.useForm();
 
-  const fetchPermissions = async () => {
+  const fetchMockPermissions = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:4000/permissions");
+      const res = await axios.get("/mock-permissions");
       setData(res.data);
     } catch (e) {
       message.error("Không thể tải dữ liệu.");
@@ -49,155 +29,114 @@ const GoogleSheetPermissionMatrix: React.FC = () => {
     }
   };
 
-  const updatePermission = async (
-    record: RecordType,
-    field: string,
+  const handleRemove = (key: number) => {
+    setData((prev) => prev.filter((r) => r.key !== key));
+    message.success("Đã xoá người dùng khỏi bảng");
+  };
+
+  const togglePermission = (
+    recordKey: number,
+    perm: string,
     checked: boolean
   ) => {
-    const updated = {
-      ...record,
-      permissions: {
-        ...record.permissions,
-        [field]: checked,
-      },
-    };
-
-    try {
-      await axios.put(`http://localhost:4000/permissions/${record.id}`, updated);
-      setData((prev) =>
-        prev.map((r) => (r.id === record.id ? updated : r))
-      );
-      message.success("Đã cập nhật quyền");
-    } catch {
-      message.error("Không thể cập nhật");
-    }
+    setData((prevData) =>
+      prevData.map((record) =>
+        record.key === recordKey
+          ? {
+              ...record,
+              permissions: checked
+                ? [...record.permissions, perm]
+                : record.permissions.filter((p) => p !== perm),
+            }
+          : record
+      )
+    );
   };
 
-  const handleDelete = async (id: number) => {
-    try {
-      await axios.delete(`http://localhost:4000/permissions/${id}`);
-      setData((prev) => prev.filter((item) => item.id !== id));
-      message.success("Đã xoá người dùng");
-    } catch {
-      message.error("Không thể xoá");
-    }
-  };
+  useEffect(() => {
+    axios.get = (async () => ({
+      data: Array.from({ length: 8 }).map((_, i) => ({
+        key: i,
+        username: "Nur Aisyah Binti Zainuddin",
+        email: "nuraisyahbintizainuddin@gmail.com",
+        avatar: `https://i.pravatar.cc/150?img=${i + 1}`,
+        permissions: PERMISSIONS.filter((_, idx) => (i + idx) % 3 === 0),
+      })),
+    })) as typeof axios.get;
+
+    fetchMockPermissions();
+  }, []);
 
   const columns = [
     {
-      title: "Tên Sheet",
-      dataIndex: "sheetName",
-      key: "sheetName",
-      render: (text: string) => <Text strong>{text}</Text>,
+      title: "#",
+      dataIndex: "index",
+      render: (_: any, __: any, index: number) => (
+        <span className="text-white">{index + 1}</span>
+      ),
     },
     {
-      title: "Người dùng",
+      title: "User Name",
       dataIndex: "username",
-      key: "username",
+      render: (_: any, record: any) => (
+        <div className="flex items-center gap-3">
+          <Avatar src={record.avatar} />
+          <div>
+            <div className="text-white font-medium">{record.username}</div>
+            <div className="text-gray-400 text-sm">{record.email}</div>
+          </div>
+        </div>
+      ),
     },
     ...PERMISSIONS.map((perm) => ({
       title: perm.charAt(0).toUpperCase() + perm.slice(1),
-      key: perm,
-      align: "center" as const,
+      dataIndex: perm,
       render: (_: any, record: RecordType) => (
         <Checkbox
-          checked={record.permissions?.[perm]}
-          onChange={(e) =>
-            updatePermission(record, perm, e.target.checked)
-          }
+          checked={record.permissions.includes(perm)}
+          onChange={(e) => togglePermission(record.key, perm, e.target.checked)}
+          className="!text-purple-400"
         />
       ),
     })),
     {
-      title: "Hành động",
-      key: "actions",
+      title: "Action",
       render: (_: any, record: RecordType) => (
-        <Popconfirm
-          title="Xoá người dùng này?"
-          onConfirm={() => handleDelete(record.id)}
-        >
-          <Button danger>Xoá</Button>
-        </Popconfirm>
+        <Tooltip title="Remove">
+          <Button
+            icon={<DeleteOutlined />}
+            type="text"
+            className="text-white hover:text-red-500"
+            onClick={() => handleRemove(record.key)}
+          />
+        </Tooltip>
       ),
     },
   ];
 
-  const handleAdd = async () => {
-    try {
-      const values = await form.validateFields();
-      const newPermission: RecordType = {
-        ...values,
-        id: Date.now(), // chỉ dùng tạm nếu server không tự sinh
-        permissions: PERMISSIONS.reduce(
-          (acc, perm) => ({ ...acc, [perm]: false }),
-          {} as Permission
-        ),
-      };
-      await axios.post("http://localhost:4000/permissions", newPermission);
-      fetchPermissions();
-      setIsModalOpen(false);
-      message.success("Đã thêm người dùng");
-    } catch {
-      message.error("Lỗi khi thêm");
-    }
-  };
-
-  useEffect(() => {
-    fetchPermissions();
-  }, []);
-
   return (
-    <div
-      className="p-4"
-      style={{ background: token.colorBgContainer, color: token.colorTextBase }}
-    >
-      <Space
-        className="w-full mb-4"
-        align="center"
-        style={{ justifyContent: "space-between" }}
-      >
-        <Text strong className="text-lg">
-          Quản lý phân quyền Google Sheets
-        </Text>
-        <Button type="primary" onClick={() => setIsModalOpen(true)}>
-          Thêm người dùng
-        </Button>
-      </Space>
-
+    <div className="p-6 bg-[#0E0B1D] min-h-screen text-white">
       {loading ? (
-        <Spin />
+        <Spin size="large" />
       ) : (
         <Table
-          rowKey={(r) => r.id}
           columns={columns}
           dataSource={data}
+          rowKey="key"
           pagination={false}
-          bordered
+          className="
+            !bg-transparent
+            [&_.ant-table]:!bg-transparent 
+            [&_.ant-table-container]:!bg-transparent 
+            [&_.ant-table-thead_th]:!bg-[#1C1C2E] 
+            [&_.ant-table-tbody_td]:!bg-transparent 
+            [&_.ant-table-cell]:!text-white 
+            [&_.ant-table-placeholder]:!bg-transparent 
+            [&_.ant-empty-description]:!text-white/60"
         />
       )}
-
-      <Modal
-        title="Thêm người dùng"
-        open={isModalOpen}
-        onOk={handleAdd}
-        onCancel={() => setIsModalOpen(false)}
-        okText="Thêm"
-        destroyOnClose
-      >
-        <Form layout="vertical" form={form}>
-          <Form.Item name="sheetName" label="Tên Sheet" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="username" label="Tên người dùng" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="userId" label="ID người dùng" rules={[{ required: true }]}>
-            <Input type="number" />
-          </Form.Item>
-        </Form>
-      </Modal>
     </div>
   );
 };
 
-export default GoogleSheetPermissionMatrix;
+export default PermissionMatrix;

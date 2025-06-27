@@ -72,25 +72,30 @@ const UserList = () => {
   return (
     <Spin spinning={status === "loading" || confirmLoading} size="large">
       <div>
-        <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-          <h2 className="text font-semibold text-white">User Listing</h2>
-          <div className="flex items-center gap-3">
+        <div className="flex justify-between items-center mb-6 flex-wrap gap-4 px-2">
+          <h2 className="text-xl font-semibold text-white">User Listing</h2>
+
+          <div className="flex  gap-3">
             <InputComponent
               type="text"
               icon={<SearchOutlined />}
-              placeholder="Search something"
+              placeholder="Search by Username"
               isDark={isDark}
               height="48px"
-              className="w-[440px]"
+              width={600}
+              className="rounded-lg border border-white/10 bg-white/5 text-white placeholder:text-white/50"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
             />
-            <PrimaryButton
-              icon={<PlusOutlined />}
-              onClick={() => navigate("/users/create")}
-            >
-              Add New User
-            </PrimaryButton>
+            <div className="flex-1">
+              <PrimaryButton
+                icon={<PlusOutlined />}
+                onClick={() => navigate("/users/create")}
+                className="width-[300px] h-12 px-5 rounded-lg font-medium text-white bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500"
+              >
+                Add New User
+              </PrimaryButton>
+            </div>
           </div>
         </div>
 
@@ -257,7 +262,7 @@ const UserList = () => {
 
           <div className="flex gap-2">
             <button
-              disabled={currentPage === 1}
+              disabled={currentPage === 1 || filteredUsers.length === 0}
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               className="w-8 h-8 rounded-md bg-[#1d152f] flex items-center justify-center text-white/70 hover:text-white disabled:opacity-40"
             >
@@ -265,7 +270,8 @@ const UserList = () => {
             </button>
             <button
               disabled={
-                currentPage === Math.ceil(filteredUsers.length / pageSize)
+                currentPage === Math.ceil(filteredUsers.length / pageSize) ||
+                filteredUsers.length === 0
               }
               onClick={() =>
                 setCurrentPage((prev) =>

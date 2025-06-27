@@ -4,6 +4,8 @@ import SecurityIncidents from "../../features/security/SecurityIncidents";
 import SystemSettings from "../../features/setting/pages/SystemSetting";
 import UserForm from "../../features/users/pages/UserForm";
 import UserList from "../../features/users/pages/UserList";
+import WorkspaceList from "../../features/setting/pages/WorkspaceList";
+import GoogleSheetPermissionMatrix from "../../features/googlesheet/GoogleSheetPermission";
 
 export const securityRoutes = {
   path: "/security",
@@ -31,8 +33,8 @@ export const userRoutes = {
 export const systemRoutes = {
   path: "/system",
   children: [
-    { path: "workspace", element: <div>User Profile</div> },
-    { path: "device-ip", element: <div>Create User</div> },
+    { path: "workspace", element: <WorkspaceList /> },
+    { path: "device-ip", element: <GoogleSheetPermissionMatrix /> },
     { path: "system-setting", element: <SystemSettings /> },
   ],
 };

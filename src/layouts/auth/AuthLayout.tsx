@@ -4,6 +4,7 @@ import type { RootState } from "../../app/store";
 import AuthLeftPanel from "./AuthLeftPanel";
 import "../../css/layout.css";
 import bgLight from "../../assets/bg-light.png";
+import LanguageSelector from "../../components/LanguageSelector";
 
 export const AuthLayout = () => {
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
@@ -15,14 +16,15 @@ export const AuthLayout = () => {
       style={
         !isDark
           ? {
-            backgroundImage: `url(${bgLight})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }
+              backgroundImage: `url(${bgLight})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+            }
           : undefined
       }
     >
+      <LanguageSelector />
       {isDark && (
         <>
           <div className="ellipse" />

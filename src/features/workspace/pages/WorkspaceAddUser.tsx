@@ -1,51 +1,88 @@
-
-// WorkspaceAddUser.tsx (updated with suggestions)
 import { Form, Input, Button, message, Select } from "antd";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { AppDispatch, RootState } from "../../../app/store";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsersThunk } from "../../users/userThunk";
+import { addUserToWorkspaceThunk } from "../workspaceThunk";
 
-const mockUsers = [
-  { id: 1, email: "user1@example.com" },
-  { id: 2, email: "user2@example.com" },
-  { id: 3, email: "user3@example.com" },
-];
+interface WorkspaceAddUserProps {
+  workspace: { id: number };
+  onClose: () => void;
+}
 
-const WorkspaceAddUser = ({ workspace, onClose }) => {
+const WorkspaceAddUser: React.FC<WorkspaceAddUserProps> = ({
+  workspace,
+  onClose,
+}) => {
   const [form] = Form.useForm();
-  const [userOptions, setUserOptions] = useState([]);
+  const dispatch = useDispatch<AppDispatch>();
+  const { users } = useSelector((state: RootState) => state.user);
+  const [loadingUsers, setLoadingUsers] = useState(false);
 
   useEffect(() => {
-    setUserOptions(mockUsers.map(user => ({
-      label: user.email,
-      value: user.email
-    })));
-  }, []);
+    const loadUsers = async () => {
+      setLoadingUsers(true);
+      await dispatch(fetchUsersThunk());
+      setLoadingUsers(false);
+    };
+    loadUsers();
+  }, [dispatch]);
 
-  const onFinish = (values) => {
-    console.log("Add user to workspace", workspace.id, values);
-    message.success("Đã thêm người dùng!");
-    onClose();
+  const onFinish = async (values: { email: string }) => {
+    try {
+      await dispatch(
+        addUserToWorkspaceThunk({
+          workspaceId: workspace.id,
+          email: values.email,
+        })
+      ).unwrap();
+      message.success("Thêm người dùng thành công!");
+      onClose();
+    } catch (error: any) {
+      message.error(error?.message || "Đã xảy ra lỗi khi thêm người dùng");
+    }
   };
 
   return (
-    <Form layout="vertical" onFinish={onFinish} form={form}>
-      <Form.Item
-        label="Chọn người dùng"
-        name="email"
-        rules={[{ required: true, message: "Vui lòng chọn người dùng!" }]}
-      >
-        <Select
-          showSearch
-          placeholder="Nhập email để tìm..."
-          options={userOptions}
-          filterOption={(input, option) =>
-            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-          }
-        />
-      </Form.Item>
-      <Form.Item>
-        <Button type="primary" htmlType="submit">Thêm</Button>
-      </Form.Item>
-    </Form>
+    <div className="bg-[#1C1C2E] p-6 rounded-2xl shadow-lg w-[400px]">
+      <h2 className="text-lg font-semibold text-white mb-4">Add New Member</h2>
+      <Form layout="vertical" onFinish={onFinish} form={form}>
+        <Form.Item
+          label={<span className="text-white">Username</span>}
+          name="email"
+          rules={[{ required: true, message: "Please enter username!" }]}
+        >
+          <Select
+            showSearch
+            placeholder="Enter username"
+            loading={loadingUsers}
+            options={users.map((user: { email: any }) => ({
+              label: user.email,
+              value: user.email,
+            }))}
+            className="bg-[#2C2C3E] text-white"
+            dropdownStyle={{ backgroundColor: "#2C2C3E" }}
+            popupClassName="custom-dark-select"
+          />
+        </Form.Item>
+
+        <div className="flex justify-end gap-3 mt-4">
+          <Button
+            onClick={onClose}
+            className="bg-[#3A3A50] text-white border-none"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="primary"
+            htmlType="submit"
+            className="bg-[#7B3FE4] text-white border-none"
+          >
+            Save
+          </Button>
+        </div>
+      </Form>
+    </div>
   );
 };
 

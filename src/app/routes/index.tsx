@@ -9,9 +9,9 @@ export const router = createHashRouter([
   {
     path: "/",
     element: (
-      <ProtectedRoute>
-        <MainLayout />
-      </ProtectedRoute>
+      // <ProtectedRoute>
+      <MainLayout />
+      // </ProtectedRoute>
     ),
     children: [securityRoutes, userRoutes, systemRoutes],
   },
