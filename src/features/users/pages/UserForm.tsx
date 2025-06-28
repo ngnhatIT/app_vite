@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Form, Select, message, Button, Spin } from "antd";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 
@@ -23,8 +23,9 @@ const workspaces = ["ws1", "ws2"];
 const UserForm: React.FC = () => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const { state } = useLocation();
   const dispatch = useDispatch<AppDispatch>();
-  const { userId } = useParams<{ userId?: string }>();
+  const userId = state.user_id;
   const isEdit = !!userId;
 
   const { t } = useTranslation();

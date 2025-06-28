@@ -14,7 +14,7 @@ export const fetchUsersThunk = createAsyncThunk("user/fetchUsers", async () => {
 
 // Lấy chi tiết user theo ID
 export const getUserDetailThunk = createAsyncThunk(
-  "user/getUserDetail",
+  "user/get_detail",
   async (userId: string) => {
     const res = await userService.getUserDetail(userId);
     return res;
@@ -25,6 +25,7 @@ export const getUserDetailThunk = createAsyncThunk(
 export const createUserThunk = createAsyncThunk(
   "user/createUser",
   async (payload: UserCreateRequestDTO, { dispatch }) => {
+    console.log(payload);
     await userService.createUser(payload);
     dispatch(fetchUsersThunk());
   }

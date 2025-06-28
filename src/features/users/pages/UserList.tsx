@@ -181,13 +181,10 @@ const UserList = () => {
                         shape="circle"
                         className="bg-transparent border border-white text-white hover:!bg-white hover:!text-black"
                         onClick={() => {
-                          Modal.confirm({
-                            title: "Edit User",
-                            icon: <ExclamationCircleOutlined />,
-                            content: `Do you want to edit user '${record.username}'?`,
-                            okText: "Yes",
-                            cancelText: "No",
-                            onOk: () => navigate(`/users/${record.user_id}`),
+                          navigate(`/users/update`, {
+                            state: {
+                              user_id: record.user_id,
+                            },
                           });
                         }}
                       />
@@ -196,7 +193,13 @@ const UserList = () => {
                       title={record.is_active ? "Deactivate" : "Approve"}
                     >
                       <Button
-                        icon={<CheckOutlined />}
+                        icon={
+                          record.is_active ? (
+                            <CheckOutlined />
+                          ) : (
+                            <ExclamationCircleOutlined />
+                          )
+                        }
                         shape="circle"
                         className={`bg-transparent border ${
                           record.is_active

@@ -16,7 +16,7 @@ const createWindow = () => {
     },
   });
 
-  mainWindow.setMenuBarVisibility(false); // Ẩn luôn cả khi nhấn Alt
+  //mainWindow.setMenuBarVisibility(false); // Ẩn luôn cả khi nhấn Alt
   // mainWindow.removeMenu(); // Xóa luôn menu nếu không cần Menu API
   // const fsPath = path.resolve(__dirname, "../dist/index.html");
   // const fileUrl = `file://${fsPath}`;
@@ -49,7 +49,7 @@ app.whenReady().then(() => {
   createWindow();
 
   // ✅ Xoá toàn bộ menu macOS, bao gồm cả Developer Tools
-  Menu.setApplicationMenu(Menu.buildFromTemplate([]));
+  //Menu.setApplicationMenu(Menu.buildFromTemplate([]));
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

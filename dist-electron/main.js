@@ -18,7 +18,7 @@ const createWindow = () => {
             nodeIntegration: false,
         },
     });
-    mainWindow.setMenuBarVisibility(false); // Ẩn luôn cả khi nhấn Alt
+    //mainWindow.setMenuBarVisibility(false); // Ẩn luôn cả khi nhấn Alt
     // mainWindow.removeMenu(); // Xóa luôn menu nếu không cần Menu API
     // const fsPath = path.resolve(__dirname, "../dist/index.html");
     // const fileUrl = `file://${fsPath}`;
@@ -45,7 +45,7 @@ const createWindow = () => {
 electron_1.app.whenReady().then(() => {
     createWindow();
     // ✅ Xoá toàn bộ menu macOS, bao gồm cả Developer Tools
-    electron_1.Menu.setApplicationMenu(electron_1.Menu.buildFromTemplate([]));
+    //Menu.setApplicationMenu(Menu.buildFromTemplate([]));
     electron_1.app.on("activate", () => {
         if (electron_1.BrowserWindow.getAllWindows().length === 0)
             createWindow();

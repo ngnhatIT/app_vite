@@ -42,7 +42,7 @@ const axiosInstance = axios.create({
 // ✅ REQUEST INTERCEPTOR
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const token = sessionStorage.getItem("access_token");
+    const token = sessionStorage.getItem("accessToken");
     if (token && isValidToken(token)) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -68,7 +68,7 @@ axiosInstance.interceptors.response.use(
 
     if (response.status === 401) {
       store.dispatch(logout());
-      sessionStorage.removeItem("access_token");
+      sessionStorage.removeItem("accessToken");
       if (navigate) navigate("/auth/login");
       else window.location.href = "/auth/login";
     }

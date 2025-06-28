@@ -37,7 +37,9 @@ export const userService = {
     return res.data.data; // trả về mảng role
   },
   getUserDetail: async (userId: string): Promise<UserDTO> => {
-    const res = await axiosInstance.get(`/user/${userId}`);
+    const res = await axiosInstance.get(`/user/get_detail`, {
+      params: { user_id: userId },
+    });
     return res.data;
   },
 };

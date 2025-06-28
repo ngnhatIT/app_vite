@@ -26,7 +26,7 @@ export const userRoutes = {
     { index: true, element: <UserList /> }, // tương ứng path: '' khi /users
     { path: "profile", element: <div>User Profile</div> },
     { path: "create", element: <UserForm /> },
-    { path: "update", element: <div>Update User</div> },
+    { path: "update", element: <UserForm /> },
   ],
 };
 
