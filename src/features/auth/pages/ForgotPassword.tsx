@@ -28,7 +28,6 @@ const ForgotPassword = () => {
       await dispatch(
         sendOtpThunk({
           payload: { email: values.email, flowType: "forgot-password" },
-          t,
           onSuccess: () => {},
         })
       ).unwrap();

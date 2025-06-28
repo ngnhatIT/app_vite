@@ -39,7 +39,7 @@ const ResetPasswordForm = () => {
     };
     setIsSubmitting(true);
     try {
-      await dispatch(resetPasswordThunk({ payload, t })).unwrap();
+      await dispatch(resetPasswordThunk({ payload })).unwrap();
       navigate("/auth/login");
     } catch (err: any) {
       showDialog({

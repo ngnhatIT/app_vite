@@ -1,6 +1,6 @@
 // 📁 src/api/axiosInstance.ts
 import axios, { type AxiosResponse, AxiosError } from "axios";
-import { logout } from "../features/auth/AuthSlice";
+import { logout } from "../features/auth/authSlice";
 import { store } from "../app/store";
 import type { NavigateFunction } from "react-router-dom";
 

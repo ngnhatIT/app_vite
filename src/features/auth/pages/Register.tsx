@@ -41,7 +41,7 @@ const Register = () => {
         flowType: "register",
       };
 
-      await dispatch(sendOtpThunk({ payload, t })).unwrap();
+      await dispatch(sendOtpThunk({ payload })).unwrap();
       navigate("/auth/check-mail", {
         state: {
           user: {

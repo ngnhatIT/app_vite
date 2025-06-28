@@ -33,7 +33,7 @@ const Login = () => {
   const onFinish = async (values: { userName: string; password: string }) => {
     setIsSubmitting(true);
     try {
-      await dispatch(loginThunk({ payload: values, t })).unwrap();
+      await dispatch(loginThunk({ payload: values })).unwrap();
       navigate("/");
     } catch (err: any) {
       showDialog({

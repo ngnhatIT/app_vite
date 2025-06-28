@@ -11,7 +11,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { ConfigProvider, theme as antdTheme } from "antd";
 import { store, persistor, type RootState, type AppDispatch } from "./app/store";
 import { router } from "./app/routes";
-import { resetAuth } from "./features/auth/AuthSlice";
+import { resetAuth } from "./features/auth/authSlice";
 
 const ThemedApp = () => {
   const isDark = useSelector((state: RootState) => state.theme.darkMode);

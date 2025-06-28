@@ -36,7 +36,7 @@ const CheckMail = () => {
       flowType: flowType,
     };
     try {
-      await dispatch(sendOtpThunk({ payload, t })).unwrap();
+      await dispatch(sendOtpThunk({ payload})).unwrap();
     } catch (err: any) {
       showDialog({
         title: t("common.error"),

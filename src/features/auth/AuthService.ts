@@ -1,5 +1,6 @@
 import axiosInstance from "../../api/AxiosIntance";
-import { handleAxiosError } from "../../api/HandleAxiosError";
+import { handleApiCall } from "../../api/HandApiCall";
+import { ENDPOINT } from "../../utils/constantEndPoint";
 import type {
   ResetPasswordRequestDTO,
   ResetPasswordResponseDTO,
@@ -13,73 +14,48 @@ import type {
 } from "./dto/VerifyOtpDTO";
 
 export const authService = {
-  loginUser: async (
-    payload: SignInRequestDTO,
-    t: (key: string) => string
-  ): Promise<string> => {
-    try {
+  loginUser: (payload: SignInRequestDTO) =>
+    handleApiCall(async () => {
       const res = await axiosInstance.post<SignInResponseDTO>(
-        "/auth/signin",
+        ENDPOINT.LOGIN,
         payload
       );
-      const { token } = res.data.data;
-      return token;
-    } catch (err) {
-      throw handleAxiosError(err, t);
-    }
-  },
+      return res.data.data.token;
+    }),
 
-  registerUser: async (
-    data: SignUpRequestDTO,
-    t: (key: string) => string
-  ): Promise<SignUpResponseDTO> => {
-    try {
+  registerUser: (data: SignUpRequestDTO) =>
+    handleApiCall(async () => {
       const res = await axiosInstance.post<SignUpResponseDTO>(
-        "/auth/signup",
+        ENDPOINT.REGISTER,
         data
       );
       return res.data;
-    } catch (err) {
-      throw handleAxiosError(err, t);
-    }
-  },
+    }),
 
-  sendOtp: async (
-    data: SendOtpRequestDTO,
-    t: (key: string) => string
-  ): Promise<SendOtpResponseDTO> => {
-    try {
-      const res = await axiosInstance.post("/auth/send-otp", data);
-      return res.data;
-    } catch (err) {
-      throw handleAxiosError(err, t);
-    }
-  },
-
-  verifyOtp: async (
-    data: VerifyOtpRequestDTO,
-    t: (key: string) => string
-  ): Promise<VerifyOtpResponseDTO> => {
-    try {
-      const res = await axiosInstance.post<{ success: boolean }>(
-        "/auth/verify-otp",
+  sendOtp: (data: SendOtpRequestDTO) =>
+    handleApiCall(async () => {
+      const res = await axiosInstance.post<SendOtpResponseDTO>(
+        ENDPOINT.SEND_OTP,
         data
       );
       return res.data;
-    } catch (err) {
-      throw handleAxiosError(err, t);
-    }
-  },
+    }),
 
-  resetPassword: async (
-    payload: ResetPasswordRequestDTO,
-    t: (key: string) => string
-  ): Promise<ResetPasswordResponseDTO> => {
-    try {
-      const res = await axiosInstance.post("/auth/reset-password", payload);
+  verifyOtp: (data: VerifyOtpRequestDTO) =>
+    handleApiCall(async () => {
+      const res = await axiosInstance.post<VerifyOtpResponseDTO>(
+        ENDPOINT.VERIFY_OTP,
+        data
+      );
       return res.data;
-    } catch (err) {
-      throw handleAxiosError(err, t);
-    }
-  },
+    }),
+
+  resetPassword: (payload: ResetPasswordRequestDTO) =>
+    handleApiCall(async () => {
+      const res = await axiosInstance.post<ResetPasswordResponseDTO>(
+        ENDPOINT.RESET_PASSWORD,
+        payload
+      );
+      return res.data;
+    }),
 };

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { notification } from "antd";
 import type { RootState, AppDispatch } from "../../../app/store";
 import CustomOtpInput from "../../../components/otp";
 import ButtonComponent from "../../../components/ButtonComponent";
@@ -10,8 +9,9 @@ import type { SignUpRequestDTO } from "../dto/SignUpDTO";
 import { registerThunk, sendOtpThunk, verifyOtpThunk } from "../AuthThunk";
 import type { VerifyOtpRequestDTO } from "../dto/VerifyOtpDTO";
 import { showDialog } from "../../../components/DialogService";
+import { message } from "antd";
 
-const OTP_COUNTDOWN_SECONDS = 600;
+const OTP_COUNTDOWN_SECONDS = 60;
 
 const OtpForm = () => {
   const { t } = useTranslation();
@@ -62,9 +62,9 @@ const OtpForm = () => {
           password: user!.password,
         };
 
-        await dispatch(verifyOtpThunk({ payload: verifyPayload, t })).unwrap();
+        await dispatch(verifyOtpThunk({ payload: verifyPayload})).unwrap();
 
-        await dispatch(registerThunk({ payload: registerPayload, t })).unwrap();
+        await dispatch(registerThunk({ payload: registerPayload })).unwrap();
         navigate("/auth/login");
       }
 
@@ -75,7 +75,7 @@ const OtpForm = () => {
           flowType: "forgot-password",
         };
 
-        await dispatch(verifyOtpThunk({ payload: verifyPayload, t })).unwrap();
+        await dispatch(verifyOtpThunk({ payload: verifyPayload})).unwrap();
 
         navigate("/auth/reset-password", {
           state: { email: user!.email, otp },
@@ -91,14 +91,20 @@ const OtpForm = () => {
   };
 
   const handleResendOtp = async () => {
-    //if (status === "loading" || countdown > 0 || !email) return;
+    if (1===1){
+      showDialog({
+        title: t("common.error"),
+        content: "Bạn đã có một mã OTP hợp lệ. Hãy kiểm tra hộp thư đến của bạn.",
+        isDark: isDark,
+      });
+    }
     const payload = {
       userName: user?.userName ?? "",
       email: email,
       flowType: "register",
     };
     setCountdown(OTP_COUNTDOWN_SECONDS);
-    await dispatch(sendOtpThunk({ payload, t })).unwrap();
+    await dispatch(sendOtpThunk({ payload })).unwrap();
   };
 
   return (
@@ -165,7 +171,6 @@ const OtpForm = () => {
             {t("otp.submit")}
           </ButtonComponent>
         </div>
-
         <div className="flex justify-center items-center gap-2 pt-4">
           <span className="text-[#9e9e9e] text-sm">{t("otp.notReceived")}</span>
           <span

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Form, Select, message, Button, Spin } from "antd";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
 
@@ -25,12 +25,12 @@ const UserForm: React.FC = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const dispatch = useDispatch<AppDispatch>();
-  const userId = state.user_id;
+  const userId = state?.user_id;
   const isEdit = !!userId;
 
   const { t } = useTranslation();
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
-  const currentUser = useSelector((state: RootState) => state.user.currentUser);
+  const currentUser = useSelector((state: RootState) => state.user.selectedUser);
 
   const [roles, setRoles] = useState<RoleDTO[]>([]);
   const [loading, setLoading] = useState(false);
@@ -44,6 +44,7 @@ const UserForm: React.FC = () => {
   }, [isEdit, userId]);
 
   useEffect(() => {
+    console.log("Current user:", currentUser);
     if (isEdit && currentUser) {
       form.setFieldsValue(currentUser);
     }
@@ -119,7 +120,7 @@ const UserForm: React.FC = () => {
                       required
                     />
                   }
-                  name="mail"
+                  name="email"
                   rules={[
                     { required: true, message: t("email.required") },
                     { type: "email", message: t("email.invalid") },

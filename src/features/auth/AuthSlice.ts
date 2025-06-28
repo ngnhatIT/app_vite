@@ -1,11 +1,5 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import {
-  loginThunk,
-  registerThunk,
-  resetPasswordThunk,
-  sendOtpThunk,
-  verifyOtpThunk,
-} from "./AuthThunk";
+import { createSlice } from "@reduxjs/toolkit";
+import { loginThunk, registerThunk, resetPasswordThunk, sendOtpThunk, verifyOtpThunk } from "./AuthThunk";
 
 interface UserDTO {
   username: string;
@@ -28,6 +22,31 @@ const initialState: AuthState = {
   error: null,
 };
 
+const setPending = (state: AuthState) => {
+  state.status = "loading";
+  state.error = null;
+};
+
+const setSucceeded = (state: AuthState) => {
+  state.status = "succeeded";
+  state.error = null;
+};
+
+const setFailed = (
+  state: AuthState,
+  action: { payload: unknown; error: { message?: string } }
+) => {
+  state.status = "failed";
+  // Try to extract a string error message from payload or error.message
+  if (typeof action.payload === "string") {
+    state.error = action.payload;
+  } else if (action.error && typeof action.error.message === "string") {
+    state.error = action.error.message;
+  } else {
+    state.error = "Unknown error";
+  }
+};
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -38,7 +57,7 @@ const authSlice = createSlice({
       state.status = "idle";
       state.isAuthenticated = false;
       state.error = null;
-      sessionStorage.removeItem("access_token");
+      sessionStorage.removeItem("accessToken");
     },
     clearError(state) {
       state.error = null;
@@ -46,87 +65,30 @@ const authSlice = createSlice({
     resetAuth: () => initialState,
   },
   extraReducers: (builder) => {
-    // LOGIN
     builder
-      .addCase(loginThunk.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
-      })
+      .addCase(loginThunk.pending, setPending)
       .addCase(loginThunk.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        setSucceeded(state);
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.isAuthenticated = true;
-        state.error = null;
         sessionStorage.setItem("accessToken", action.payload.token);
       })
-      .addCase(loginThunk.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload ?? "Login failed";
-      });
-
-    // REGISTER
-    builder
-      .addCase(registerThunk.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
+      .addCase(loginThunk.rejected, setFailed)
+      .addCase(registerThunk.pending, setPending)
+      .addCase(registerThunk.fulfilled, (state) => {
+        setSucceeded(state);
       })
-      .addCase(registerThunk.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.user = action.payload.user;
-        state.token = action.payload.token;
-        state.isAuthenticated = true;
-        state.error = null;
-      })
-      .addCase(registerThunk.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload ?? "Register failed";
-      });
-
-    // VERIFY OTP
-    builder
-      .addCase(verifyOtpThunk.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
-      })
-      .addCase(verifyOtpThunk.fulfilled, (state) => {
-        state.status = "succeeded";
-        state.error = null;
-      })
-      .addCase(verifyOtpThunk.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload ?? "OTP verification failed";
-      });
-
-    // SEND OTP
-    builder
-      .addCase(sendOtpThunk.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
-      })
-      .addCase(sendOtpThunk.fulfilled, (state) => {
-        state.status = "succeeded";
-        state.error = null;
-      })
-      .addCase(sendOtpThunk.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload ?? "Send OTP failed";
-      });
-
-    // RESET PASSWORD
-    builder
-      .addCase(resetPasswordThunk.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
-      })
-      .addCase(resetPasswordThunk.fulfilled, (state) => {
-        state.status = "succeeded";
-        state.error = null;
-      })
-      .addCase(resetPasswordThunk.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload ?? "Reset password failed";
-      });
+      .addCase(registerThunk.rejected, setFailed)
+      .addCase(verifyOtpThunk.pending, setPending)
+      .addCase(verifyOtpThunk.fulfilled, setSucceeded)
+      .addCase(verifyOtpThunk.rejected, setFailed)
+      .addCase(sendOtpThunk.pending, setPending)
+      .addCase(sendOtpThunk.fulfilled, setSucceeded)
+      .addCase(sendOtpThunk.rejected, setFailed)
+      .addCase(resetPasswordThunk.pending, setPending)
+      .addCase(resetPasswordThunk.fulfilled, setSucceeded)
+      .addCase(resetPasswordThunk.rejected, setFailed);
   },
 });
 

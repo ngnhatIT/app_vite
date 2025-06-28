@@ -33,11 +33,24 @@ const UserList = () => {
 
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
   const users = useSelector((state: RootState) => state.user.users);
-  const status = useSelector((state: RootState) => state.user.status);
+  const userStatus = useSelector((state: RootState) => state.user.status);
+  const lastFetched = useSelector((state: RootState) => state.user.lastFetched);
+  const error = useSelector((state: RootState) => state.user.error);
 
   useEffect(() => {
-    dispatch(fetchUsersThunk());
-  }, [dispatch]);
+    const FIVE_MINUTES = 5 * 60 * 1000;
+    if (!lastFetched || Date.now() - lastFetched > FIVE_MINUTES) {
+      dispatch(fetchUsersThunk());
+    }
+  }, [dispatch, lastFetched]);
+
+  useEffect(() => {
+    if (userStatus.toggleStatus === "succeeded") {
+      //message.success("User status updated successfully");
+    } else if (userStatus.toggleStatus === "failed" && error) {
+      //message.error(error);
+    }
+  }, [userStatus.toggleStatus, error]);
 
   const filteredUsers = users.filter(
     (u) =>
@@ -70,7 +83,7 @@ const UserList = () => {
   };
 
   return (
-    <Spin spinning={status === "loading" || confirmLoading} size="large">
+    <Spin spinning={userStatus.list === "loading" || confirmLoading} size="large">
       <div>
         <div className="flex justify-between items-center mb-6 flex-wrap gap-4 px-2">
           <h2 className="text-xl font-semibold text-white">User Listing</h2>
@@ -99,7 +112,7 @@ const UserList = () => {
           </div>
         </div>
 
-        <div style={{ height: "calc(100vh - 350px)", overflowY: "auto" }}>
+        <div style={{ height: "calc(100vh - 400px)", overflowY: "auto" }}>
           <Table
             dataSource={paginatedUsers}
             rowKey="user_id"
