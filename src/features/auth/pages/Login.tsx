@@ -1,5 +1,3 @@
-// ✅ Refactored Login.tsx to keep Redux dispatch but manage loading locally
-
 import { useEffect, useState } from "react";
 import { Form } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
@@ -38,7 +36,7 @@ const Login = () => {
     } catch (err: any) {
       showDialog({
         title: t("common.error"),
-        content: err ?? t("error.general"),
+        content: err.message ?? t("error.general"),
         isDark,
       });
     } finally {
@@ -47,23 +45,25 @@ const Login = () => {
   };
 
   return (
-    <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-10 rounded-[32px] border-[#4b3b61] bg-[rgba(255,255,255,0.1)] px-[5.5rem] py-[4.25rem] w-[600px]">
+    <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-2 rounded-[32px] border-[#4b3b61] bg-[rgba(255,255,255,0.1)] px-[5.5rem] py-[4.25rem]">
       {/* Title */}
       <div className="flex flex-col justify-center items-start self-stretch">
-        <div
-          className={`font-['Poppins'] text-5xl font-medium capitalize leading-normal ${
-            isDark ? "text-neutral-100" : "text-[#2c2c2c]"
-          }`}
-        >
-          {t("login.title")}
-        </div>
-        <div className="flex justify-start items-center gap-2 mt-2">
-          <div className="text-[#9e9e9e] font-['Poppins'] text-sm leading-5">
-            {t("login.noAccount")}
-          </div>
+        <LabelComponent
+          as="h2"
+          label="login.title"
+          isDark={isDark}
+          className="text-[48px] capitalize"
+        />
+        <div className="flex justify-start items-center gap-2 ">
+          <LabelComponent
+            label="login.noAccount"
+            checkSpecial
+            as="span"
+            className="text-[#9e9e9e] text-sm"
+          />
           <Link
             to="/auth/register"
-            className="text-[#e476ad] font-['Poppins'] text-sm leading-5 cursor-pointer"
+            className="text-[#e476ad]  text-sm leading-5 cursor-pointer"
           >
             {t("login.signUp")}
           </Link>
@@ -71,11 +71,11 @@ const Login = () => {
       </div>
 
       {/* Form */}
-      <div className="flex flex-col items-start w-full gap-6">
+      <div className="flex flex-col items-start w-full gap-6 mt-[36px]">
         <Form
           form={form}
           layout="vertical"
-          className="w-full"
+          className="w-full" // hoặc mb-0 nếu cần cực sát
           onFinish={onFinish}
           autoComplete="off"
         >
@@ -85,7 +85,6 @@ const Login = () => {
               <LabelComponent label="login.username" isDark={isDark} required />
             }
             name="userName"
-            rules={[{ required: true, message: t("login.usernameRequired") }]}
           >
             <InputComponent
               type="text"
@@ -102,7 +101,6 @@ const Login = () => {
               <LabelComponent label="login.password" isDark={isDark} required />
             }
             name="password"
-            rules={[{ required: true, message: t("login.passwordRequired") }]}
           >
             <InputComponent
               type="password"
@@ -114,15 +112,16 @@ const Login = () => {
           </Form.Item>
 
           {/* Forgot password */}
-          <div className="w-full flex justify-end mb-4">
-            <div
-              className={`cursor-pointer font-['Poppins'] text-sm leading-5 ${
+          <div className="w-full flex justify-start mb-4">
+            <LabelComponent
+              label="login.forgotPassword"
+              checkSpecial
+              as="div"
+              onClick={() => navigate("/auth/forgot-password")}
+              className={`cursor-pointer text-sm  leading-5 ${
                 isDark ? "text-[#e476ad]" : "text-[#c61a65]"
               }`}
-              onClick={() => navigate("/auth/forgot-password")}
-            >
-              {t("login.forgotPassword")}
-            </div>
+            />
           </div>
 
           {/* Submit */}

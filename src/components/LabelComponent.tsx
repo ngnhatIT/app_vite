@@ -1,29 +1,41 @@
 import { useTranslation } from "react-i18next";
+import type { HTMLAttributes, ElementType } from "react";
 
-interface FormLabelProps {
-  label: string; // key trong i18n
-  required?: boolean; // có hiển thị dấu * không
-  isDark?: boolean; // dark mode
-  className?: string; // bổ sung CSS nếu cần
+interface LabelComponentProps<T extends HTMLElement = HTMLDivElement>
+  extends HTMLAttributes<T> {
+  label: string; // i18n key
+  required?: boolean;
+  isDark?: boolean;
+  checkSpecial?: boolean;
+  as?: ElementType;
+  className?: string;
 }
 
-const LabelComponent = ({
+const LabelComponent = <T extends HTMLElement = HTMLDivElement>({
   label,
   required = false,
   isDark = false,
+  checkSpecial = false,
+  as: Tag = "span",
   className = "",
-}: FormLabelProps) => {
+  ...rest
+}: LabelComponentProps<T>) => {
   const { t } = useTranslation();
 
+  const baseColor = checkSpecial
+    ? ""
+    : isDark
+    ? "text-white"
+    : "text-[#2c2c2c]";
+
   return (
-    <div
-      className={`${
-        isDark ? "text-white" : "text-[#2c2c2c]"
-      } font-['Poppins'] text-sm leading-[1.125rem] ${className}`}
+    <Tag
+      className={`font-['Poppins'] text-[14px] leading-[1.125rem] ${baseColor} ${className}`}
+      {...rest}
     >
       {t(label)}
       {required && <span className="text-red-500 ml-[2px]">*</span>}
-    </div>
+    </Tag>
   );
 };
 

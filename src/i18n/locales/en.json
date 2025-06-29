@@ -96,10 +96,19 @@
     "network": "Network Error",
     "general": "An error occurred. Please try again."
   },
-   "captcha": {
+  "captcha": {
     "label": "Slide to verify",
     "slideToVerify": "Swipe to complete verification",
     "verified": "Verified",
     "reset": "Reset"
+  },
+  "auth": {
+    "GoogleSheet": "Google Sheet",
+    "WorkSpace": "Work Space",
+    "Description1": "Product by Cloud.com Group Inc.",
+    "Description2": "Welcome to the workspace, please log in to continue.",
+    "Dark": "Dark",
+    "Light": "Light",
+    "Footer": "© Cloud.com Group Inc. 2025. All rights reserved"
   }
 }

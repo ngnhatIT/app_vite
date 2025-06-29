@@ -27,7 +27,7 @@ const ButtonComponent = ({
   icon,
   variant = "primary",
   isDark = false,
-  height = "48px",
+  height = "46px",
   tooltip,
 }: ButtonComponentProps) => {
   const baseClass =

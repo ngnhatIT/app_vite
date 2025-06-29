@@ -82,10 +82,20 @@
     "yes": "はい",
     "no": "いいえ"
   },
-   "captcha": {
+  "captcha": {
     "label": "スライダーで認証",
     "slideToVerify": "スライドして認証を完了",
     "verified": "認証済み",
     "reset": "リセット"
+  },
+
+  "auth": {
+    "GoogleSheet": "Google Sheet",
+    "WorkSpace": "ワークスペース",
+    "Description1": "Cloud.com Group Inc. の製品",
+    "Description2": "ワークスペースへようこそ。続行するにはログインしてください。",
+    "Dark": "ダーク",
+    "Light": "ライト",
+    "Footer": "© Cloud.com Group Inc. 2025. 無断複写・転載を禁じます"
   }
 }

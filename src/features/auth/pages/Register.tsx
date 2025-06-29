@@ -1,5 +1,3 @@
-// ✅ Refactored Register.tsx to keep dispatch but use local loading state
-
 import { useState } from "react";
 import { Form } from "antd";
 import {
@@ -18,46 +16,54 @@ import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
 import { sendOtpThunk } from "../AuthThunk";
 import { showDialog } from "../../../components/DialogService";
+import {
+  RegisterSchema,
+  type RegisterFormType,
+} from "../../../utils/registerSchema";
 
 const Register = () => {
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<RegisterFormType>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleRegister = async (values: {
-    email: string;
-    userName: string;
-    password: string;
-    confirmPassword: string;
-  }) => {
-    setIsSubmitting(true);
+  const handleRegister = async () => {
     try {
-      const payload = {
-        userName: values.userName,
-        email: values.email,
-        flowType: "register",
-      };
+      const values = await form.validateFields();
+      const parsed = RegisterSchema.safeParse(values);
+
+      if (!parsed.success) {
+        const fieldErrors = parsed.error.flatten().fieldErrors;
+        form.setFields(
+          Object.entries(fieldErrors).map(([name, errors]) => ({
+            name: name as keyof RegisterFormType,
+            errors: errors || [],
+          }))
+        );
+        return;
+      }
+
+      setIsSubmitting(true);
+
+      const { email, userName, password } = parsed.data;
+      const payload = { email, userName, flowType: "register" };
 
       await dispatch(sendOtpThunk({ payload })).unwrap();
+
       navigate("/auth/check-mail", {
         state: {
-          user: {
-            email: values.email,
-            userName: values.userName,
-            password: values.password,
-          },
+          user: { email, userName, password },
           otpCountdownStart: Date.now(),
           flowType: "register",
         },
       });
-    } catch (err: any) {
+    } catch (err) {
       showDialog({
         title: t("common.error"),
-        content: err ?? t("error.general"),
-        isDark: isDark,
+        content: (err as Error)?.message || t("error.general"),
+        isDark,
       });
     } finally {
       setIsSubmitting(false);
@@ -65,137 +71,112 @@ const Register = () => {
   };
 
   return (
-    <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-2 rounded-[32px] border-[#4b3b61] bg-[rgba(255,255,255,0.1)] px-[5.5rem] py-[4.25rem] w-[600px]">
-      {/* TITLE */}
+    <div className="card-2 inline-flex flex-col justify-center items-center gap-2 rounded-[32px] border-[#4b3b61] bg-[rgba(255,255,255,0.1)] px-[5.5rem] py-[4.25rem] w-[600px]">
+      {/* Title */}
       <div className="flex flex-col justify-center items-start self-stretch">
-        <h2
-          className={`font-['Poppins'] text-5xl font-medium leading-[normal] capitalize ${
-            isDark ? "text-neutral-100" : "text-[#2c2c2c]"
-          }`}
-        >
-          {t("register.title")}
-        </h2>
-        <div className="flex gap-2">
-          <span className="text-[#9e9e9e] font-['Poppins'] text-sm leading-5">
-            {t("login.noAccount")}
-          </span>
-          <span
-            className="text-[#e476ad] font-['Poppins'] text-sm leading-5 cursor-pointer"
+        <LabelComponent
+          as="h2"
+          label="register.title"
+          isDark={isDark}
+          className="text-[48px] capitalize"
+        />
+        <div className="flex items-center gap-2">
+          <LabelComponent
+            label="login.noAccount"
+            as="span"
+            checkSpecial
+            className="text-[#9e9e9e] text-sm"
+          />
+          <LabelComponent
+            label="login.submit"
+            as="span"
+            checkSpecial
+            className="text-[#e476ad] text-sm cursor-pointer font-['Poppins']"
             onClick={() => navigate("/auth/login")}
-          >
-            {t("login.submit")}
-          </span>
+          />
         </div>
       </div>
 
-      {/* FORM */}
-      <div className="flex flex-col items-start w-full gap-4 mt-2">
+      {/* Form */}
+      <div className="flex flex-col items-start w-full mt-[34px]">
         <Form
-          layout="vertical"
-          className="w-full"
           form={form}
+          layout="vertical"
           onFinish={handleRegister}
+          className="w-full"
+          autoComplete="off"
         >
-          {/* USERNAME */}
           <Form.Item
-            label={
-              <LabelComponent label={t("register.username")} isDark={isDark} />
-            }
             name="userName"
-            rules={[
-              { required: true, message: t("register.usernameRequired") },
-            ]}
+            label={
+              <LabelComponent
+                label="register.username"
+                isDark={isDark}
+                required
+              />
+            }
           >
             <InputComponent
               type="text"
               placeholder={t("register.usernamePlaceholder")}
               icon={<UserOutlined />}
               isDark={isDark}
-              height={48}
             />
           </Form.Item>
 
-          {/* EMAIL */}
           <Form.Item
-            label={
-              <LabelComponent label={t("register.email")} isDark={isDark} />
-            }
             name="email"
-            rules={[
-              { required: true, message: t("register.emailRequired") },
-              { type: "email", message: t("register.emailInvalid") },
-            ]}
+            label={
+              <LabelComponent label="register.email" isDark={isDark} required />
+            }
           >
             <InputComponent
               type="text"
               placeholder={t("register.emailPlaceholder")}
               icon={<MailOutlined />}
               isDark={isDark}
-              height={48}
             />
           </Form.Item>
 
-          {/* PASSWORD */}
           <Form.Item
-            label={
-              <LabelComponent label={t("register.password")} isDark={isDark} />
-            }
             name="password"
-            rules={[
-              { required: true, message: t("register.passwordRequired") },
-              {
-                pattern:
-                  /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,12}$/,
-                message: t("register.passwordInvalid"),
-              },
-            ]}
+            label={
+              <LabelComponent
+                label="register.password"
+                isDark={isDark}
+                required
+              />
+            }
           >
             <InputComponent
               type="password"
               placeholder={t("register.passwordPlaceholder")}
               icon={<LockOutlined />}
               isDark={isDark}
-              height={48}
             />
           </Form.Item>
 
-          {/* CONFIRM PASSWORD */}
           <Form.Item
+            name="confirmPassword"
             label={
               <LabelComponent
-                label={t("register.confirmPassword")}
+                label="register.confirmPassword"
                 isDark={isDark}
+                required
               />
             }
-            name="confirmPassword"
-            dependencies={["password"]}
-            rules={[
-              {
-                required: true,
-                message: t("register.confirmPasswordRequired"),
-              },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue("password") === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(t("register.passwordsMismatch"));
-                },
-              }),
-            ]}
           >
             <InputComponent
               type="password"
               placeholder={t("register.confirmPasswordPlaceholder")}
               icon={<LockOutlined />}
               isDark={isDark}
-              height={48}
             />
           </Form.Item>
 
-          {/* BUTTONS */}
-          <Form.Item className="mb-0 mt-6">
-            <div className="flex justify-between gap-4">
+          {/* Buttons */}
+          <Form.Item className="mt-18">
+            <div className="flex justify-between gap-3">
               <ButtonComponent
                 variant="secondary"
                 isDark={isDark}
@@ -204,12 +185,13 @@ const Register = () => {
               >
                 <ArrowLeftOutlined /> {t("register.back")}
               </ButtonComponent>
+
               <ButtonComponent
                 htmlType="submit"
                 variant="primary"
                 loading={isSubmitting}
                 disabled={isSubmitting}
-                className="flex-2"
+                className="flex-[4] h-12"
               >
                 {t("register.submit")}
               </ButtonComponent>

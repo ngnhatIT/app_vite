@@ -66,17 +66,17 @@
   flex-direction: column;
   justify-content: center;
   width: 100%;
-  height: 618px;
+  height: 696px;
   position: static;
   overflow: hidden;
 }
 
 .login-dark-mode-EN .card {
-  padding: 64px;
+  padding: 36px 28px;
 }
 
 .login-dark-mode-EN .card-2 {
-  padding: 88px;
+  padding: 68px 88px;
 }
 
 .login-dark-mode-EN .card-2::before {
@@ -154,17 +154,17 @@
   flex-direction: column;
   justify-content: center;
   width: 100%;
-  height: 618px;
+  height: 696px;
   position: static;
   overflow: hidden;
 }
 
 .login-light-mode-EN .card {
-  padding: 64px;
+  padding: 36px 28px;
 }
 
 .login-light-mode-EN .card-2 {
-  padding: 88px;
+  padding: 68px 88px;
 }
 
 .login-light-mode-EN .card::before,
@@ -181,3 +181,4 @@
   -webkit-mask-composite: xor;
   mask-composite: exclude;
 }
+

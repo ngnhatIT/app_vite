@@ -34,9 +34,7 @@ const ForgotPassword = () => {
 
       navigate("/auth/check-mail", {
         state: {
-          user: {
-            email: values.email,
-          },
+          user: { email: values.email },
           otpCountdownStart: Date.now(),
           flowType: "forgot-password",
         },
@@ -53,20 +51,17 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-10 rounded-[32px] border-[#4b3b61] px-[5.5rem] py-[4.25rem] w-[600px]">
+    <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-10 rounded-[32px] border-[#4b3b61] px-[5.5rem] py-[4.25rem] w-[600px] bg-[rgba(255,255,255,0.1)]">
       {/* TITLE */}
       <div className="flex flex-col justify-center items-start self-stretch">
-        <h2
-          className={`font-['Poppins'] text-5xl font-medium leading-[normal] capitalize ${
-            isDark ? "text-neutral-100" : "text-[#2c2c2c]"
-          }`}
-        >
-          {t("forgot.title")}
-        </h2>
-        <div className="flex items-center gap-2 mt-2">
-          <span className="text-[#9e9e9e] font-['Poppins'] text-sm leading-5">
-            {t("forgot.subtitle")}
-          </span>
+        <LabelComponent
+          as="h2"
+          label="forgot.title"
+          className={`text-[48px] capitalize`}
+          isDark={isDark}
+        />
+        <div className="flex items-center gap-2 ">
+          <LabelComponent as="p" label="forgot.subtitle" isDark={isDark} />
         </div>
       </div>
 
@@ -83,13 +78,6 @@ const ForgotPassword = () => {
               <LabelComponent label="forgot.email" isDark={isDark} required />
             }
             name="email"
-            rules={[
-              {
-                required: true,
-                type: "email",
-                message: t("forgot.emailError"),
-              },
-            ]}
           >
             <InputComponent
               type="text"

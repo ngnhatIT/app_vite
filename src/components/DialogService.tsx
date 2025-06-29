@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import React from "react";
 import DialogComponent from "./DialogComponent";
+import type { DialogType } from "./DialogType";
 
 let container = document.getElementById("dialog-root");
 if (!container) {
@@ -15,12 +16,18 @@ export const showDialog = ({
   title,
   content,
   isDark,
+  type = "warning",
+  confirmText = "Ok",
+  cancelText = "Cancel",
   onOk,
   onCancel,
 }: {
   title: string;
   content: string;
   isDark: boolean;
+  type?: DialogType;
+  confirmText?: string;
+  cancelText?: string;
   onOk?: () => void;
   onCancel?: () => void;
 }) => {
@@ -29,21 +36,22 @@ export const showDialog = ({
   };
 
   root.render(
-    React.createElement(DialogComponent, {
-      open: true,
-      title,
-      content,
-      isDark,
-      confirmText: "Ok",
-      cancelText: "Cancel",
-      onConfirm: () => {
+    <DialogComponent
+      open={true}
+      title={title}
+      content={content}
+      isDark={isDark}
+      type={type}
+      confirmText={confirmText}
+      cancelText={cancelText}
+      onConfirm={() => {
         handleClose();
         onOk?.();
-      },
-      onCancel: () => {
+      }}
+      onCancel={() => {
         handleClose();
         onCancel?.();
-      },
-    })
+      }}
+    />
   );
 };

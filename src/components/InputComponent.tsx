@@ -37,7 +37,19 @@ const InputComponent = ({
     ? "text-white placeholder:text-[#9e9e9e] border-[#4b3b61] bg-[#1c1c1c]"
     : "text-black placeholder:text-gray-500 border-gray-300 bg-white";
 
-  const combinedClassName = `rounded-md font-['Poppins'] text-sm ${baseStyle} ${className}`;
+  const focusStyle =
+    "focus:border-[#985FF6] focus:shadow-[0_0_2px_2px_rgba(217,96,255,0.16)] focus:outline-none";
+
+  const combinedClassName = `
+    rounded-[8px]
+    font-['Poppins']
+    text-sm
+    transition-all
+    duration-200
+    ${baseStyle}
+    ${focusStyle}
+    ${className}
+  `;
 
   const sharedStyle: React.CSSProperties = {
     background: isDark ? "rgba(255,255,255,0.05)" : "white",
@@ -80,7 +92,7 @@ const InputComponent = ({
 
   return (
     <Input
-      allowClear
+      allowClear={allowClear}
       prefix={effectivePrefix}
       className={combinedClassName}
       style={sharedStyle}

@@ -22,7 +22,7 @@ const SliderCaptcha = ({ onSuccess, isDark = false }: Props) => {
   const handleSliderChange = (val: number | number[]) => {
     const numVal = Array.isArray(val) ? val[0] : val;
     setValue(numVal);
-    if (numVal >= 95 && !verified) {
+    if (numVal >= 98 && !verified) {
       setVerified(true);
       setShowFlash(true);
       onSuccess(true);
@@ -63,12 +63,12 @@ const SliderCaptcha = ({ onSuccess, isDark = false }: Props) => {
             background: verified
               ? "#4b0082"
               : "linear-gradient(90deg, rgba(255,255,255,0); , rgba(168,85,247,0.4), #ab47ff)",
-            height: 36,
+            height: 50,
             borderRadius: 9999,
           }}
           handleStyle={{
-            height: 36,
-            width: 36,
+            height: 50,
+            width: 50,
             marginTop: -1,
             backgroundColor: verified ? "#4b0082" : "#9333ea",
             border: "3px solid white",
@@ -79,7 +79,7 @@ const SliderCaptcha = ({ onSuccess, isDark = false }: Props) => {
             animation: verified ? "none" : "pulseHandle 1.2s infinite",
           }}
           railStyle={{
-            height: 36,
+            height: 50,
             background: isDark ? "#2a2a2a" : "#e5e7eb",
             borderRadius: 9999,
           }}
@@ -87,7 +87,7 @@ const SliderCaptcha = ({ onSuccess, isDark = false }: Props) => {
 
         {/* Text inside the slider track */}
         <div
-          className={`absolute top-0 left-0 w-full h-[40px] flex items-center justify-center pointer-events-none z-10`}
+          className={`absolute top-0 left-0 w-full h-[50px] flex items-center justify-center pointer-events-none`}
         >
           <span
             className={`flex items-center gap-2  font-poppins drop-shadow-md ${

@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import { toggleTheme } from "../../features/setting/ThemeSlice";
 import type { RootState } from "../../app/store";
 import { MoonIcon, SunIcon } from "lucide-react";
+import LanguageSelector from "../../components/LanguageSelector";
 
 // format segment: system-settings -> System Settings
 const formatSegment = (segment: string) =>
@@ -38,7 +39,7 @@ const PageHeader = () => {
 
   const segments = location.pathname.split("/").filter(Boolean);
   const title = formatSegment(segments[segments.length - 1] || "Home");
-  const breadcrumbItems = generateBreadcrumbItems(location.pathname,isDark);
+  const breadcrumbItems = generateBreadcrumbItems(location.pathname, isDark);
 
   return (
     <header className="w-full px-6 py-4 flex justify-between items-center bg-transparent">
@@ -60,6 +61,7 @@ const PageHeader = () => {
 
       {/* RIGHT: Dark mode + Avatar */}
       <div className="flex items-center gap-4">
+        <LanguageSelector />
         <div
           className={`flex items-center gap-5 px-4 py-1 rounded-full transition-all hover:shadow-lg h-11
         ${isDark ? "bg-[#1C1C2E] border border-[#343A40]" : "bg-[#F7F8F9]"}`}
