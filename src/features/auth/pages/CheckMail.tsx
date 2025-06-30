@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../app/store";
 import { sendOtpThunk } from "../AuthThunk";
 import { showDialog } from "../../../components/DialogService";
+import sms from "../../../assets/sms.svg";
 
 const CheckMail = () => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const CheckMail = () => {
       flowType: flowType,
     };
     try {
-      await dispatch(sendOtpThunk({ payload})).unwrap();
+      await dispatch(sendOtpThunk({ payload })).unwrap();
     } catch (err: any) {
       showDialog({
         title: t("common.error"),

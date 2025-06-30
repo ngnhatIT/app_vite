@@ -1,5 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginThunk, registerThunk, resetPasswordThunk, sendOtpThunk, verifyOtpThunk } from "./AuthThunk";
+import {
+  loginThunk,
+  registerThunk,
+  resetPasswordThunk,
+  sendOtpThunk,
+  verifyOtpThunk,
+} from "./AuthThunk";
 
 interface UserDTO {
   username: string;

@@ -10,7 +10,7 @@ import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
 import type { ResetPasswordRequestDTO } from "../dto/ResetPasswordDTO";
-import { resetPasswordThunk } from "../AuthThunk";
+import { resetPasswordThunk } from "../authThunk";
 import { showDialog } from "../../../components/DialogService";
 
 const ResetPasswordForm = () => {

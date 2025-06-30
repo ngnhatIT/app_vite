@@ -10,8 +10,12 @@ import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
 import { showDialog } from "../../../components/DialogService";
-import { loginThunk } from "../AuthThunk";
+import { loginThunk } from "../authThunk";
 import { setNavigate } from "../../../api/AxiosIntance";
+import {
+  RegisterSchema,
+  type RegisterFormType,
+} from "../../../utils/registerSchema";
 
 const Login = () => {
   const [form] = Form.useForm();
@@ -28,7 +32,19 @@ const Login = () => {
     };
   }, [navigate]);
 
-  const onFinish = async (values: { userName: string; password: string }) => {
+  const onFinish = async () => {
+    const values = await form.validateFields();
+    const parsed = RegisterSchema.safeParse(values);
+    if (!parsed.success) {
+      const fieldErros = parsed.error.flatten().fieldErrors;
+      form.setFields(
+        Object.entries(fieldErros).map(([name, errors]) => ({
+          name: name as keyof RegisterFormType,
+          errors: errors || [],
+        }))
+      );
+      return;
+    }
     setIsSubmitting(true);
     try {
       await dispatch(loginThunk({ payload: values })).unwrap();
@@ -75,7 +91,7 @@ const Login = () => {
         <Form
           form={form}
           layout="vertical"
-          className="w-full" // hoặc mb-0 nếu cần cực sát
+          className="w-full"
           onFinish={onFinish}
           autoComplete="off"
         >

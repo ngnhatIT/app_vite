@@ -7,7 +7,7 @@ import CustomOtpInput from "../../../components/OTPComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
 import LabelComponent from "../../../components/LabelComponent";
 import type { SignUpRequestDTO } from "../dto/SignUpDTO";
-import { registerThunk, sendOtpThunk, verifyOtpThunk } from "../AuthThunk";
+import { registerThunk, sendOtpThunk, verifyOtpThunk } from "../authThunk";
 import type { VerifyOtpRequestDTO } from "../dto/VerifyOtpDTO";
 import { showDialog } from "../../../components/DialogService";
 import sms from "../../../assets/sms.svg";
