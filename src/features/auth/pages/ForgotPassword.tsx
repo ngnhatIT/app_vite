@@ -10,7 +10,7 @@ import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
 import SliderCaptcha from "../../../components/SliderCaptcha";
-import { sendOtpThunk } from "../authThunk";
+import { sendOtpThunk } from "../AuthThunk";
 import { showDialog } from "../../../components/DialogService";
 
 const ForgotPassword = () => {
@@ -51,21 +51,26 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-10 rounded-[32px] border-[#4b3b61] px-[5.5rem] py-[4.25rem] w-[600px] bg-[rgba(255,255,255,0.1)]">
-      {/* TITLE */}
+    <div className="card-2 inline-flex flex-col justify-center items-center gap-2">
+      {/* Title */}
       <div className="flex flex-col justify-center items-start self-stretch">
         <LabelComponent
           as="h2"
           label="forgot.title"
-          className={`text-[48px] capitalize`}
           isDark={isDark}
+          className="text-[48px] capitalize leading-[40px]"
         />
-        <div className="flex items-center gap-2 ">
-          <LabelComponent as="p" label="forgot.subtitle" isDark={isDark} />
+        <div className="flex justify-start items-center gap-2 ">
+          <LabelComponent
+            label="forgot.subTitle"
+            checkSpecial
+            as="span"
+            className="text-[#9e9e9e] text-sm"
+          />
         </div>
       </div>
 
-      <div className="flex flex-col items-start w-full gap-6">
+      <div className="flex flex-col items-start w-full gap-6 mt-[36px]">
         <Form
           layout="vertical"
           className="w-full"
@@ -108,7 +113,7 @@ const ForgotPassword = () => {
                 isDark={isDark}
                 className="flex-1 h-12 bg-[#292929] border border-[#4b3b61] hover:opacity-80"
               >
-                {t("common.back")}
+                {t("forgot.back")}
               </ButtonComponent>
               <ButtonComponent
                 htmlType="submit"

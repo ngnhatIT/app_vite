@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
-import { sendOtpThunk } from "../authThunk";
+import { sendOtpThunk } from "../AuthThunk";
 import { showDialog } from "../../../components/DialogService";
 import {
   RegisterSchema,
@@ -71,7 +71,7 @@ const Register = () => {
   };
 
   return (
-    <div className="card-2 inline-flex flex-col justify-center items-center gap-2 rounded-[32px] border-[#4b3b61] bg-[rgba(255,255,255,0.1)] px-[5.5rem] py-[4.25rem] w-[600px]">
+    <div className="card-2 inline-flex flex-col justify-center items-center gap-2 rounded-[32px]">
       {/* Title */}
       <div className="flex flex-col justify-center items-start self-stretch">
         <LabelComponent
@@ -82,13 +82,13 @@ const Register = () => {
         />
         <div className="flex items-center gap-2">
           <LabelComponent
-            label="login.noAccount"
+            label="register.subTitle"
             as="span"
             checkSpecial
             className="text-[#9e9e9e] text-sm"
           />
           <LabelComponent
-            label="login.submit"
+            label="register.signIn"
             as="span"
             checkSpecial
             className="text-[#e476ad] text-sm cursor-pointer font-['Poppins']"

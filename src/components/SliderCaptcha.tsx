@@ -63,12 +63,12 @@ const SliderCaptcha = ({ onSuccess, isDark = false }: Props) => {
             background: verified
               ? "#4b0082"
               : "linear-gradient(90deg, rgba(255,255,255,0); , rgba(168,85,247,0.4), #ab47ff)",
-            height: 50,
+            height: 40,
             borderRadius: 9999,
           }}
           handleStyle={{
-            height: 50,
-            width: 50,
+            height: 40,
+            width: 40,
             marginTop: -1,
             backgroundColor: verified ? "#4b0082" : "#9333ea",
             border: "3px solid white",
@@ -79,7 +79,7 @@ const SliderCaptcha = ({ onSuccess, isDark = false }: Props) => {
             animation: verified ? "none" : "pulseHandle 1.2s infinite",
           }}
           railStyle={{
-            height: 50,
+            height: 40,
             background: isDark ? "#2a2a2a" : "#e5e7eb",
             borderRadius: 9999,
           }}
@@ -87,29 +87,35 @@ const SliderCaptcha = ({ onSuccess, isDark = false }: Props) => {
 
         {/* Text inside the slider track */}
         <div
-          className={`absolute top-0 left-0 w-full h-[50px] flex items-center justify-center pointer-events-none`}
+          className={`absolute top-0 left-0 w-full h-[40px] flex items-center justify-center pointer-events-none`}
         >
-          <span
-            className={`flex items-center gap-2  font-poppins drop-shadow-md ${
-              verified
-                ? "text-white"
-                : isDark
-                ? "text-white/80"
-                : "text-gray-800"
-            }`}
-          >
-            {verified ? (
-              <>
-                <CheckCircleFilled className="text-white font-poppins" />{" "}
-                {t("captcha.verified")}
-              </>
-            ) : (
-              <>
-                <LockFilled className="text-sm font-poppins" />{" "}
-                {t("captcha.slideToVerify")}
-              </>
-            )}
-          </span>
+          {(() => {
+            let textColorClass = "";
+            if (verified) {
+              textColorClass = "text-white";
+            } else if (isDark) {
+              textColorClass = "text-white/80";
+            } else {
+              textColorClass = "text-gray-800";
+            }
+            return (
+              <span
+                className={`flex items-center gap-2  font-poppins drop-shadow-md ${textColorClass}`}
+              >
+                {verified ? (
+                  <>
+                    <CheckCircleFilled className="text-white font-poppins" />{" "}
+                    {t("captcha.verified")}
+                  </>
+                ) : (
+                  <>
+                    <LockFilled className="text-sm font-poppins" />{" "}
+                    {t("captcha.slideToVerify")}
+                  </>
+                )}
+              </span>
+            );
+          })()}
         </div>
 
         {verified && (

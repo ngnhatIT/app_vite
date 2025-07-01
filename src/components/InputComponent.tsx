@@ -29,16 +29,19 @@ const InputComponent = ({
   prefix,
   className = "",
   style,
-  height = "48px",
+  height = "42px",
   width,
   ...rest
 }: CommonInputProps) => {
-  const baseStyle = isDark
-    ? "text-white placeholder:text-[#9e9e9e] border-[#4b3b61] bg-[#1c1c1c]"
-    : "text-black placeholder:text-gray-500 border-gray-300 bg-white";
+  const borderColor = "rgba(152,95,246,1)";
+  const shadowColor = "rgba(152,95,246,0.6)";
 
-  const focusStyle =
-    "focus:border-[#985FF6] focus:shadow-[0_0_2px_2px_rgba(217,96,255,0.16)] focus:outline-none";
+  const baseStyle = isDark
+    ? "text-white placeholder:text-[#9e9e9e] border border-transparent bg-[#1c1c1c]"
+    : "text-black placeholder:text-gray-500 border border-gray-300 bg-white";
+
+  const focusStyle = "focus:outline-none";
+  const hoverStyle = "hover:outline-none";
 
   const combinedClassName = `
     rounded-[8px]
@@ -48,14 +51,18 @@ const InputComponent = ({
     duration-200
     ${baseStyle}
     ${focusStyle}
+    ${hoverStyle}
     ${className}
   `;
 
   const sharedStyle: React.CSSProperties = {
     background: isDark ? "rgba(255,255,255,0.05)" : "white",
-    border: "1px solid",
+    borderColor: isDark ? "rgba(255,255,255,0.1)" : "#d9d9d9",
+    borderWidth: 1,
+    borderStyle: "solid",
     width: normalizeSize(width),
     height: normalizeSize(height),
+    transition: "all 0.2s ease-in-out",
     ...style,
   };
 
@@ -69,10 +76,22 @@ const InputComponent = ({
       </span>
     ) : null);
 
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.currentTarget.style.borderColor = borderColor;
+    e.currentTarget.style.boxShadow = `0 0 4px 1px ${shadowColor}`;
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.currentTarget.style.borderColor = isDark
+      ? "rgba(255,255,255,0.1)"
+      : "#d9d9d9";
+    e.currentTarget.style.boxShadow = "none";
+  };
+
   if (type === "password") {
     return (
       <Input.Password
-        allowClear
+        allowClear={allowClear}
         prefix={effectivePrefix}
         iconRender={(visible) =>
           visible ? (
@@ -83,6 +102,8 @@ const InputComponent = ({
             />
           )
         }
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         className={combinedClassName}
         style={sharedStyle}
         {...(rest as PasswordProps)}
@@ -94,6 +115,8 @@ const InputComponent = ({
     <Input
       allowClear={allowClear}
       prefix={effectivePrefix}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
       className={combinedClassName}
       style={sharedStyle}
       {...rest}

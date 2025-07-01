@@ -10,7 +10,7 @@ import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
 import { showDialog } from "../../../components/DialogService";
-import { loginThunk } from "../authThunk";
+import { loginThunk } from "../AuthThunk";
 import { setNavigate } from "../../../api/AxiosIntance";
 import {
   RegisterSchema,
@@ -61,18 +61,18 @@ const Login = () => {
   };
 
   return (
-    <div className="card-2 inline-flex flex-col flex-shrink-0 justify-center items-center gap-2 rounded-[32px] border-[#4b3b61] bg-[rgba(255,255,255,0.1)] px-[5.5rem] py-[4.25rem]">
+    <div className="card-2 inline-flex flex-col justify-center items-center gap-2">
       {/* Title */}
       <div className="flex flex-col justify-center items-start self-stretch">
         <LabelComponent
           as="h2"
           label="login.title"
           isDark={isDark}
-          className="text-[48px] capitalize"
+          className="text-[48px] capitalize leading-[40px]"
         />
         <div className="flex justify-start items-center gap-2 ">
           <LabelComponent
-            label="login.noAccount"
+            label="login.subTitle"
             checkSpecial
             as="span"
             className="text-[#9e9e9e] text-sm"

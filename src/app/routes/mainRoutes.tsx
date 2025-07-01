@@ -5,7 +5,6 @@ import SystemSettings from "../../features/setting/pages/SystemSetting";
 import UserForm from "../../features/users/pages/UserForm";
 import UserList from "../../features/users/pages/UserList";
 import WorkspaceList from "../../features/setting/pages/WorkspaceList";
-import GoogleSheetPermissionMatrix from "../../features/googlesheet/GoogleSheetPermission";
 
 export const securityRoutes = {
   path: "/security",
@@ -34,7 +33,7 @@ export const systemRoutes = {
   path: "/system",
   children: [
     { path: "workspace", element: <WorkspaceList /> },
-    { path: "device-ip", element: <GoogleSheetPermissionMatrix /> },
+    { path: "device-ip", element: <div>User Profile</div> },
     { path: "system-setting", element: <SystemSettings /> },
   ],
 };

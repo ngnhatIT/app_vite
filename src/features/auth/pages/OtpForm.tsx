@@ -7,7 +7,7 @@ import CustomOtpInput from "../../../components/OTPComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
 import LabelComponent from "../../../components/LabelComponent";
 import type { SignUpRequestDTO } from "../dto/SignUpDTO";
-import { registerThunk, sendOtpThunk, verifyOtpThunk } from "../authThunk";
+import { registerThunk, sendOtpThunk, verifyOtpThunk } from "../AuthThunk";
 import type { VerifyOtpRequestDTO } from "../dto/VerifyOtpDTO";
 import { showDialog } from "../../../components/DialogService";
 import sms from "../../../assets/sms.svg";
@@ -107,7 +107,7 @@ const OtpForm = () => {
   };
 
   return (
-    <div className="card inline-flex flex-col justify-center items-start gap-2 px-[5.5rem] py-[4.25rem] w-[600px] rounded-[32px] border border-[#4b3b61] bg-[rgba(255,255,255,0.1)]">
+    <div className="card inline-flex flex-col justify-center items-start gap-2">
       <img
         src={sms}
         alt="Logo"
@@ -118,9 +118,9 @@ const OtpForm = () => {
 
       <LabelComponent
         as="h1"
-        label="otp.titleRegister"
-        checkSpecial
-        className="text-[#f8f9fa] text-5xl font-medium capitalize"
+        label="otp.title"
+        isDark={isDark}
+        className="capitalize"
       />
 
       <div className="flex flex-col items-start self-stretch gap-4">

@@ -1,7 +1,7 @@
 {
   "login": {
     "title": "Login",
-    "noAccount": "Don't have an account?",
+    "subTitle": "Don't have an account?",
     "signUp": "Sign up",
     "username": "Username",
     "password": "Password",
@@ -13,88 +13,55 @@
     "submit": "Login"
   },
   "register": {
-    "failed": "Registration failed. Please try again later or check your information.",
     "title": "Register",
-    "back": "Back",
-    "submit": "Register",
+    "subTitle": "Already have an account?",
+    "signIn": "Login",
     "username": "Username",
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm password",
-    "usernameRequired": "Username is required.",
-    "emailRequired": "Email is required.",
-    "passwordRequired": "Password is required.",
-    "confirmPasswordRequired": "Confirm password is required.",
-    "passwordsMismatch": "Passwords do not match.",
     "usernamePlaceholder": "Enter your username",
     "emailPlaceholder": "Enter your email",
     "passwordPlaceholder": "Enter your password",
-    "confirmPasswordPlaceholder": "Re-enter your password",
-    "emailInvalid": "Invalid email address",
-    "passwordInvalid": "Password must be 8–12 characters, include at least one uppercase letter and one special character"
+    "confirmPasswordPlaceholder": "Enter your confirm password",
+    "back": "Back",
+    "submit": "Register"
   },
   "forgot": {
     "title": "Forgot password",
-    "subtitle": "Enter your email to receive reset instructions.",
-    "description": "Enter your email to receive reset instructions.",
+    "subTitle": "Please enter your email to receive a password reset link.",
     "email": "Email",
-    "emailRequired": "Email is required.",
     "emailPlaceholder": "Enter your email",
-    "submit": "Send Reset Link",
-    "emailError": "Invalid email address"
+    "back": "Back",
+    "submit": "Send Reset"
   },
   "reset": {
     "title": "Reset Password",
-    "description": "You are resetting password for {{email}}.",
+    "subTitle": "Please enter your email to receive a password reset link.",
     "newPassword": "New Password",
     "confirmPassword": "Confirm Password",
-    "passwordRequired": "New password is required.",
     "confirmPasswordRequired": "Confirmation is required.",
-    "passwordsMismatch": "Passwords do not match.",
     "newPasswordPlaceholder": "Enter new password",
     "confirmPasswordPlaceholder": "Confirm new password",
-    "submit": "Change Password",
-    "cancel": "Cancel"
+    "back": "Back",
+    "submit": "Change Password"
   },
   "otp": {
-    "titleRegister": "Email verification",
-    "titleCheckMail": "Check your email",
-    "description": "We’ve sent a verification code to {{email}}.",
-    "expirePrefix": "Code expires in",
+    "title": "Email verification",
+    "subTitle": "Enter the verification code we sent to: {{email}}.",
+    "expirePrefix": "OTP will expire after",
     "expireSuffix": "seconds",
-    "enterPrompt": "Please enter the 6-digit code",
-    "invalidTitle": "Invalid OTP",
-    "invalidDescription": "Please enter a valid 6-digit verification code.",
-    "resend": "Resend code",
-    "resendSuccessTitle": "Sent",
-    "resendSuccess": "Verification code sent successfully.",
-    "resendFailedTitle": "Error",
-    "resendFailed": "Failed to resend the code.",
-    "submit": "Verify",
-    "cancel": "Cancel",
-    "notReceived": "Didn't receive the code?",
-    "checkmailDescription": "A confirmation email has been sent to your email address. Please check your inbox to verify your account. Thank you!"
-  },
-  "common": {
+    "enterPrompt": "Type your 6 digit verification code",
+    "resendTitle": "Haven’t received the verification code?",
     "back": "Back",
-    "submit": "Submit",
-    "error": "Error",
-    "success": "Success",
-    "loading": "Loading...",
-    "ok": "OK",
-    "cancel": "Cancel",
-    "yes": "Yes",
-    "no": "No"
+    "submit": "Confirm"
   },
-  "error": {
-    "forbidden": "Access Denied",
-    "noPermission": "You do not have permission to access this resource.",
-    "notFound": "Not Found",
-    "resourceMissing": "The requested resource was not found.",
-    "serverError": "Server Error",
-    "tryAgain": "Something went wrong. Please try again later.",
-    "network": "Network Error",
-    "general": "An error occurred. Please try again."
+  "checkMail": {
+    "title": "Check Your Email",
+    "subTitle": "A confirmation email has been sent to your email address. Please check your inbox to verify your account. Thank you!",
+    "skipNow": "Skip for Now",
+    "resendTitle": "Didn't receive an email?",
+    "resendLink": "Resend"
   },
   "captcha": {
     "label": "Slide to verify",
@@ -103,12 +70,56 @@
     "reset": "Reset"
   },
   "auth": {
-    "GoogleSheet": "Google Sheet",
-    "WorkSpace": "Work Space",
-    "Description1": "Product by Cloud.com Group Inc.",
-    "Description2": "Welcome to the workspace, please log in to continue.",
-    "Dark": "Dark",
-    "Light": "Light",
-    "Footer": "© Cloud.com Group Inc. 2025. All rights reserved"
+    "title": "Google Sheet",
+    "subTitle": "Work Space",
+    "description1": "Product by Cloud.com Group Inc.",
+    "description2": "Welcome to the workspace, please log in to continue.",
+    "footer": "© Cloud.com Group Inc. 2025. All rights reserved"
+  },
+  "user_list": {
+    "title": "User Listing",
+    "search_placeholder": "Search by Username",
+    "add_user": "Add New User",
+    "columns": {
+      "name": "Name",
+      "role": "Role",
+      "status": "Status",
+      "action": "Action"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "tooltip": {
+      "edit": "Edit",
+      "deactivate": "Deactivate",
+      "activate": "Approve"
+    },
+    "modal": {
+      "title_activate": "Approve this user?",
+      "title_deactivate": "Deactivate this user?",
+      "confirm": "Are you sure you want to {{action}} this user?",
+      "ok": "Yes",
+      "cancel": "No"
+    },
+    "empty": "No users found",
+    "Enable IP Check": "Enable IP Check",
+    "user": {
+      "created": "User created successfully",
+      "updated": "User updated successfully"
+    },
+    "form": {
+      "submitFailed": "Something went wrong, please try again"
+    },
+    "username.required": "Please enter a username",
+    "email.required": "Please enter an email",
+    "email.invalid": "Invalid email format",
+    "password.required": "Please enter a password",
+    "confirmPassword.required": "Please confirm your password",
+    "password.notMatch": "Passwords do not match",
+    "role.required": "Please select a role",
+    "role.fetchFailed": "Failed to load roles",
+    "Workspace": "Workspace",
+    "Select workspace": "Select a workspace"
   }
 }

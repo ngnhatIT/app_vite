@@ -34,26 +34,26 @@ const AuthLeftPanel = () => {
         <div className="flex flex-col items-start self-stretch pt-[20px] pb-[12px]">
           <LabelComponent
             as="h1"
-            label="auth.GoogleSheet"
+            label="auth.title"
             checkSpecial
             className="text-[#985ff6] text-[48px] leading-[40px] font-medium capitalize"
           />
           <LabelComponent
             as="h2"
-            label="auth.WorkSpace"
+            label="auth.subTitle"
             isDark={isDark}
             className="opacity-70 text-[28px] leading-normal capitalize"
           />
         </div>
         <div className="flex flex-col items-start self-stretch gap-[2px]">
           <LabelComponent
-            label="auth.Description1"
+            label="auth.description1"
             checkSpecial
             as="p"
             className="text-[#9e9e9e] text-[12px] leading-normal"
           />
           <LabelComponent
-            label="auth.Description2"
+            label="auth.description2"
             checkSpecial
             as="p"
             className="text-[#9e9e9e] text-[12px] leading-normal self-stretch"
@@ -71,10 +71,10 @@ const AuthLeftPanel = () => {
             <Select
               value={currentTheme}
               onChange={handleThemeChange}
-              bordered={false}
-              dropdownStyle={{ fontFamily: "Poppins" }}
+              variant="borderless"
+              styles={{ popup: { root: { fontFamily: "Poppins" } } }}
               className="font-['Poppins'] text-sm text-[#f8f9fa] w-[100px] bg-transparent custom-theme-select"
-              popupClassName="theme-select-dropdown"
+              classNames={{ popup: { root: "theme-select-dropdown" } }}
             >
               <Option value="light">Light</Option>
               <Option value="dark">Dark</Option>
@@ -83,7 +83,7 @@ const AuthLeftPanel = () => {
 
           <LabelComponent
             as="p"
-            label="auth.Footer"
+            label="auth.footer"
             checkSpecial
             className="text-[#9e9e9e] text-[12px] leading-normal mt-4"
           />

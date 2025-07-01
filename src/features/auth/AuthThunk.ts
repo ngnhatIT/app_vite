@@ -5,7 +5,7 @@ import type { SignUpRequestDTO } from "./dto/SignUpDTO";
 import type { VerifyOtpRequestDTO } from "./dto/VerifyOtpDTO";
 import type { ResetPasswordRequestDTO } from "./dto/ResetPasswordDTO";
 import type { SendOtpRequestDTO } from "./dto/SendOtpDTO";
-import { authService } from "./AuthService";
+import { authService } from "./authService";
 
 interface LocalizedPayload<T> {
   payload: T;

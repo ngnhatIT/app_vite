@@ -12,8 +12,8 @@ interface ButtonComponentProps {
   icon?: ReactNode;
   variant?: "primary" | "secondary";
   isDark?: boolean;
-  height?: number | string; // ✅ thêm height tùy chỉnh
-  tooltip?: string; // ✅ thêm tooltip cho trạng thái disabled
+  height?: number | string;
+  tooltip?: string;
 }
 
 const ButtonComponent = ({

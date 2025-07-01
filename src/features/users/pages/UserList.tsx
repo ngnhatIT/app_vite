@@ -22,8 +22,11 @@ import { fetchUsersThunk, updateUserStatusThunk } from "../userThunk";
 import type { RootState, AppDispatch } from "../../../app/store";
 import PrimaryButton from "../../../components/ButtonComponent";
 import InputComponent from "../../../components/InputComponent";
+import { useTranslation } from "react-i18next";
+import LabelComponent from "../../../components/LabelComponent";
 
 const UserList = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
@@ -46,9 +49,9 @@ const UserList = () => {
 
   useEffect(() => {
     if (userStatus.toggleStatus === "succeeded") {
-      //message.success("User status updated successfully");
+      // success message
     } else if (userStatus.toggleStatus === "failed" && error) {
-      //message.error(error);
+      // error message
     }
   }, [userStatus.toggleStatus, error]);
 
@@ -65,13 +68,19 @@ const UserList = () => {
 
   const handleStatusToggle = (userId: string, current: boolean) => {
     Modal.confirm({
-      title: current ? "Deactivate this user?" : "Approve this user?",
+      title: t(
+        current
+          ? "user_list.modal.title_deactivate"
+          : "user_list.modal.title_activate"
+      ),
       icon: <ExclamationCircleOutlined />,
-      content: `Are you sure you want to ${
-        current ? "deactivate" : "activate"
-      } this user?`,
-      okText: "Yes",
-      cancelText: "No",
+      content: t("user_list.modal.confirm", {
+        action: current
+          ? t("user_list.tooltip.deactivate")
+          : t("user_list.tooltip.activate"),
+      }),
+      okText: t("user_list.modal.ok"),
+      cancelText: t("user_list.modal.cancel"),
       onOk: async () => {
         setConfirmLoading(true);
         await dispatch(
@@ -83,16 +92,21 @@ const UserList = () => {
   };
 
   return (
-    <Spin spinning={userStatus.list === "loading" || confirmLoading} size="large">
+    <Spin
+      spinning={userStatus.list === "loading" || confirmLoading}
+      size="large"
+    >
       <div>
         <div className="flex justify-between items-center mb-6 flex-wrap gap-4 px-2">
-          <h2 className="text-xl font-semibold text-white">User Listing</h2>
+          <h2 className="text-xl font-semibold text-white">
+            {t("user_list.title")}
+          </h2>
 
-          <div className="flex  gap-3">
+          <div className="flex gap-3">
             <InputComponent
               type="text"
               icon={<SearchOutlined />}
-              placeholder="Search by Username"
+              placeholder={t("user_list.search_placeholder")}
               isDark={isDark}
               height="48px"
               width={600}
@@ -106,7 +120,7 @@ const UserList = () => {
                 onClick={() => navigate("/users/create")}
                 className="width-[300px] h-12 px-5 rounded-lg font-medium text-white bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500"
               >
-                Add New User
+                <LabelComponent label="user_list.add_user" isDark={isDark} />
               </PrimaryButton>
             </div>
           </div>
@@ -121,7 +135,7 @@ const UserList = () => {
             locale={{
               emptyText: (
                 <div className="text-white/60 italic py-6 text-sm text-center">
-                  No users found
+                  {t("user_list.empty")}
                 </div>
               ),
             }}
@@ -144,7 +158,7 @@ const UserList = () => {
                 ),
               },
               {
-                title: "Name",
+                title: t("user_list.columns.name"),
                 dataIndex: "username",
                 render: (_: any, record: any) => (
                   <div className="flex items-center gap-3">
@@ -163,14 +177,14 @@ const UserList = () => {
                 ),
               },
               {
-                title: "Role",
+                title: t("user_list.columns.role"),
                 dataIndex: "role",
                 render: (role: string) => (
                   <span className="text-white">{role}</span>
                 ),
               },
               {
-                title: "Status",
+                title: t("user_list.columns.status"),
                 dataIndex: "is_active",
                 render: (active: boolean) => (
                   <span
@@ -180,30 +194,34 @@ const UserList = () => {
                         : "bg-gray-400 text-white"
                     }`}
                   >
-                    {active ? "Active" : "Inactive"}
+                    {active
+                      ? t("user_list.status.active")
+                      : t("user_list.status.inactive")}
                   </span>
                 ),
               },
               {
-                title: "Action",
+                title: t("user_list.columns.action"),
                 render: (_: any, record: any) => (
                   <Space>
-                    <Tooltip title="Edit">
+                    <Tooltip title={t("user_list.tooltip.edit")}>
                       <Button
                         icon={<EditOutlined />}
                         shape="circle"
                         className="bg-transparent border border-white text-white hover:!bg-white hover:!text-black"
                         onClick={() => {
                           navigate(`/users/update`, {
-                            state: {
-                              user_id: record.user_id,
-                            },
+                            state: { user_id: record.user_id },
                           });
                         }}
                       />
                     </Tooltip>
                     <Tooltip
-                      title={record.is_active ? "Deactivate" : "Approve"}
+                      title={
+                        record.is_active
+                          ? t("user_list.tooltip.deactivate")
+                          : t("user_list.tooltip.activate")
+                      }
                     >
                       <Button
                         icon={
@@ -228,17 +246,7 @@ const UserList = () => {
                 ),
               },
             ]}
-            className="
-    !bg-transparent
-    [&_.ant-table]:!bg-transparent 
-    [&_.ant-table-container]:!bg-transparent 
-    [&_.ant-table-content]:!bg-transparent 
-    [&_.ant-table-thead_th]:!bg-transparent 
-    [&_.ant-table-tbody_td]:!bg-transparent 
-    [&_.ant-table-cell]:!text-white 
-    [&_.ant-table-placeholder]:!bg-transparent 
-    [&_.ant-empty]:!bg-transparent 
-    [&_.ant-empty-description]:!text-white/60"
+            className="!bg-transparent [&_.ant-table-cell]:!text-white"
           />
         </div>
 
@@ -273,7 +281,7 @@ const UserList = () => {
             showSizeChanger={false}
             prevIcon={null}
             nextIcon={null}
-            className="text-white [&_.ant-pagination-item-active]:!bg-[#9747FF] [&_.ant-pagination-item-active]:!border-none [&_.ant-pagination-item-active>a]:!text-white"
+            className="text-white [&_.ant-pagination-item-active]:!bg-[#9747FF] [&_.ant-pagination-item-active>a]:!text-white"
           />
 
           <div className="flex gap-2">
