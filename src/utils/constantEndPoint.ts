@@ -11,4 +11,7 @@ export const ENDPOINT = {
   UPDATESTATUS: "/user/update_status",
   ROLE: "/role",
   DETAIL: "/user/get_detail",
+  //PROFILE
+  PROFILE:"/profile",
+  CHANGE_PASSWORD:"/profile/change_password"
 };

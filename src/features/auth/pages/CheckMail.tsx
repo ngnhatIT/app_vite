@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import ButtonComponent from "../../../components/ButtonComponent";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../../../app/store";
-import { sendOtpThunk } from "../AuthThunk";
+import { sendOtpThunk } from "../authThunk";
 import { showDialog } from "../../../components/DialogService";
 import sms from "../../../assets/sms.svg";
 import LabelComponent from "../../../components/LabelComponent";

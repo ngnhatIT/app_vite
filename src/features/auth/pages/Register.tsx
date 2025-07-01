@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
-import { sendOtpThunk } from "../AuthThunk";
+import { sendOtpThunk } from "../authThunk";
 import { showDialog } from "../../../components/DialogService";
 import {
   RegisterSchema,

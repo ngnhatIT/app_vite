@@ -1,15 +1,14 @@
 import { Outlet } from "react-router-dom";
-import AuditLog from "../../features/security/AuditLog";
-import SecurityIncidents from "../../features/security/SecurityIncidents";
 import SystemSettings from "../../features/setting/pages/SystemSetting";
 import UserForm from "../../features/users/pages/UserForm";
 import UserList from "../../features/users/pages/UserList";
+import { DivideCircle } from "lucide-react";
 
 export const securityRoutes = {
   path: "/security",
   children: [
-    { path: "audit-log", element: <AuditLog /> },
-    { path: "security-incidents", element: <SecurityIncidents /> },
+    { path: "audit-log", element: <div /> },
+    { path: "security-incidents", element: <DivideCircle /> },
   ],
 };
 

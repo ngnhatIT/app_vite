@@ -1,5 +1,4 @@
 import { AxiosError } from "axios";
-import { useTranslation } from "react-i18next";
 
 interface ServerErrorResponse {
   msg?: string;
@@ -21,7 +20,6 @@ interface ErrorDetails {
 export const handleAxiosError = (
   err: unknown
 ): ErrorDetails => {
-  const { t } = useTranslation();
   let code = "UNKNOWN";
   let status: number | undefined;
   let message = "";
@@ -29,7 +27,7 @@ export const handleAxiosError = (
   if (!(err instanceof AxiosError)) {
     return {
       code: "RUNTIME_ERROR",
-      message: err instanceof Error ? err.message : t("error.unknown"),
+      message: err instanceof Error ? err.message : "",
     };
   }
 
@@ -39,14 +37,14 @@ export const handleAxiosError = (
   if (axiosErr.code === "ECONNABORTED") {
     return {
       code: "TIMEOUT",
-      message: t("error.timeout"),
+      message: "Time out",
     };
   }
 
   if (!res) {
     return {
       code: "NETWORK",
-      message: t("error.network"),
+      message: "Network",
     };
   }
 
@@ -71,7 +69,7 @@ export const handleAxiosError = (
   message =
     typeof serverMessage === "string" && serverMessage.trim()
       ? serverMessage.trim()
-      : res.statusText?.trim() || t("error.unknown");
+      : res.statusText?.trim() ;
 
   switch (res.status) {
     case 400:

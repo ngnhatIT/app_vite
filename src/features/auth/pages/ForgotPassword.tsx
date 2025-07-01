@@ -10,7 +10,7 @@ import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
 import SliderCaptcha from "../../../components/SliderCaptcha";
-import { sendOtpThunk } from "../AuthThunk";
+import { sendOtpThunk } from "../authThunk";
 import { showDialog } from "../../../components/DialogService";
 
 const ForgotPassword = () => {

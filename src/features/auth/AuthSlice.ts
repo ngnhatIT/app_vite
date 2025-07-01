@@ -5,7 +5,7 @@ import {
   resetPasswordThunk,
   sendOtpThunk,
   verifyOtpThunk,
-} from "./AuthThunk";
+} from "./authThunk";
 
 interface UserDTO {
   username: string;

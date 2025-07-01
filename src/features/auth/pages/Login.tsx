@@ -10,7 +10,7 @@ import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
 import { showDialog } from "../../../components/DialogService";
-import { loginThunk } from "../AuthThunk";
+import { loginThunk } from "../authThunk";
 import { setNavigate } from "../../../api/AxiosIntance";
 import {
   RegisterSchema,
@@ -50,6 +50,7 @@ const Login = () => {
       await dispatch(loginThunk({ payload: values })).unwrap();
       navigate("/");
     } catch (err: any) {
+      console.log(err);
       showDialog({
         title: t("common.error"),
         content: err.message ?? t("error.general"),
@@ -146,6 +147,7 @@ const Login = () => {
               htmlType="submit"
               loading={isSubmitting}
               disabled={isSubmitting}
+              onClick={onFinish}
             >
               {t("login.submit")}
             </ButtonComponent>
