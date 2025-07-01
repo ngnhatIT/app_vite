@@ -1,10 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { Dropdown, Menu, Button } from "antd";
 import { GlobalOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
+import type { RootState } from "../app/store"; // Cập nhật đúng path nếu khác
 import "../css/language_selector.css";
 
-const LanguageSelector = () => {
+const LanguageSelectorMain = () => {
   const { i18n } = useTranslation();
+  const isDark = useSelector((state: RootState) => state.theme.darkMode);
 
   const handleChangeLanguage = (lang: string) => {
     i18n.changeLanguage(lang);
@@ -25,17 +28,17 @@ const LanguageSelector = () => {
   );
 
   return (
-    <div className="fixed top-4 left-4">
-      <Dropdown overlay={menu} placement="bottomLeft" arrow>
-        <Button
-          icon={<GlobalOutlined />}
-          className="!bg-white/10 !text-white !border-white/30 backdrop-blur-md rounded-full px-4 py-1 shadow-none hover:!bg-white/20"
-        >
-          {currentLang}
-        </Button>
-      </Dropdown>
-    </div>
+    <Dropdown overlay={menu} placement="bottomLeft" arrow>
+      <Button
+        icon={<GlobalOutlined />}
+        className={`!text-white !border-white/30 backdrop-blur-md rounded-full px-4 py-1 shadow-none hover:!bg-white/20 ${
+          isDark ? "bg-transparent" : "!bg-[#9e9e9e]"
+        }`}
+      >
+        {currentLang}
+      </Button>
+    </Dropdown>
   );
 };
 
-export default LanguageSelector;
+export default LanguageSelectorMain;

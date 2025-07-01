@@ -121,5 +121,33 @@
     "role.fetchFailed": "Failed to load roles",
     "Workspace": "Workspace",
     "Select workspace": "Select a workspace"
+  },
+  "menu": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "workspace": "Workspace",
+    "security": "Security & Monitoring",
+    "securityEvents": "Security Events",
+    "securityIncidents": "Security Incidents",
+    "system": "System",
+    "workspaceMng": "Workspace Management",
+    "systemSettings": "System Settings",
+    "deviceIpMng": "Device & IP Management",
+    "statistical": "Statistical",
+    "logout": "Logout"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "system": "System",
+    "workspace": "Workspace",
+    "users": "Users",
+    "dashboard": "Dashboard",
+    "workspaceManagement": "Workspace Management",
+    "systemSettings": "System Settings",
+    "deviceIpManagement": "Device & IP Management",
+    "security": "Security & Monitoring",
+    "securityEvents": "Security Events",
+    "securityIncidents": "Security Incidents",
+    "statistical": "Statistical"
   }
 }

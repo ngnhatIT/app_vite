@@ -4,7 +4,6 @@ import SecurityIncidents from "../../features/security/SecurityIncidents";
 import SystemSettings from "../../features/setting/pages/SystemSetting";
 import UserForm from "../../features/users/pages/UserForm";
 import UserList from "../../features/users/pages/UserList";
-import WorkspaceList from "../../features/setting/pages/WorkspaceList";
 
 export const securityRoutes = {
   path: "/security",
@@ -22,7 +21,7 @@ export const userRoutes = {
     </div>
   ),
   children: [
-    { index: true, element: <UserList /> }, // tương ứng path: '' khi /users
+    { index: true, element: <UserList /> },
     { path: "profile", element: <div>User Profile</div> },
     { path: "create", element: <UserForm /> },
     { path: "update", element: <UserForm /> },
@@ -32,8 +31,18 @@ export const userRoutes = {
 export const systemRoutes = {
   path: "/system",
   children: [
-    { path: "workspace", element: <WorkspaceList /> },
-    { path: "device-ip", element: <div>User Profile</div> },
+    { path: "workspace-mng", element: <div>Workspace management</div> },
+    { path: "device-ip", element: <div>Device & IP</div> },
     { path: "system-setting", element: <SystemSettings /> },
   ],
+};
+
+export const workspaceRoutes = {
+  path: "/workspace",
+  element: <div>workspace</div>,
+};
+
+export const statisticalRoutes = {
+  path: "/statistical",
+  element: <div>statistical</div>,
 };

@@ -11,14 +11,14 @@
 
 /* ✅ Menu item */
 .ant-dropdown .ant-dropdown-menu-item {
-  color: white !important;
+
   padding: 8px 16px;
   font-weight: 500;
-  transition: background 0.2s ease;
+ 
 }
 
 /* ✅ Hover item */
 .ant-dropdown .ant-dropdown-menu-item:hover {
   background-color: rgba(255, 255, 255, 0.12) !important;
-  color: white !important;
+  
 }

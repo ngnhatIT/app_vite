@@ -9,7 +9,6 @@ import {
 import authReducer from "../features/auth/authSlice";
 import themeReducer from "../features/setting/ThemeSlice";
 import userReducer from "../features/users/userSlice";
-import workspaceReducer from "../features/workspace/workspaceSlice";
 
 const persistConfig = {
   key: "root",
@@ -21,7 +20,6 @@ const rootReducer = combineReducers({
   auth: authReducer,
   theme: themeReducer,
   user: userReducer,
-  workspaces: workspaceReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

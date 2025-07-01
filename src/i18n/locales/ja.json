@@ -119,5 +119,33 @@
     "role.fetchFailed": "ロールの取得に失敗しました",
     "Workspace": "ワークスペース",
     "Select workspace": "ワークスペースを選択してください"
+  },
+  "menu": {
+    "dashboard": "ダッシュボード",
+    "users": "ユーザー",
+    "workspace": "ワークスペース",
+    "security": "セキュリティと監視",
+    "securityEvents": "セキュリティイベント",
+    "securityIncidents": "セキュリティインシデント",
+    "system": "システム",
+    "workspaceMng": "ワークスペース管理",
+    "systemSettings": "システム設定",
+    "deviceIpMng": "デバイスとIP管理",
+    "statistical": "統計",
+    "logout": "ログアウト"
+  },
+  "breadcrumb": {
+    "home": "ホーム",
+    "system": "システム",
+    "workspace": "ワークスペース",
+    "users": "ユーザー",
+    "dashboard": "ダッシュボード",
+    "workspaceManagement": "ワークスペース管理",
+    "systemSettings": "システム設定",
+    "deviceIpManagement": "デバイスとIP管理",
+    "security": "セキュリティと監視",
+    "securityEvents": "セキュリティイベント",
+    "securityIncidents": "セキュリティインシデント",
+    "statistical": "統計"
   }
 }
