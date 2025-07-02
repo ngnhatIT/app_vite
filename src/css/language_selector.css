@@ -20,5 +20,4 @@
 /* ✅ Hover item */
 .ant-dropdown .ant-dropdown-menu-item:hover {
   background-color: rgba(255, 255, 255, 0.12) !important;
-  
 }

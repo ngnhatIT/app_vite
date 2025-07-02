@@ -1,67 +1,48 @@
-// 📁 src/features/auditlog/AuditLogList.tsx
+// 📁 src/features/security/SecurityIncidentsList.tsx
 import { useEffect, useState } from "react";
-import { Table, Input, Select, Button, DatePicker, Spin, Space } from "antd";
+import { Table, Input, Select, Button, DatePicker, Spin } from "antd";
 import {
   SearchOutlined,
-  EyeOutlined,
   FileExcelOutlined,
   ReloadOutlined,
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAuditLogsThunk } from "./auditLogThunk";
+import { fetchIncidentsThunk } from "./securityThunk";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
 import type { AppDispatch, RootState } from "../../app/store";
 
 const { RangePicker } = DatePicker;
 
-const AuditLogList = () => {
+const SecurityIncidentsList = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(8);
-  const [workspace, setWorkspace] = useState("");
   const [user, setUser] = useState("");
-  const [action, setAction] = useState("");
-  const [searchText, setSearchText] = useState("");
+  const [violation, setViolation] = useState("");
   const [dateRange, setDateRange] = useState<[any, any] | null>(null);
 
   const { list, total, status } = useSelector(
-    (state: RootState) => state.auditLog
+    (state: RootState) => state.incident
   );
   const loading = status === "loading";
 
   useEffect(() => {
     dispatch(
-      fetchAuditLogsThunk({
+      fetchIncidentsThunk({
         page: currentPage,
         pageSize,
-        workspace,
         user,
-        action,
-        search: searchText,
-        fromDate: dateRange?.[0]?.format("YYYY-MM-DD") ?? undefined,
-        toDate: dateRange?.[1]?.format("YYYY-MM-DD") ?? undefined,
+        violation,
+        fromDate: dateRange?.[0]?.format("YYYY-MM-DD"),
+        toDate: dateRange?.[1]?.format("YYYY-MM-DD"),
       })
     );
-  }, [
-    currentPage,
-    pageSize,
-    workspace,
-    user,
-    action,
-    searchText,
-    dateRange,
-    dispatch,
-  ]);
+  }, [currentPage, pageSize, user, violation, dateRange, dispatch]);
 
   const columns = [
-    {
-      title: "",
-      render: () => <input type="checkbox" className="accent-purple-500" />,
-      width: 40,
-    },
     {
       title: "#",
       render: (_: any, __: any, index: number) => (
@@ -72,27 +53,29 @@ const AuditLogList = () => {
       width: 50,
     },
     {
-      title: t("audit_log.columns.workspace"),
-      dataIndex: "workspace",
-      render: (text: string) => <span className="text-white">{text}</span>,
-    },
-    {
-      title: t("audit_log.columns.user"),
+      title: t("incident.columns.user"),
       dataIndex: "user",
+      render: (_: any, record: any) => (
+        <div className="flex items-center gap-2">
+          <img
+            src={record.avatar}
+            alt={record.user}
+            className="w-8 h-8 rounded-full"
+          />
+          <div className="text-white">
+            <div>{record.user}</div>
+            <div className="text-white/60 text-sm">{record.email}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: t("incident.columns.violation"),
+      dataIndex: "violation",
       render: (text: string) => <span className="text-white">{text}</span>,
     },
     {
-      title: "IP",
-      dataIndex: "ip",
-      render: (text: string) => <span className="text-white">{text}</span>,
-    },
-    {
-      title: t("audit_log.columns.action"),
-      dataIndex: "action",
-      render: (text: string) => <span className="text-white">{text}</span>,
-    },
-    {
-      title: t("audit_log.columns.time"),
+      title: t("incident.columns.time"),
       dataIndex: "time",
       render: (text: string) => (
         <span className="text-white">
@@ -101,7 +84,7 @@ const AuditLogList = () => {
       ),
     },
     {
-      title: t("audit_log.columns.notes"),
+      title: t("incident.columns.notes"),
       dataIndex: "notes",
       render: (text: string) => (
         <span className="text-white truncate" title={text}>
@@ -110,42 +93,34 @@ const AuditLogList = () => {
       ),
     },
     {
-      title: t("audit_log.columns.view"),
-      render: () => (
-        <Button
-          icon={<EyeOutlined />}
-          shape="circle"
-          className="bg-transparent border border-white text-white hover:!bg-white hover:!text-black"
-        />
-      ),
+      title: t("incident.columns.action"),
+      render: () => <span className="text-white">...</span>,
     },
   ];
 
   return (
     <Spin spinning={loading} size="large">
       <div className="p-4">
+        <h2 className="text-xl font-semibold text-white mb-4">
+          {t("incident.title")}
+        </h2>
+
         <div className="flex flex-wrap gap-3 mb-4">
           <Input
-            placeholder={t("audit_log.filters.workspace")}
-            value={workspace}
-            onChange={(e) => setWorkspace(e.target.value)}
-            className="w-[200px] text-white bg-white/10 border-white/20"
-          />
-          <Input
-            placeholder={t("audit_log.filters.user")}
+            placeholder={t("incident.filters.user")}
             value={user}
             onChange={(e) => setUser(e.target.value)}
             className="w-[200px] text-white bg-white/10 border-white/20"
           />
           <Select
-            value={action}
-            onChange={setAction}
-            placeholder={t("audit_log.filters.action")}
+            value={violation}
+            onChange={setViolation}
+            placeholder={t("incident.filters.violation")}
             allowClear
             className="w-[200px]"
-            options={["Download", "Update"].map((a) => ({
-              label: a,
-              value: a,
+            options={["Multiple_downloads", "Failed_login"].map((v) => ({
+              label: v,
+              value: v,
             }))}
           />
           <RangePicker
@@ -156,23 +131,21 @@ const AuditLogList = () => {
           <Button
             icon={<ReloadOutlined />}
             onClick={() => {
-              setWorkspace("");
               setUser("");
-              setAction("");
+              setViolation("");
               setDateRange(null);
-              setSearchText("");
             }}
           >
-            {t("audit_log.clear_filters")}
+            {t("incident.clear")}
           </Button>
-          <Button type="primary" icon={<SearchOutlined />}>
-            {t("audit_log.search")}
+          <Button icon={<SearchOutlined />} type="primary">
+            {t("incident.search")}
           </Button>
           <Button
             icon={<FileExcelOutlined />}
             className="bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white"
           >
-            {t("audit_log.export")}
+            {t("incident.export")}
           </Button>
         </div>
 
@@ -219,4 +192,4 @@ const AuditLogList = () => {
   );
 };
 
-export default AuditLogList;
+export default SecurityIncidentsList;

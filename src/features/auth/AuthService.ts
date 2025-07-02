@@ -1,5 +1,5 @@
-import axiosInstance from "../../api/AxiosIntance";
-import { handleApiCall } from "../../api/HandApiCall";
+import axiosInstance from "../../api/axiosIntance";
+import { handleApiCall } from "../../api/handApiCall";
 import { ENDPOINT } from "../../utils/constantEndPoint";
 import type {
   ResetPasswordRequestDTO,

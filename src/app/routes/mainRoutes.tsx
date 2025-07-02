@@ -1,8 +1,11 @@
 import { Outlet } from "react-router-dom";
-import SystemSettings from "../../features/setting/pages/SystemSetting";
+import SystemSettings from "../../features/setting/SystemSetting";
 import UserForm from "../../features/users/pages/UserForm";
 import UserList from "../../features/users/pages/UserList";
 import { DivideCircle } from "lucide-react";
+import WorkspaceManagement from "../../features/workspace_management/pages/WorkspaceList";
+import { AddEditWorkspaceModal } from "../../features/workspace_management/pages/ModalWorkspace";
+import AddEditWorkspaceScreen from "../../features/workspace_management/pages/WorkspaceForm";
 
 export const securityRoutes = {
   path: "/security",
@@ -30,7 +33,11 @@ export const userRoutes = {
 export const systemRoutes = {
   path: "/system",
   children: [
-    { path: "workspace-mng", element: <div>Workspace management</div> },
+    {
+      path: "workspace-mng",
+      element: <WorkspaceManagement />,
+    },
+    { path: "workspace-mng/create", element: <AddEditWorkspaceScreen /> },
     { path: "device-ip", element: <div>Device & IP</div> },
     { path: "system-setting", element: <SystemSettings /> },
   ],

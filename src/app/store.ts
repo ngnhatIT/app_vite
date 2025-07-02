@@ -7,9 +7,14 @@ import {
   type ThunkAction,
 } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/authSlice";
-import themeReducer from "../features/setting/ThemeSlice";
+import themeReducer from "../features/setting/themeSlice";
 import userReducer from "../features/users/userSlice";
 import profileReducer from "../features/profile/profileSlice";
+import auditReducer from "../features/audit_log/auditLogSlice";
+import incidentReducer from "../features/secutiry/securitySlice";
+import statictifyReducer from "../features/static/statictifySlice";
+import workspaceMNGReducer from "../features/workspace_management/workspaceSlice";
+import workspaceReducer from "../features/workspace/workspaceSlice";
 
 const persistConfig = {
   key: "root",
@@ -21,7 +26,12 @@ const rootReducer = combineReducers({
   auth: authReducer,
   theme: themeReducer,
   user: userReducer,
-  profile:profileReducer
+  profile: profileReducer,
+  auditLog: auditReducer,
+  incident: incidentReducer,
+  statictify: statictifyReducer,
+  workspaceMng: workspaceMNGReducer,
+  workspace: workspaceReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

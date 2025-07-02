@@ -1,8 +1,8 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import type { ReactNode } from "react";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../app/store";
-import { Divider } from "antd";
+import type { ReactNode } from "react";
 
 interface SubMenuItem {
   key: string;
@@ -15,26 +15,32 @@ interface SubMenuPanelProps {
   group: string;
   submenus?: Record<string, SubMenuItem[]>;
   onClosePanel?: () => void;
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 const SubMenuPanel = ({
   group,
   submenus = {},
   onClosePanel,
+  collapsed = false,
+  onToggleCollapse,
 }: SubMenuPanelProps) => {
   const navigate = useNavigate();
-  const location = useLocation(); // ✅ để biết current path
+  const location = useLocation();
+  const isDark = useSelector((state: RootState) => state.theme.darkMode);
+
   const items = submenus[group] || [];
   const groupTitle = group.replace("/", "").replace(/-/g, " ");
-  const isDark = useSelector((state: RootState) => state.theme.darkMode);
+
   const handleNavigate = (link: string) => {
     navigate(link);
     onClosePanel?.();
   };
-
+  if (!items.length) return null;
   return (
     <div
-      className="w-full h-full py-4 flex flex-col gap-4"
+      className="h-full py-4 flex flex-col gap-4 relative"
       style={{
         borderRadius: 24,
         background: isDark
@@ -44,49 +50,56 @@ const SubMenuPanel = ({
         backdropFilter: "blur(12px)",
       }}
     >
-      <h2
-        className={`text-lg font-semibold px-5 capitalize ${
-          isDark ? "text-white" : "text-black"
-        }`}
+      {/* Toggle Collapse Button */}
+      <button
+        onClick={onToggleCollapse}
+        className="absolute -right-3 top-1/2 transform -translate-y-1/2 z-10 w-6 h-6 bg-white dark:bg-[#1c1c1c] border border-gray-300 dark:border-gray-700 rounded-full flex items-center justify-center shadow transition hover:bg-gray-100"
       >
-        {groupTitle}
-      </h2>
-      <div className="mt-2 border-b border-gray-200" />
-      <div className="grid grid-cols-2 gap-5 w-full p-4">
+        {collapsed ? <RightOutlined /> : <LeftOutlined />}
+      </button>
+
+      {/* Title */}
+      {!collapsed && (
+        <>
+          <h2
+            className={`text-lg font-semibold px-5 capitalize ${
+              isDark ? "text-white" : "text-black"
+            }`}
+          >
+            {groupTitle}
+          </h2>
+          <div className="mt-2 border-b border-gray-200" />
+        </>
+      )}
+
+      {/* Submenu grid */}
+      <div
+        className={`w-full p-2 grid ${
+          collapsed ? "grid-cols-1" : "grid-cols-2"
+        } gap-3`}
+      >
         {items.map((item) => {
-          const isActive = location.pathname === item.key; // ✅ check active
+          const isActive = location.pathname === item.key;
           return (
             <div
               key={item.key}
               onClick={() => handleNavigate(item.key)}
-              className={`flex flex-col items-center justify-center text-center px-2 py-3 rounded-xl transition cursor-pointer
+              className={`flex flex-col items-center justify-center text-center p-2 rounded-xl cursor-pointer transition
                 ${
                   isActive
                     ? `${
                         isDark ? "bg-[#5b21b6]/30" : "#FFFFFF"
-                      } text-[#a855f7] font-medium shadow-[0_4px_12px_rgba(100,35,216,0.08)]`
+                      } text-[#a855f7] font-medium shadow-md`
                     : `${
                         isDark ? "text-white" : "text-gray-700"
                       } hover:text-[#a855f7]`
                 }
               `}
             >
-              <div
-                className={`text-xl ${
-                  isActive ? "" : isDark ? "text-white" : "text-#FFFFFFA3"
-                }`}
-              >
-                {item.icon}
-              </div>
-
-              {/* Label (text stays styled separately) */}
-              <div
-                className={`text-xs mt-1 text-center leading-tight ${
-                  isActive ? "" : isDark ? "text-white" : "text-#FFFFFFA3"
-                }`}
-              >
-                {item.title}
-              </div>
+              <div className="text-xl">{item.icon}</div>
+              {!collapsed && (
+                <div className="text-xs mt-1 leading-tight">{item.title}</div>
+              )}
             </div>
           );
         })}

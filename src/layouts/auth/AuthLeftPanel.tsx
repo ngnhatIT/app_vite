@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Select } from "antd";
 import type { RootState } from "../../app/store";
-import { toggleTheme } from "../../features/setting/ThemeSlice";
+import { toggleTheme } from "../../features/setting/themeSlice";
 import LabelComponent from "../../components/LabelComponent";
 import darkModeIcon from "../../assets/dark_mode.svg";
 import ligthModeIcon from "../../assets/light_mode.svg";

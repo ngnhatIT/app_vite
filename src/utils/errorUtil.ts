@@ -1,4 +1,4 @@
-import { handleAxiosError } from "../api/HandleAxiosError";
+import { handleAxiosError } from "../api/handleAxiosError";
 
 export const getErrorMessage = (
   err: unknown,

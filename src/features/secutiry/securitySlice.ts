@@ -1,36 +1,36 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchAuditLogsThunk } from "./auditLogThunk";
+import { fetchIncidentsThunk } from "./securityThunk";
 
-interface AuditLogState {
+interface IncidentState {
   list: any[];
   total: number;
   status: "idle" | "loading" | "succeeded" | "failed";
 }
 
-const initialState: AuditLogState = {
+const initialState: IncidentState = {
   list: [],
   total: 0,
   status: "idle",
 };
 
-const auditLogSlice = createSlice({
-  name: "auditLog",
+const securitySlice = createSlice({
+  name: "incident",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchAuditLogsThunk.pending, (state) => {
+      .addCase(fetchIncidentsThunk.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(fetchAuditLogsThunk.fulfilled, (state, action) => {
+      .addCase(fetchIncidentsThunk.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.list = action.payload.list;
         state.total = action.payload.total;
       })
-      .addCase(fetchAuditLogsThunk.rejected, (state) => {
+      .addCase(fetchIncidentsThunk.rejected, (state) => {
         state.status = "failed";
       });
   },
 });
 
-export default auditLogSlice.reducer;
+export default securitySlice.reducer;

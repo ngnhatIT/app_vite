@@ -1,3 +1,4 @@
+// 📁 src/api/handleAxiosError.ts
 import { AxiosError } from "axios";
 
 interface ServerErrorResponse {
@@ -17,17 +18,11 @@ interface ErrorDetails {
   raw?: any;
 }
 
-export const handleAxiosError = (
-  err: unknown
-): ErrorDetails => {
-  let code = "UNKNOWN";
-  let status: number | undefined;
-  let message = "";
-
+export const handleAxiosError = (err: unknown): ErrorDetails => {
   if (!(err instanceof AxiosError)) {
     return {
       code: "RUNTIME_ERROR",
-      message: err instanceof Error ? err.message : "",
+      message: err instanceof Error ? err.message : "Unknown runtime error",
     };
   }
 
@@ -44,64 +39,28 @@ export const handleAxiosError = (
   if (!res) {
     return {
       code: "NETWORK",
-      message: "Network",
+      message: "Network error",
     };
   }
 
-  status = res.status;
+  const status = res.status;
+  const data = res.data;
 
-  let serverMessage: string | undefined;
+  const code = data?.code?.toString() ?? "UNKNOWN";
 
-  if (typeof res.data === "string") {
-    serverMessage = res.data;
-  } else if (res.status === 422 && res.data?.errors) {
-    serverMessage = res.data.errors
-      .map((e) => `${e.field}: ${e.message}`)
-      .join("; ");
-  } else if (res.data?.msg) {
-    serverMessage = res.data.msg;
-  } else if (res.data?.message) {
-    serverMessage = res.data.message;
-  } else if (res.data?.error) {
-    serverMessage = res.data.error;
-  }
+  const message =
+    typeof data === "string"
+      ? data
+      : data?.errors?.map((e) => `${e.field}: ${e.message}`).join("; ") ??
+        data?.msg ??
+        data?.message ??
+        data?.error ??
+        "Unknown server error";
 
-  message =
-    typeof serverMessage === "string" && serverMessage.trim()
-      ? serverMessage.trim()
-      : res.statusText?.trim() ;
-
-  switch (res.status) {
-    case 400:
-      code = "BAD_REQUEST";
-      break;
-    case 401:
-      code = "UNAUTHORIZED";
-      break;
-    case 403:
-      code = "FORBIDDEN";
-      break;
-    case 404:
-      code = "NOT_FOUND";
-      break;
-    case 409:
-      code = "CONFLICT";
-      break;
-    case 422:
-      code = "VALIDATION_FAILED";
-      break;
-    case 500:
-      code = "SERVER_ERROR";
-      break;
-    default:
-      code = `HTTP_${res.status}`;
-  }
-
-  const result = {
+  return {
     code,
-    message,
+    message: message.trim(),
     status,
-    raw: res.data,
+    raw: data,
   };
-  return result;
 };

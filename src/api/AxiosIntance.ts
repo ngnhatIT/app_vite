@@ -46,13 +46,17 @@ axiosInstance.interceptors.request.use(
     if (token && isValidToken(token)) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    config.headers["Accept-Language"] = "ja";
-    const device = await (window as any).deviceInfo?.get?.();
-    const ip = device?.ip ?? "unknown";
-    const mac = device?.mac ?? "unknown";
+    config.headers["Accept-Language"] =
+      localStorage.getItem("language") ?? "ja";
 
-    config.headers["X-Client-IP"] = ip;
-    config.headers["X-Client-MAC"] = mac;
+    try {
+      const device = await (window as any)?.deviceInfo?.get?.();
+      config.headers["X-Client-IP"] = device?.ip ?? "unknown";
+      config.headers["X-Client-MAC"] = device?.mac ?? "unknown";
+    } catch {
+      config.headers["X-Client-IP"] = "unknown";
+      config.headers["X-Client-MAC"] = "unknown";
+    }
     return config;
   },
   (error) => Promise.reject(new Error(error?.message ?? "Request error"))
