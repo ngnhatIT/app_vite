@@ -7,4 +7,5 @@ export interface SendOtpRequestDTO {
 export interface SendOtpResponseDTO {
   success: boolean;
   message?: string;
+  otplimit: number;
 }

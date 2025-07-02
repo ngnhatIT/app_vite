@@ -1,5 +1,5 @@
-import axiosInstance from "../../api/axiosIntance";
-import { handleApiCall } from "../../api/handApiCall";
+import axiosInstance from "../../api/AxiosIntance";
+import { handleApiCall } from "../../api/HandApiCall";
 import { ENDPOINT } from "../../utils/constantEndPoint";
 import type { RoleDTO } from "./dto/RoleDTO";
 import type {
@@ -11,6 +11,7 @@ import type {
   UserUpdateRequestDTO,
   UserStatusUpdateDTO,
 } from "./dto/UserUpdateDTO";
+import type { WorkSpaceDTO } from "./dto/WorkSpace.DTO";
 
 export const userService = {
   fetchUsers: async (): Promise<UserListResponseDTO> =>
@@ -42,6 +43,11 @@ export const userService = {
   getRoles: async (): Promise<RoleDTO[]> =>
     handleApiCall(async () => {
       const { data } = await axiosInstance.get(ENDPOINT.ROLE);
+      return data.data;
+    }),
+  getWorkSpaces: async (): Promise<WorkSpaceDTO[]> =>
+    handleApiCall(async () => {
+      const { data } = await axiosInstance.get(ENDPOINT.WORKSPACELST);
       return data.data;
     }),
 

@@ -17,8 +17,7 @@ import {
 } from "../userThunk";
 import { userService } from "../userService";
 import type { RoleDTO } from "../dto/RoleDTO";
-
-const workspaces = ["ws1", "ws2"];
+import type { WorkSpaceDTO } from "../dto/WorkSpace.DTO";
 
 const UserForm: React.FC = () => {
   const [form] = Form.useForm();
@@ -35,6 +34,7 @@ const UserForm: React.FC = () => {
   );
 
   const [roles, setRoles] = useState<RoleDTO[]>([]);
+  const [wsps, setWsp] = useState<WorkSpaceDTO[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -61,10 +61,20 @@ const UserForm: React.FC = () => {
         message.error(t("role.fetchFailed") || "Failed to load roles");
       }
     };
+    const fetchWsp = async () => {
+      try {
+        const res = await userService.getWorkSpaces();
+        setWsp(res);
+      } catch {
+        message.error(t("role.fetchFailed") || "Failed to load roles");
+      }
+    };
     fetchRoles();
+    fetchWsp();
   }, []);
 
   const onFinish = async (values: any) => {
+    console.log(values);
     setSubmitting(true);
     try {
       if (isEdit && userId) {
@@ -130,6 +140,24 @@ const UserForm: React.FC = () => {
                 >
                   <InputComponent
                     placeholder={t("Enter email")}
+                    height={48}
+                    isDark={isDark}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label={
+                    <LabelComponent
+                      isDark={isDark}
+                      label={t("Full Name")}
+                      required
+                    />
+                  }
+                  name="fullname"
+                  rules={[{ required: true, message: t("fullname.required") }]}
+                >
+                  <InputComponent
+                    placeholder={t("Enter full name")}
                     height={48}
                     isDark={isDark}
                   />
@@ -229,16 +257,20 @@ const UserForm: React.FC = () => {
                     size="large"
                     className="rounded-md bg-[#1A132D] text-white border border-[#2f2542]"
                   >
-                    {workspaces.map((ws) => (
-                      <Select.Option key={ws} value={ws}>
-                        {ws}
+                    {wsps.map((ws) => (
+                      <Select.Option
+                        key={ws.workspaceId}
+                        value={ws.workspaceId}
+                      >
+                        {ws.workspaceName}
                       </Select.Option>
                     ))}
                   </Select>
                 </Form.Item>
                 <Form.Item
-                  label={<LabelComponent label="()" isDark={isDark} />}
-                  name="isCheckIP"
+                  label={<LabelComponent label="Is check IP" isDark={isDark} />}
+                  name="ip_check"
+                  valuePropName="checked"
                 >
                   <Checkbox></Checkbox>
                 </Form.Item>

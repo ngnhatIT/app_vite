@@ -13,5 +13,7 @@ export const ENDPOINT = {
   DETAIL: "/user/get_detail",
   //PROFILE
   PROFILE:"/profile",
-  CHANGE_PASSWORD:"/profile/change_password"
+  CHANGE_PASSWORD:"/profile/change_password",
+  //WORKSPACEMNG
+  WORKSPACELST : "/system/workspaces"
 };

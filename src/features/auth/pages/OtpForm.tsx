@@ -7,12 +7,10 @@ import CustomOtpInput from "../../../components/OTPComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
 import LabelComponent from "../../../components/LabelComponent";
 import type { SignUpRequestDTO } from "../dto/SignUpDTO";
-import { registerThunk, sendOtpThunk, verifyOtpThunk } from "../authThunk";
 import type { VerifyOtpRequestDTO } from "../dto/VerifyOtpDTO";
+import { registerThunk, sendOtpThunk, verifyOtpThunk } from "../authThunk";
 import { showDialog } from "../../../components/DialogService";
 import sms from "../../../assets/sms.svg";
-
-const OTP_COUNTDOWN_SECONDS = 60;
 
 const OtpForm = () => {
   const { t } = useTranslation();
@@ -20,15 +18,18 @@ const OtpForm = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { state } = useLocation();
+
   const status = useSelector((s: RootState) => s.auth.status);
-
-  const [countdown, setCountdown] = useState(OTP_COUNTDOWN_SECONDS);
-  const [otp, setOtp] = useState("");
-
   const user: SignUpRequestDTO | undefined = state?.user;
   const email: string = user?.email ?? "";
-  const flowType = state?.flowType ?? "register";
-  const otpCountdownStart = state?.otpCountdownStart ?? Date.now();
+  const flowType: string = state?.flowType ?? "register";
+
+  // 👇 initial countdown from navigation or default 60
+  const initialCountdown = state?.otplimit ?? 60;
+  const [countdown, setCountdown] = useState(initialCountdown);
+  const [otpStartTime, setOtpStartTime] = useState(Date.now());
+
+  const [otp, setOtp] = useState("");
 
   useEffect(() => {
     if (!email || !flowType) {
@@ -36,47 +37,40 @@ const OtpForm = () => {
     }
   }, [email, flowType, navigate]);
 
+  // ⏱ Countdown effect
   useEffect(() => {
     const interval = setInterval(() => {
-      const elapsed = Math.floor((Date.now() - otpCountdownStart) / 1000);
-      const remaining = OTP_COUNTDOWN_SECONDS - elapsed;
+      const elapsed = Math.floor((Date.now() - otpStartTime) / 1000);
+      const remaining = initialCountdown - elapsed;
       setCountdown(remaining > 0 ? remaining : 0);
     }, 1000);
     return () => clearInterval(interval);
-  }, [otpCountdownStart]);
+  }, [otpStartTime, initialCountdown]);
 
+  // ✅ Submit OTP
   const handleSubmit = async () => {
-    if (otp.length !== 6) {
-      return;
-    }
+    if (otp.length !== 6) return;
     try {
-      if (flowType === "register") {
-        const verifyPayload: VerifyOtpRequestDTO = {
-          email: user!.email,
-          otpCode: otp,
-          flowType: "register",
-        };
+      const verifyPayload: VerifyOtpRequestDTO = {
+        email: user!.email,
+        otpCode: otp,
+        flowType,
+      };
 
-        const registerPayload: SignUpRequestDTO = {
+      await dispatch(verifyOtpThunk({ payload: verifyPayload })).unwrap();
+
+      if (flowType === "register") {
+        const registerPayload = {
           userName: user!.userName,
           email: user!.email,
           password: user!.password,
+          fullName : user!.fullName
         };
-
-        await dispatch(verifyOtpThunk({ payload: verifyPayload })).unwrap();
         await dispatch(registerThunk({ payload: registerPayload })).unwrap();
         navigate("/auth/login");
       }
 
       if (flowType === "forgot-password") {
-        const verifyPayload: VerifyOtpRequestDTO = {
-          email: user!.email,
-          otpCode: otp,
-          flowType: "forgot-password",
-        };
-
-        await dispatch(verifyOtpThunk({ payload: verifyPayload })).unwrap();
-
         navigate("/auth/reset-password", {
           state: { email: user!.email, otp },
         });
@@ -84,56 +78,61 @@ const OtpForm = () => {
     } catch (error: any) {
       showDialog({
         title: t("common.error"),
-        content: error ?? t("error.general"),
+        content: error?.message ?? t("error.general"),
         isDark,
       });
     }
   };
 
+  // 🔁 Resend OTP
   const handleResendOtp = async () => {
-    showDialog({
-      title: t("common.error"),
-      content: t("otp.alreadySent"),
-      isDark,
-    });
+    try {
+      const payload = {
+        userName: user?.userName ?? "",
+        email,
+        flowType,
+      };
 
-    const payload = {
-      userName: user?.userName ?? "",
-      email,
-      flowType: "register",
-    };
-    setCountdown(OTP_COUNTDOWN_SECONDS);
-    await dispatch(sendOtpThunk({ payload })).unwrap();
+      const { otplimit } = await dispatch(sendOtpThunk({ payload })).unwrap();
+
+      setOtp(""); // optional: clear input
+      setCountdown(otplimit); // 🆕 new countdown from BE
+      setOtpStartTime(Date.now()); // reset timer
+      showDialog({
+        title: t("common.success"),
+        content: t("otp.resent"),
+        isDark,
+      });
+    } catch (error: any) {
+      showDialog({
+        title: t("common.error"),
+        content: error?.message ?? t("error.general"),
+        isDark,
+      });
+    }
   };
 
   return (
     <div className="card inline-flex flex-col justify-center items-start gap-2">
-      <img
-        src={sms}
-        alt="Logo"
-        width={206}
-        height={222}
-        className="pb-[36px]"
-      />
+      <img src={sms} alt="Logo" width={150} height={222} className="pb-[36px]" />
 
       <LabelComponent
         as="h1"
         label="otp.title"
         isDark={isDark}
-        className="capitalize"
+        className="text-[48px] capitalize leading-[40px]"
       />
 
       <div className="flex flex-col items-start self-stretch gap-4">
-        <div className="flex items-center gap-2 text-sm text-[#9e9e9e]">
-          <LabelComponent label={"otp.expirePrefix"} as="span" />
-          <LabelComponent label={"otp.expirePrefix"} as="span" />
+        <div className="flex items-center gap-2 text-sm">
+          <LabelComponent label="otp.expirePrefix" as="span" isDark={isDark} />
           <LabelComponent
             label={`00:${String(countdown).padStart(2, "0")}`}
             checkSpecial
             as="span"
             className="text-[#f44335] font-medium"
           />
-          <LabelComponent label={"otp.expireSuffix"} as="span" />
+          <LabelComponent label="otp.expireSuffix" as="span" isDark={isDark} />
         </div>
 
         <LabelComponent
@@ -177,12 +176,18 @@ const OtpForm = () => {
             as="span"
             className="text-[#9e9e9e] text-sm"
           />
-          <LabelComponent
-            label="otp.resend"
-            checkSpecial
-            className="text-[#e476ad] text-sm cursor-pointer hover:underline"
+          <ButtonComponent
             onClick={handleResendOtp}
-          />
+            disabled={countdown > 0}
+            tooltip={
+              countdown > 0
+                ? t("otp.cooldownMessage", { seconds: countdown })
+                : ""
+            }
+            className="text-[#e476ad] text-sm cursor-pointer hover:underline border-none bg-transparent p-0 h-auto"
+          >
+            {t("otp.resend")}
+          </ButtonComponent>
         </div>
       </div>
     </div>

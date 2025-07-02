@@ -1,7 +1,7 @@
 // 📁 src/features/workspace/workspaceService.ts
 
-import axiosInstance from "../../api/axiosIntance";
-import { handleApiCall } from "../../api/handApiCall";
+import axiosInstance from "../../api/AxiosIntance";
+import { handleApiCall } from "../../api/HandApiCall";
 
 export const workspaceService = {
   fetch: (params: { page: number; pageSize: number; search?: string }) =>

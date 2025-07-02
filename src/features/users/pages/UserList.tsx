@@ -8,6 +8,7 @@ import {
   Pagination,
   Modal,
   Spin,
+  Checkbox,
 } from "antd";
 import {
   PlusOutlined,
@@ -198,6 +199,12 @@ const UserList = () => {
                       ? t("user_list.status.active")
                       : t("user_list.status.inactive")}
                   </span>
+                ),
+              },
+              {
+                title: t("user_list.columns.isCheck"),
+                render: (_: any, record: any) => (
+                  <Checkbox checked={record.ip_check} disabled />
                 ),
               },
               {

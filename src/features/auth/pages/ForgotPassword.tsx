@@ -42,7 +42,7 @@ const ForgotPassword = () => {
     } catch (err: any) {
       showDialog({
         title: t("common.error"),
-        content: err ?? t("error.general"),
+        content: err.message ?? t("error.general"),
         isDark: isDark,
       });
     } finally {

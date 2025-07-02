@@ -84,6 +84,7 @@
       "name": "Name",
       "role": "Role",
       "status": "Status",
+      "isCheck":"Check IP",
       "action": "Action"
     },
     "status": {

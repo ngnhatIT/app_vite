@@ -5,6 +5,8 @@ export interface UserCreateRequestDTO {
   confirm_password: string;
   role: string;
   workspace: string;
+  ip_check:boolean;
+  fullname:string;
 }
 
 export interface UserCreateResponseDTO {

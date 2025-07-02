@@ -20,6 +20,7 @@ import {
   RegisterSchema,
   type RegisterFormType,
 } from "../../../utils/registerSchema";
+import { User2 } from "lucide-react";
 
 const Register = () => {
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
@@ -47,16 +48,17 @@ const Register = () => {
 
       setIsSubmitting(true);
 
-      const { email, userName, password } = parsed.data;
+      const { email, userName, password, fullName } = parsed.data;
       const payload = { email, userName, flowType: "register" };
 
-      await dispatch(sendOtpThunk({ payload })).unwrap();
+      const { otplimit } = await dispatch(sendOtpThunk({ payload })).unwrap();
 
       navigate("/auth/check-mail", {
         state: {
-          user: { email, userName, password },
+          user: { email, userName, password,fullName },
           otpCountdownStart: Date.now(),
           flowType: "register",
+          otplimit : otplimit
         },
       });
     } catch (err) {
@@ -134,6 +136,24 @@ const Register = () => {
               type="text"
               placeholder={t("register.emailPlaceholder")}
               icon={<MailOutlined />}
+              isDark={isDark}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="fullName"
+            label={
+              <LabelComponent
+                label="register.fullName"
+                isDark={isDark}
+                required
+              />
+            }
+          >
+            <InputComponent
+              type="text"
+              placeholder={t("register.fullnamePlaceholder")}
+              icon={<User2 />}
               isDark={isDark}
             />
           </Form.Item>

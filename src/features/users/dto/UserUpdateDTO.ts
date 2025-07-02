@@ -3,6 +3,8 @@ export interface UserUpdateRequestDTO {
   password?: string;
   confirm_password?: string;
   role?: string;
+  fullname:string;
+  ip_check:boolean;
 }
 
 export interface UserStatusUpdateDTO {

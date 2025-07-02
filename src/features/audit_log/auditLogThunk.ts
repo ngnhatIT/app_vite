@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "../../api/axiosIntance";
+import axiosInstance from "../../api/AxiosIntance";
 
 interface FetchAuditLogParams {
   page: number;

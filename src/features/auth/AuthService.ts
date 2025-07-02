@@ -1,5 +1,5 @@
-import axiosInstance from "../../api/axiosIntance";
-import { handleApiCall } from "../../api/handApiCall";
+import axiosInstance from "../../api/AxiosIntance";
+import { handleApiCall } from "../../api/HandApiCall";
 import { ENDPOINT } from "../../utils/constantEndPoint";
 import type {
   ResetPasswordRequestDTO,
@@ -38,6 +38,7 @@ export const authService = {
         ENDPOINT.SEND_OTP,
         data
       );
+      console.log(res.data);
       return res.data;
     }),
 

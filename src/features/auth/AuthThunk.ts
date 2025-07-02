@@ -5,7 +5,7 @@ import type { SignUpRequestDTO } from "./dto/SignUpDTO";
 import type { VerifyOtpRequestDTO } from "./dto/VerifyOtpDTO";
 import type { ResetPasswordRequestDTO } from "./dto/ResetPasswordDTO";
 import type { SendOtpRequestDTO } from "./dto/SendOtpDTO";
-import { authService } from "./authService";
+import { authService } from "./AuthService";
 
 interface LocalizedPayload<T> {
   payload: T;
@@ -63,12 +63,14 @@ export const resetPasswordThunk = createAsyncThunk<
 });
 
 export const sendOtpThunk = createAsyncThunk<
-  void,
+  {otplimit:number},
   LocalizedPayload<SendOtpRequestDTO>,
   { rejectValue: string }
 >("auth/sendOtp", async ({ payload }, { rejectWithValue }) => {
   try {
-    await authService.sendOtp(payload);
+    const {otplimit} = await authService.sendOtp(payload);
+    console.log(otplimit);
+    return {otplimit};
   } catch (error: any) {
     return rejectWithValue(error);
   }

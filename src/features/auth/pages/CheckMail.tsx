@@ -54,13 +54,13 @@ const CheckMail = () => {
       <img
         src={sms}
         alt="Logo"
-        width={206}
+        width={150}
         height={222}
         className="pb-[36px]"
       />
 
       {/* TITLE */}
-      <div className="flex flex-col justify-center items-start self-stretch">
+      <div className="flex flex-col justify-center items-start self-stretch mb-[36px]">
         <LabelComponent
           as="h2"
           label="checkMail.title"

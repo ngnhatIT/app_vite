@@ -4,4 +4,6 @@ export interface UserDetailResponseDTO {
   username: string;
   email: string;
   role: string;
+  fullname:string;
+  ip_checl:boolean;
 }

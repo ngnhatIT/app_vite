@@ -20,6 +20,12 @@ export const RegisterSchema = z
         message: "register.emailAsciiOnly", // Email không được có dấu (chỉ cho phép ký tự không dấu, chuẩn ASCII)
       }),
 
+    fullName:z
+      .string()
+      .min(4,"")
+      .max(50,"")
+      .regex(/^\S+$/, "register.usernameNoSpaces"),
+
     password: z
       .string()
       .min(1, "register.passwordRequired")

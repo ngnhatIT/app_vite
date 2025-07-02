@@ -11,11 +11,11 @@ import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
 import { showDialog } from "../../../components/DialogService";
 import { loginThunk } from "../authThunk";
-import { setNavigate } from "../../../api/axiosIntance";
+import { setNavigate } from "../../../api/AxiosIntance";
 import {
-  RegisterSchema,
-  type RegisterFormType,
-} from "../../../utils/registerSchema";
+  LoginSchema,
+  type LoginFormType,
+} from "../authSchema";
 
 const Login = () => {
   const [form] = Form.useForm();
@@ -32,28 +32,34 @@ const Login = () => {
     };
   }, [navigate]);
 
-  const onFinish = async () => {
-    const values = await form.validateFields();
-    const parsed = RegisterSchema.safeParse(values);
-    if (!parsed.success) {
-      const fieldErros = parsed.error.flatten().fieldErrors;
-      form.setFields(
-        Object.entries(fieldErros).map(([name, errors]) => ({
-          name: name as keyof RegisterFormType,
-          errors: errors || [],
-        }))
-      );
-      return;
-    }
-    setIsSubmitting(true);
+  const onSubmit = async () => {
     try {
-      await dispatch(loginThunk({ payload: values })).unwrap();
+      const values = await form.validateFields();
+      const parsed = LoginSchema.safeParse(values);
+      console.log(parsed);
+      
+      if (!parsed.success) {
+        console.log("aaaa");
+        const fieldErrors = parsed.error.flatten().fieldErrors;
+        form.setFields(
+          Object.entries(fieldErrors).map(([name, errors]) => ({
+            name: name as keyof LoginFormType,
+            errors: errors || [],
+          }))
+        );
+        return;
+      }
+ console.log("bbbb");
+      setIsSubmitting(true);
+      const loginData = parsed.data;
+console.log("dispatching loginThunk", loginData);
+
+      await dispatch(loginThunk({ payload: loginData })).unwrap();
       navigate("/");
     } catch (err: any) {
-      console.log(err);
       showDialog({
         title: t("common.error"),
-        content: err.message ?? t("error.general"),
+        content: err?.message ?? t("error.general"),
         isDark,
       });
     } finally {
@@ -80,7 +86,7 @@ const Login = () => {
           />
           <Link
             to="/auth/register"
-            className="text-[#e476ad]  text-sm leading-5 cursor-pointer"
+            className="text-[#e476ad] text-sm leading-5 cursor-pointer"
           >
             {t("login.signUp")}
           </Link>
@@ -93,7 +99,6 @@ const Login = () => {
           form={form}
           layout="vertical"
           className="w-full"
-          onFinish={onFinish}
           autoComplete="off"
         >
           {/* Username */}
@@ -135,7 +140,7 @@ const Login = () => {
               checkSpecial
               as="div"
               onClick={() => navigate("/auth/forgot-password")}
-              className={`cursor-pointer text-sm  leading-5 ${
+              className={`cursor-pointer text-sm leading-5 ${
                 isDark ? "text-[#e476ad]" : "text-[#c61a65]"
               }`}
             />
@@ -144,10 +149,10 @@ const Login = () => {
           {/* Submit */}
           <Form.Item className="mb-0">
             <ButtonComponent
-              htmlType="submit"
+           
               loading={isSubmitting}
               disabled={isSubmitting}
-              onClick={onFinish}
+            onClick = {onSubmit}
             >
               {t("login.submit")}
             </ButtonComponent>

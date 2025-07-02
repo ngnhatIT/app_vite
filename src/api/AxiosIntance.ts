@@ -51,8 +51,8 @@ axiosInstance.interceptors.request.use(
 
     try {
       const device = await (window as any)?.deviceInfo?.get?.();
-      config.headers["X-Client-IP"] = device?.ip ?? "unknown";
-      config.headers["X-Client-MAC"] = device?.mac ?? "unknown";
+      config.headers["X-Client-IP"] = (device?.ip?.toUpperCase()) ?? "unknown";
+      config.headers["X-Client-MAC"] =(device?.mac?.toUpperCase()) ?? "unknown";
     } catch {
       config.headers["X-Client-IP"] = "unknown";
       config.headers["X-Client-MAC"] = "unknown";
