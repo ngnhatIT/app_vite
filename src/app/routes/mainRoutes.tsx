@@ -36,7 +36,7 @@ export const systemRoutes = {
       path: "workspace-mng",
       element: <WorkspaceManagement />,
     },
-    { path: "workspace-mng/create", element: <div>Device & IP</div> },
+    { path: "workspace-mng/create", element: <WorkspaceForm /> },
     { path: "device-ip", element: <div>Device & IP</div> },
     { path: "system-setting", element: <SystemSettings /> },
   ],

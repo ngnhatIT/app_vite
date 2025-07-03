@@ -1,132 +1,249 @@
-import { useEffect } from "react";
-import { Form, Input, Checkbox, Button, message } from "antd";
+import { Select, Upload, Checkbox, message, Typography } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import * as z from "zod";
+import { useNavigate } from "react-router-dom";
+import ButtonComponent from "../../../components/ButtonComponent";
+import InputComponent from "../../../components/InputComponent";
+import LabelComponent from "../../../components/LabelComponent";
 
-const WorkspaceSchema = z.object({
-  name: z.string().min(1, "workspace.validation.name"),
-  owner: z.string().min(1, "workspace.validation.owner"),
-  desc: z.string().optional(),
-  usePassword: z.boolean().optional(),
-  password: z.string().optional(),
-  confirm: z.string().optional(),
-});
-
-const WorkspaceForm = ({
-  initialValues,
-  onSubmit,
-}: {
-  initialValues?: any;
-  onSubmit: (data: any) => void;
-}) => {
-  const [form] = Form.useForm();
+const AddEditWorkspaceScreen = ({ initialData }: any) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (initialValues) {
-      form.setFieldsValue(initialValues);
-    } else {
-      form.resetFields();
+  const [name, setName] = useState(initialData?.name || "");
+  const [owner, setOwner] = useState(initialData?.owner || "");
+  const [desc, setDesc] = useState(initialData?.desc || "");
+  const [file, setFile] = useState<File | null>(initialData?.file || null);
+  const [usePassword, setUsePassword] = useState(!!initialData?.password);
+  const [password, setPassword] = useState(initialData?.password || "");
+  const [confirm, setConfirm] = useState(initialData?.password || "");
+
+  const handleSubmit = () => {
+    if (!name || !owner || !file) {
+      return message.warning(t("common.fillAllRequired"));
     }
-  }, [initialValues]);
-
-  const handleFinish = async (values: any) => {
-    const result = WorkspaceSchema.safeParse(values);
-
-    if (!result.success) {
-      const errorMsg = Object.values(
-        result.error.flatten().fieldErrors
-      )[0]?.[0];
-      message.error(t(errorMsg) || t("common.error"));
-      return;
+    if (usePassword && password !== confirm) {
+      return message.error(t("common.passwordNotMatch"));
     }
-
-    if (values.usePassword && values.password !== values.confirm) {
-      message.error(t("workspace.validation.passwordNotMatch"));
-      return;
-    }
-
-    onSubmit({
-      name: values.name,
-      owner: values.owner,
-      desc: values.desc,
-      password: values.usePassword ? values.password : undefined,
-    });
+    const payload = {
+      name,
+      owner,
+      desc,
+      file,
+      password: usePassword ? password : undefined,
+    };
+    console.log("submit:", payload);
+    message.success(t("common.saved"));
   };
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      onFinish={handleFinish}
-      autoComplete="off"
-      className="w-full max-w-lg bg-[#1e1e2f] p-6 rounded-xl shadow-lg"
-    >
-      <Form.Item
-        name="name"
-        label={t("workspace.name")}
-        rules={[{ required: true, message: t("workspace.validation.name") }]}
-      >
-        <Input placeholder={t("workspace.name")} />
-      </Form.Item>
+    <div className="p-6 max-w-4xl mx-auto text-white">
+      <h2 className="text-xl font-semibold mb-6">
+        {initialData ? t("workspace.edit") : t("workspace.add")}
+      </h2>
 
-      <Form.Item
-        name="owner"
-        label={t("workspace.owner")}
-        rules={[{ required: true, message: t("workspace.validation.owner") }]}
-      >
-        <Input placeholder={t("workspace.owner")} />
-      </Form.Item>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Workspace Name */}
+        <div>
+          <LabelComponent label="workspace.name" required isDark />
+          <InputComponent
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={t("workspace.namePlaceholder")}
+            isDark
+            allowClear
+          />
+        </div>
 
-      <Form.Item name="desc" label={t("workspace.desc")}>
-        <Input.TextArea placeholder={t("workspace.desc")} />
-      </Form.Item>
+        {/* Workspace Owner */}
+        <div>
+          <LabelComponent label="workspace.owner" required isDark />
+          <Select
+            value={owner}
+            onChange={setOwner}
+            placeholder={t("workspace.ownerPlaceholder")}
+            options={[]}
+            className="w-full rounded-[8px]"
+          />
+        </div>
 
-      <Form.Item name="usePassword" valuePropName="checked">
-        <Checkbox>{t("workspace.usePassword")}</Checkbox>
-      </Form.Item>
+        {/* Description (full width) */}
+        <div className="md:col-span-2">
+          <LabelComponent label="workspace.desc" isDark />
+          <InputComponent
+            value={desc}
+            onChange={(e) => setDesc(e.target.value)}
+            placeholder={t("workspace.descPlaceholder")}
+            isDark
+            allowClear
+            height={100}
+          />
+        </div>
 
-      <Form.Item noStyle shouldUpdate>
-        {() =>
-          form.getFieldValue("usePassword") && (
-            <>
-              <Form.Item
-                name="password"
-                label={t("workspace.password")}
-                rules={[
-                  {
-                    required: true,
-                    message: t("workspace.validation.password"),
-                  },
-                ]}
+        {/* File Upload (full width) */}
+        <div className="md:col-span-2">
+          <LabelComponent label="workspace.upload" required isDark />
+          <div className="border border-dashed rounded-lg p-4 bg-[#1e1e2e]">
+            {file ? (
+              <div className="flex items-center justify-between">
+                <span>{file.name}</span>
+                <ButtonComponent
+                  variant="secondary"
+                  onClick={() => setFile(null)}
+                  isDark
+                  height="36px"
+                >
+                  {t("workspace.remove")}
+                </ButtonComponent>
+              </div>
+            ) : (
+              <Upload
+                beforeUpload={(f) => {
+                  setFile(f);
+                  return false;
+                }}
+                showUploadList={false}
               >
-                <Input.Password placeholder={t("workspace.password")} />
-              </Form.Item>
-
-              <Form.Item
-                name="confirm"
-                label={t("workspace.confirmPassword")}
-                rules={[
-                  {
-                    required: true,
-                    message: t("workspace.validation.confirmPassword"),
-                  },
-                ]}
+                <ButtonComponent icon={<UploadOutlined />} isDark height="36px">
+                  {t("workspace.uploadBtn")}
+                </ButtonComponent>
+              </Upload>
+            )}
+            <Typography.Text className="block mt-1 text-xs text-gray-400">
+              {t("workspace.uploadNote")}
+            </Typography.Text>
+          </div>
+        </div>
+        <div className="md:col-span-2">
+          <LabelComponent label="workspace.upload" required isDark />
+          <div className="border border-dashed rounded-lg p-4 bg-[#1e1e2e]">
+            {file ? (
+              <div className="flex items-center justify-between">
+                <span>{file.name}</span>
+                <ButtonComponent
+                  variant="secondary"
+                  onClick={() => setFile(null)}
+                  isDark
+                  height="36px"
+                >
+                  {t("workspace.remove")}
+                </ButtonComponent>
+              </div>
+            ) : (
+              <Upload
+                beforeUpload={(f) => {
+                  setFile(f);
+                  return false;
+                }}
+                showUploadList={false}
               >
-                <Input.Password placeholder={t("workspace.confirmPassword")} />
-              </Form.Item>
-            </>
-          )
-        }
-      </Form.Item>
+                <ButtonComponent icon={<UploadOutlined />} isDark height="36px">
+                  {t("workspace.uploadBtn")}
+                </ButtonComponent>
+              </Upload>
+            )}
+            <Typography.Text className="block mt-1 text-xs text-gray-400">
+              {t("workspace.uploadNote")}
+            </Typography.Text>
+          </div>
+        </div>
+        <div className="md:col-span-2">
+          <LabelComponent label="workspace.upload" required isDark />
+          <div className="border border-dashed rounded-lg p-4 bg-[#1e1e2e]">
+            {file ? (
+              <div className="flex items-center justify-between">
+                <span>{file.name}</span>
+                <ButtonComponent
+                  variant="secondary"
+                  onClick={() => setFile(null)}
+                  isDark
+                  height="36px"
+                >
+                  {t("workspace.remove")}
+                </ButtonComponent>
+              </div>
+            ) : (
+              <Upload
+                beforeUpload={(f) => {
+                  setFile(f);
+                  return false;
+                }}
+                showUploadList={false}
+              >
+                <ButtonComponent icon={<UploadOutlined />} isDark height="36px">
+                  {t("workspace.uploadBtn")}
+                </ButtonComponent>
+              </Upload>
+            )}
+            <Typography.Text className="block mt-1 text-xs text-gray-400">
+              {t("workspace.uploadNote")}
+            </Typography.Text>
+          </div>
+        </div>
 
-      <div className="flex justify-end mt-4">
-        <Button type="primary" htmlType="submit">
-          {t("common.submit")}
-        </Button>
+        {/* Enable Password (full width) */}
+        <div className="md:col-span-2">
+          <Checkbox
+            checked={usePassword}
+            onChange={(e) => setUsePassword(e.target.checked)}
+            className="text-white"
+          >
+            {t("workspace.enablePassword")}
+          </Checkbox>
+        </div>
+
+        {/* Password fields (only show when enabled) */}
+        {usePassword && (
+          <>
+            <div>
+              <LabelComponent label="workspace.password" required isDark />
+              <InputComponent
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t("workspace.passwordPlaceholder")}
+                isDark
+                allowClear
+              />
+            </div>
+            <div>
+              <LabelComponent label="workspace.confirm" required isDark />
+              <InputComponent
+                type="password"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                placeholder={t("workspace.confirmPlaceholder")}
+                isDark
+                allowClear
+              />
+            </div>
+          </>
+        )}
       </div>
-    </Form>
+
+      {/* Action buttons */}
+      <div className="flex justify-end gap-4 mt-8">
+        <ButtonComponent
+          variant="secondary"
+          onClick={() => navigate(-1)}
+          isDark
+          height={44}
+          className="w-[120px]"
+        >
+          {t("common.back")}
+        </ButtonComponent>
+        <ButtonComponent
+          onClick={handleSubmit}
+          isDark
+          height={44}
+          className="w-[140px]"
+        >
+          {initialData ? t("workspace.update") : t("workspace.save")}
+        </ButtonComponent>
+      </div>
+    </div>
   );
 };
 
-export default WorkspaceForm;
+export default AddEditWorkspaceScreen;
