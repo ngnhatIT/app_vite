@@ -180,6 +180,7 @@ const UserForm = ({
                 <Select
                   placeholder="Select role"
                   size="large"
+                  style={{ height: 42 }}
                   loading={!roles.length}
                   className="rounded-md w-full"
                 >
@@ -200,6 +201,7 @@ const UserForm = ({
                   size="large"
                   loading={!wsps.length}
                   className="rounded-md w-full"
+                  style={{ height: 42 }}
                 >
                   {wsps.map((ws) => (
                     <Select.Option key={ws.workspaceId} value={ws.workspaceId}>
@@ -209,15 +211,23 @@ const UserForm = ({
                 </Select>
               </Form.Item>
 
-              <Form.Item
-                name="ip_check"
-                valuePropName="checked"
-                label={
-                  <LabelComponent label="Enable IP Check" isDark={isDark} />
-                }
+              <Form
+                form={form}
+                layout="vertical"
+                initialValues={{
+                  ip_check: true,
+                }}
               >
-                <Checkbox />
-              </Form.Item>
+                <Form.Item
+                  name="ip_check"
+                  valuePropName="checked"
+                  label={
+                    <LabelComponent label="Enable IP Check" isDark={isDark} />
+                  }
+                >
+                  <Checkbox />
+                </Form.Item>
+              </Form>
             </div>
           </div>
 
