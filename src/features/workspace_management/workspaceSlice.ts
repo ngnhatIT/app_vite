@@ -1,74 +1,134 @@
 import { createSlice } from "@reduxjs/toolkit";
+
+
 import {
   fetchWorkspacesThunk,
   createWorkspaceThunk,
   updateWorkspaceThunk,
   deleteWorkspaceThunk,
-  addUserThunk,
-  removeUsersThunk,
-  updateUserThunk,
-  changePasswordThunk,
+  addMemberThunk,
+  removeMembersThunk,
+  getWorkspaceDetailThunk,
 } from "./workspaceThunk";
-import type { Workspace } from "../workspace/dto/workspaceDTO";
+import type { Workspace, WorkspaceDetail } from "./dto/workSpaceDTO";
 
-type WorkspaceState = {
+interface WorkspaceState {
   list: Workspace[];
-  loading: boolean;
+  detail: WorkspaceDetail | null;
+  status: "idle" | "loading" | "succeeded" | "failed";
+  loadingDetail: boolean;
+  updating: boolean;
   error: string | null;
-};
+}
 
 const initialState: WorkspaceState = {
   list: [],
-  loading: false,
+  detail: null,
+  status: "idle",
+  loadingDetail: false,
+  updating: false,
   error: null,
 };
 
+// 📋 Mapper: WorkspaceDetail → Workspace
+function mapDetailToWorkspace(detail: WorkspaceDetail): Workspace {
+  return {
+    workspaceId: detail.workspaceId,
+    workspaceName: detail.workspaceName,
+    wspOwner: detail.ownerUsername || "",
+    email: "", // optional
+    avatar: "", // optional
+    members: 0, // optional
+    createdAt: "", // optional
+    updatedAt: "", // optional
+  };
+}
+
 const workspaceSlice = createSlice({
-  name: "workspace",
+  name: "workspaceMng",
   initialState,
-  reducers: {},
+  reducers: {
+    clearDetail(state) {
+      state.detail = null;
+    },
+    clearError(state) {
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
+      // 📋 List
       .addCase(fetchWorkspacesThunk.pending, (state) => {
-        state.loading = true;
+        state.status = "loading";
         state.error = null;
       })
       .addCase(fetchWorkspacesThunk.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = "succeeded";
         state.list = action.payload;
       })
       .addCase(fetchWorkspacesThunk.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
+        state.status = "failed";
+        state.error = (action.payload as any)?.message || "Failed to fetch";
       })
 
       .addCase(createWorkspaceThunk.fulfilled, (state, action) => {
         state.list.push(action.payload);
       })
-      .addCase(updateWorkspaceThunk.fulfilled, (state, action) => {
-        const idx = state.list.findIndex(
-          (w: any) => w.id === action.payload.id
-        );
-        if (idx >= 0) state.list[idx] = action.payload;
+
+      .addCase(updateWorkspaceThunk.pending, (state) => {
+        state.updating = true;
+        state.error = null;
       })
-      .addCase(deleteWorkspaceThunk.fulfilled, (state, action) => {
-        state.list = state.list.filter((w: any) => w.id !== action.payload);
+      .addCase(updateWorkspaceThunk.fulfilled, (state, action) => {
+        state.updating = false;
+
+        // chỉ update list
+        const idx = state.list.findIndex(
+          (w) => w.workspaceId === action.payload.workspaceId
+        );
+        if (idx >= 0) {
+          state.list[idx] = mapDetailToWorkspace(action.payload);
+        }
+      })
+      .addCase(updateWorkspaceThunk.rejected, (state, action) => {
+        state.updating = false;
+        state.error = (action.payload as any) || "Failed to update";
       })
 
-      // Manage Users
-      .addCase(addUserThunk.fulfilled, (state, action) => {
-        // optionally: update state if needed
+      .addCase(deleteWorkspaceThunk.fulfilled, (state, action) => {
+        state.list = state.list.filter((w) => w.workspaceId !== action.payload);
       })
-      .addCase(removeUsersThunk.fulfilled, (state, action) => {
-        // optionally: update state if needed
+
+      .addCase(addMemberThunk.fulfilled, (state, action) => {
+        const idx = state.list.findIndex(
+          (w) => w.workspaceId === action.payload.workspaceId
+        );
+        if (idx >= 0) state.list[idx] = action.payload as any;
       })
-      .addCase(updateUserThunk.fulfilled, (state, action) => {
-        // optionally: update state if needed
+
+      .addCase(removeMembersThunk.fulfilled, (state, action) => {
+        const idx = state.list.findIndex(
+          (w) => w.workspaceId === action.payload.workspaceId
+        );
+        if (idx >= 0) state.list[idx] = action.payload as any;
       })
-      .addCase(changePasswordThunk.fulfilled, (state, action) => {
-        // optionally: update state if needed
+
+      // 📋 Detail
+      .addCase(getWorkspaceDetailThunk.pending, (state) => {
+        state.loadingDetail = true;
+        state.error = null;
+      })
+      .addCase(getWorkspaceDetailThunk.fulfilled, (state, action) => {
+        state.loadingDetail = false;
+        state.detail = action.payload;
+      })
+      .addCase(getWorkspaceDetailThunk.rejected, (state, action) => {
+        state.loadingDetail = false;
+        state.error = (action.payload as any) || "Failed to load detail";
       });
   },
 });
+
+export const { clearDetail, clearError } = workspaceSlice.actions;
 
 export default workspaceSlice.reducer;

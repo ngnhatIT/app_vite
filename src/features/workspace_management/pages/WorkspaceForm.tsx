@@ -1,50 +1,160 @@
-import { Select, Upload, Checkbox, message, Typography } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Select, Checkbox, message, Spin } from "antd";
+import axiosInstance from "../../../api/AxiosIntance";
+
 import ButtonComponent from "../../../components/ButtonComponent";
 import InputComponent from "../../../components/InputComponent";
 import LabelComponent from "../../../components/LabelComponent";
+import UploadField from "../../../components/UpdateFieldComponent";
 
-const AddEditWorkspaceScreen = ({ initialData }: any) => {
+
+const WorkspaceForm = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [name, setName] = useState(initialData?.name || "");
-  const [owner, setOwner] = useState(initialData?.owner || "");
-  const [desc, setDesc] = useState(initialData?.desc || "");
-  const [file, setFile] = useState<File | null>(initialData?.file || null);
-  const [usePassword, setUsePassword] = useState(!!initialData?.password);
-  const [password, setPassword] = useState(initialData?.password || "");
-  const [confirm, setConfirm] = useState(initialData?.password || "");
-
-  const handleSubmit = () => {
-    if (!name || !owner || !file) {
-      return message.warning(t("common.fillAllRequired"));
-    }
-    if (usePassword && password !== confirm) {
-      return message.error(t("common.passwordNotMatch"));
-    }
-    const payload = {
-      name,
-      owner,
-      desc,
-      file,
-      password: usePassword ? password : undefined,
-    };
-    console.log("submit:", payload);
-    message.success(t("common.saved"));
+  const { mode, id } = (location.state || {}) as {
+    mode: "create" | "edit";
+    id?: string;
   };
+
+  const [name, setName] = useState("");
+  const [owner, setOwner] = useState("");
+  const [desc, setDesc] = useState("");
+  const [usePassword, setUsePassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+
+  const [viewConfig, setViewConfig] = useState<File | null>(null);
+  const [editConfig, setEditConfig] = useState<File | null>(null);
+  const [commentConfig, setCommentConfig] = useState<File | null>(null);
+
+  const [viewFileName, setViewFileName] = useState("");
+  const [editFileName, setEditFileName] = useState("");
+  const [commentFileName, setCommentFileName] = useState("");
+
+  const [owners, setOwners] = useState<{ userId: string; userName: string }[]>([]);
+  const [loadingOwners, setLoadingOwners] = useState(false);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+
+  const fetchOwners = async () => {
+    setLoadingOwners(true);
+    try {
+      const res = await axiosInstance.get<{
+        data: { userId: string; userName: string }[];
+      }>("/system/workspaces/select-owner");
+      setOwners(res.data.data || []);
+    } catch {
+      message.error(t("common.error"));
+    } finally {
+      setLoadingOwners(false);
+    }
+  };
+
+  const fetchDetail = async () => {
+    if (!id) {
+      message.error(t("workspace.error.noId"));
+      return;
+    }
+    setLoadingDetail(true);
+    try {
+      const res = await axiosInstance.get<{ data: any }>(`/system/workspaces/${id}`);
+      const detail = res.data.data;
+
+      setName(detail.workspaceName);
+      setOwner(detail.ownerId);
+      setDesc(detail.description || "");
+      setUsePassword(detail.isPasswordRequired);
+
+      setViewFileName(detail.viewFileName || "");
+      setEditFileName(detail.editFileName || "");
+      setCommentFileName(detail.commentFileName || "");
+    } catch {
+      message.error(t("common.error"));
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOwners();
+    if (mode === "edit") {
+      fetchDetail();
+    }
+  }, [mode, id]);
+
+  const handleSubmit = async () => {
+    if (!name || !owner) {
+      message.warning(t("common.fillAllRequired"));
+      return;
+    }
+
+    if (usePassword && password !== confirm) {
+      message.error(t("common.passwordNotMatch"));
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("workspaceName", name);
+    formData.append("ownerId", owner);
+    if (desc) formData.append("description", desc);
+    formData.append("isPasswordRequired", String(usePassword));
+
+    if (usePassword) {
+      formData.append("password", password);
+      formData.append("confirmPassword", confirm);
+    }
+
+    if (viewConfig) {
+      formData.append("viewConfig", viewConfig);
+    } else if (!viewFileName) {
+      formData.append("viewConfig", "");
+    }
+
+    if (editConfig) {
+      formData.append("editConfig", editConfig);
+    } else if (!editFileName) {
+      formData.append("editConfig", "");
+    }
+
+    if (commentConfig) {
+      formData.append("commentConfig", commentConfig);
+    } else if (!commentFileName) {
+      formData.append("commentConfig", "");
+    }
+
+    try {
+      if (mode === "edit" && id) {
+        await axiosInstance.patch(`/system/workspaces/${id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      } else {
+        await axiosInstance.post(`/system/workspaces`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      }
+
+      message.success(t("common.saved"));
+      navigate(-1);
+    } catch (err: any) {
+      console.error(err);
+      message.error(t("common.error"));
+    }
+  };
+
+  if (mode === "edit" && loadingDetail) {
+    return <Spin tip="Loading workspace detail..." />;
+  }
 
   return (
     <div className="p-6 max-w-4xl mx-auto text-white">
       <h2 className="text-xl font-semibold mb-6">
-        {initialData ? t("workspace.edit") : t("workspace.add")}
+        {mode === "edit" ? t("workspace.edit") : t("workspace.add")}
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Workspace Name */}
         <div>
           <LabelComponent label="workspace.name" required isDark />
           <InputComponent
@@ -56,19 +166,23 @@ const AddEditWorkspaceScreen = ({ initialData }: any) => {
           />
         </div>
 
-        {/* Workspace Owner */}
         <div>
           <LabelComponent label="workspace.owner" required isDark />
           <Select
+            loading={loadingOwners}
             value={owner}
             onChange={setOwner}
             placeholder={t("workspace.ownerPlaceholder")}
-            options={[]}
             className="w-full rounded-[8px]"
-          />
+          >
+            {owners.map((o) => (
+              <Select.Option key={o.userId} value={o.userId}>
+                {o.userName}
+              </Select.Option>
+            ))}
+          </Select>
         </div>
 
-        {/* Description (full width) */}
         <div className="md:col-span-2">
           <LabelComponent label="workspace.desc" isDark />
           <InputComponent
@@ -81,108 +195,33 @@ const AddEditWorkspaceScreen = ({ initialData }: any) => {
           />
         </div>
 
-        {/* File Upload (full width) */}
-        <div className="md:col-span-2">
-          <LabelComponent label="workspace.upload" required isDark />
-          <div className="border border-dashed rounded-lg p-4 bg-[#1e1e2e]">
-            {file ? (
-              <div className="flex items-center justify-between">
-                <span>{file.name}</span>
-                <ButtonComponent
-                  variant="secondary"
-                  onClick={() => setFile(null)}
-                  isDark
-                  height="36px"
-                >
-                  {t("workspace.remove")}
-                </ButtonComponent>
-              </div>
-            ) : (
-              <Upload
-                beforeUpload={(f) => {
-                  setFile(f);
-                  return false;
-                }}
-                showUploadList={false}
-              >
-                <ButtonComponent icon={<UploadOutlined />} isDark height="36px">
-                  {t("workspace.uploadBtn")}
-                </ButtonComponent>
-              </Upload>
-            )}
-            <Typography.Text className="block mt-1 text-xs text-gray-400">
-              {t("workspace.uploadNote")}
-            </Typography.Text>
-          </div>
-        </div>
-        <div className="md:col-span-2">
-          <LabelComponent label="workspace.upload" required isDark />
-          <div className="border border-dashed rounded-lg p-4 bg-[#1e1e2e]">
-            {file ? (
-              <div className="flex items-center justify-between">
-                <span>{file.name}</span>
-                <ButtonComponent
-                  variant="secondary"
-                  onClick={() => setFile(null)}
-                  isDark
-                  height="36px"
-                >
-                  {t("workspace.remove")}
-                </ButtonComponent>
-              </div>
-            ) : (
-              <Upload
-                beforeUpload={(f) => {
-                  setFile(f);
-                  return false;
-                }}
-                showUploadList={false}
-              >
-                <ButtonComponent icon={<UploadOutlined />} isDark height="36px">
-                  {t("workspace.uploadBtn")}
-                </ButtonComponent>
-              </Upload>
-            )}
-            <Typography.Text className="block mt-1 text-xs text-gray-400">
-              {t("workspace.uploadNote")}
-            </Typography.Text>
-          </div>
-        </div>
-        <div className="md:col-span-2">
-          <LabelComponent label="workspace.upload" required isDark />
-          <div className="border border-dashed rounded-lg p-4 bg-[#1e1e2e]">
-            {file ? (
-              <div className="flex items-center justify-between">
-                <span>{file.name}</span>
-                <ButtonComponent
-                  variant="secondary"
-                  onClick={() => setFile(null)}
-                  isDark
-                  height="36px"
-                >
-                  {t("workspace.remove")}
-                </ButtonComponent>
-              </div>
-            ) : (
-              <Upload
-                beforeUpload={(f) => {
-                  setFile(f);
-                  return false;
-                }}
-                showUploadList={false}
-              >
-                <ButtonComponent icon={<UploadOutlined />} isDark height="36px">
-                  {t("workspace.uploadBtn")}
-                </ButtonComponent>
-              </Upload>
-            )}
-            <Typography.Text className="block mt-1 text-xs text-gray-400">
-              {t("workspace.uploadNote")}
-            </Typography.Text>
-          </div>
-        </div>
+        <UploadField
+          label="workspace.viewConfig"
+          file={viewConfig}
+          setFile={setViewConfig}
+          fileName={viewFileName}
+          setFileName={setViewFileName}
+          t={t}
+        />
 
-        {/* Enable Password (full width) */}
+        <UploadField
+          label="workspace.editConfig"
+          file={editConfig}
+          setFile={setEditConfig}
+          fileName={editFileName}
+          setFileName={setEditFileName}
+          t={t}
+        />
+
+        <UploadField
+          label="workspace.commentConfig"
+          file={commentConfig}
+          setFile={setCommentConfig}
+          fileName={commentFileName}
+          setFileName={setCommentFileName}
+          t={t}
+        />
+
         <div className="md:col-span-2">
           <Checkbox
             checked={usePassword}
@@ -193,7 +232,6 @@ const AddEditWorkspaceScreen = ({ initialData }: any) => {
           </Checkbox>
         </div>
 
-        {/* Password fields (only show when enabled) */}
         {usePassword && (
           <>
             <div>
@@ -222,7 +260,6 @@ const AddEditWorkspaceScreen = ({ initialData }: any) => {
         )}
       </div>
 
-      {/* Action buttons */}
       <div className="flex justify-end gap-4 mt-8">
         <ButtonComponent
           variant="secondary"
@@ -239,11 +276,11 @@ const AddEditWorkspaceScreen = ({ initialData }: any) => {
           height={44}
           className="w-[140px]"
         >
-          {initialData ? t("workspace.update") : t("workspace.save")}
+          {mode === "edit" ? t("workspace.update") : t("workspace.save")}
         </ButtonComponent>
       </div>
     </div>
   );
 };
 
-export default AddEditWorkspaceScreen;
+export default WorkspaceForm;

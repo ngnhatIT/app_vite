@@ -7,7 +7,7 @@ import {
   type ThunkAction,
 } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/authSlice";
-import themeReducer from "../features/setting/themeSlice";
+import themeReducer from "../features/setting/ThemeSlice";
 import userReducer from "../features/users/userSlice";
 import profileReducer from "../features/profile/profileSlice";
 import auditReducer from "../features/audit_log/auditLogSlice";

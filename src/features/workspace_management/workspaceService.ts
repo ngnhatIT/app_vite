@@ -1,44 +1,137 @@
-// 📁 src/features/workspace/workspaceService.ts
-
 import axiosInstance from "../../api/AxiosIntance";
 import { handleApiCall } from "../../api/HandApiCall";
+import { ENDPOINT } from "../../utils/constantEndPoint";
+import type { Workspace, CreateWorkspaceDTO, UpdateWorkspaceDTO, AddMemberDTO, RemoveMembersDTO, ChangePasswordDTO, WorkspaceDetail } from "./dto/workSpaceDTO";
 
 export const workspaceService = {
-  fetch: () => handleApiCall(() => axiosInstance.get("/workspaces")),
+  /**
+   * Lấy toàn bộ workspace
+   */
+  fetchAll: () =>
+    handleApiCall<Workspace[]>(async () => {
+      const res = await axiosInstance.get<{ data: Workspace[] }>(
+        ENDPOINT.WORKSPACELST
+      );
+      return res.data.data;
+    }),
 
-  create: (formData: FormData) =>
-    handleApiCall(() => axiosInstance.post("/workspaces", formData)),
+  /**
+   * Tạo workspace mới
+   */
+  create: (payload: CreateWorkspaceDTO) =>
+    handleApiCall<Workspace>(async () => {
+      const formData = new FormData();
 
-  update: (id: string, formData: FormData) =>
-    handleApiCall(() => axiosInstance.put(`/workspaces/${id}`, formData)),
+      formData.append("workspaceName", payload.workspaceName);
+      formData.append("ownerId", payload.ownerId);
 
+      if (payload.description) formData.append("description", payload.description);
+      if (payload.isPasswordRequired !== undefined)
+        formData.append("isPasswordRequired", String(payload.isPasswordRequired));
+      if (payload.password) formData.append("password", payload.password);
+      if (payload.confirmPassword) formData.append("confirmPassword", payload.confirmPassword);
+
+      if (payload.viewConfig) formData.append("viewConfig", payload.viewConfig);
+      if (payload.editConfig) formData.append("editConfig", payload.editConfig);
+      if (payload.commentConfig) formData.append("commentConfig", payload.commentConfig);
+
+      const res = await axiosInstance.post<{ data: Workspace }>(
+        ENDPOINT.WORKSPACELST,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
+      return res.data.data;
+    }),
+
+ getDetail: (id: string) =>
+    handleApiCall<WorkspaceDetail>(async () => {
+      const res = await axiosInstance.get<{ data: WorkspaceDetail }>(
+        `${ENDPOINT.WORKSPACELST}/${id}`
+      );
+      return res.data.data;
+    }),
+
+  update: (id: string, payload: Partial<WorkspaceDetail> & {
+    viewConfig?: File;
+    editConfig?: File;
+    commentConfig?: File;
+    password?: string;
+    confirmPassword?: string;
+  }) =>
+    handleApiCall<WorkspaceDetail>(async () => {
+      const formData = new FormData();
+
+      formData.append("workspaceName", payload.workspaceName || "");
+      formData.append("ownerId", payload.ownerId || "");
+      if (payload.description) formData.append("description", payload.description);
+      formData.append("isPasswordRequired", String(payload.isPasswordRequired));
+
+      if (payload.password) formData.append("password", payload.password);
+      if (payload.confirmPassword) formData.append("confirmPassword", payload.confirmPassword);
+
+      if (payload.viewConfig) formData.append("viewConfig", payload.viewConfig);
+      if (payload.editConfig) formData.append("editConfig", payload.editConfig);
+      if (payload.commentConfig) formData.append("commentConfig", payload.commentConfig);
+
+      const res = await axiosInstance.patch<{ data: WorkspaceDetail }>(
+        `${ENDPOINT.WORKSPACELST}/${id}`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
+      return res.data.data;
+    }),
+
+  /**
+   * Xóa workspace
+   */
   delete: (id: string) =>
-    handleApiCall(() => axiosInstance.delete(`/workspaces/${id}`)),
+    handleApiCall<void>(async () => {
+      await axiosInstance.delete(`${ENDPOINT.WORKSPACELST}/${id}`);
+    }),
 
-  // 👥 Manage users
-  addUser: (workspaceId: string, userId: string) =>
-    handleApiCall(() =>
-      axiosInstance.post(`/workspaces/${workspaceId}/users`, { userId })
-    ),
+  /**
+   * Thêm thành viên
+   */
+  addMember: (workspaceId: string, userId: string) =>
+    handleApiCall(async () => {
+      const res = await axiosInstance.post(`system/workspaces/${workspaceId}/members`, {
+        userId,
+      });
+      return res.data;
+    }),
 
-  removeUsers: (workspaceId: string, userIds: string[]) =>
-    handleApiCall(() =>
-      axiosInstance.delete(`/workspaces/${workspaceId}/users`, {
-        data: { userIds },
-      })
-    ),
+  /**
+   * Xóa thành viên
+   */
+  removeMembers: (payload: RemoveMembersDTO) =>
+    handleApiCall<Workspace>(async () => {
+      const res = await axiosInstance.delete<{ data: Workspace }>(
+        `${ENDPOINT.WORKSPACELST}/${payload.workspaceId}/members`,
+        {
+          data: { memberIds: payload.memberIds },
+        }
+      );
+      return res.data.data;
+    }),
 
-  updateUser: (workspaceId: string, userId: string, role: string) =>
-    handleApiCall(() =>
-      axiosInstance.put(`/workspaces/${workspaceId}/users/${userId}`, { role })
-    ),
-
-  // 🔐 Change workspace password
-  changePassword: (workspaceId: string, current: string, next: string) =>
-    handleApiCall(() =>
-      axiosInstance.post(`/workspaces/${workspaceId}/change-password`, {
-        current,
-        next,
-      })
-    ),
+  /**
+   * Đổi mật khẩu
+   */
+  changePassword: (payload: ChangePasswordDTO) =>
+    handleApiCall<void>(async () => {
+      await axiosInstance.patch(
+        `${ENDPOINT.WORKSPACELST}/${payload.workspaceId}/reset-password`,
+        {
+          currentPassword: payload.currentPassword,
+          password: payload.password,
+          confirmPassword:payload.confirmPassword
+        }
+      );
+    }),
 };
