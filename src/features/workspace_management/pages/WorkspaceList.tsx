@@ -1,208 +1,117 @@
-// 📁 src/features/workspace/WorkspaceManagement.tsx
 import { useEffect, useState } from "react";
-import {
-  Table,
-  Button,
-  Modal,
-  Input,
-  Avatar,
-  Tooltip,
-  message,
-  Spin,
-} from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  PlusOutlined,
-  LockOutlined,
-  UserAddOutlined,
-} from "@ant-design/icons";
+import { Table, Button, Space, Popconfirm, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../../app/store";
-
 import { useTranslation } from "react-i18next";
-import { deleteWorkspaceThunk, fetchWorkspacesThunk } from "../workspaceThunk";
-import { useNavigate } from "react-router-dom";
 
-const WorkspaceManagement = () => {
+import { fetchWorkspacesThunk, deleteWorkspaceThunk } from "../workspaceThunk";
+import ModalWorkspace from "./ModalWorkspace";
+import type { RootState, AppDispatch } from "../../../app/store";
+
+const WorkspaceList = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingWorkspace, setEditingWorkspace] = useState(null);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(8);
-  const [searchText, setSearchText] = useState("");
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const navigate = useNavigate();
-
-  const { list, total, status } = useSelector(
-    (state: RootState) => state.workspaceMng
-  );
-  const loading = status === "loading";
+  const workspaces = useSelector((state: RootState) => state.workspaceMng.list);
+  const loading = useSelector((state: RootState) => state.workspaceMng.loading);
 
   useEffect(() => {
-    dispatch(
-      fetchWorkspacesThunk({ page: currentPage, pageSize, search: searchText })
-    );
-  }, [dispatch, currentPage, pageSize, searchText]);
+    dispatch(fetchWorkspacesThunk());
+  }, [dispatch]);
 
-  const handleDelete = (workspaceId: string) => {
-    Modal.confirm({
-      title: t("workspace.delete_title"),
-      content: t("workspace.delete_confirm"),
-      okText: t("workspace.ok_delete"),
-      cancelText: t("workspace.cancel"),
-      onOk: async () => {
-        await dispatch(deleteWorkspaceThunk(workspaceId));
-        dispatch(
-          fetchWorkspacesThunk({
-            page: currentPage,
-            pageSize,
-            search: searchText,
-          })
-        );
-        message.success(t("workspace.deleted"));
-      },
-    });
+  const handleDelete = async (id: string) => {
+    try {
+      await dispatch(deleteWorkspaceThunk(id)).unwrap();
+      message.success(t("workspace.deleteSuccess"));
+    } catch {
+      message.error(t("workspace.deleteFailed"));
+    }
   };
 
   const columns = [
     {
-      title: "",
-      render: () => <input type="checkbox" className="accent-purple-500" />,
-      width: 40,
-    },
-    {
-      title: "#",
-      render: (_: any, __: any, index: number) => (
-        <span className="text-white">
-          {(currentPage - 1) * pageSize + index + 1}
-        </span>
-      ),
-      width: 50,
-    },
-    {
-      title: t("workspace.columns.name"),
+      title: t("workspace.name"),
       dataIndex: "name",
-      render: (text: string) => (
-        <span className="text-white font-medium">{text}</span>
-      ),
+      key: "name",
     },
     {
-      title: t("workspace.columns.owner"),
+      title: t("workspace.owner"),
       dataIndex: "owner",
-      render: (_: any, record: any) => (
-        <div className="flex items-center gap-2">
-          <Avatar src={record.avatar} />
-          <div className="text-white">
-            <div>{record.owner}</div>
-            <div className="text-white/60 text-sm">{record.email}</div>
-          </div>
-        </div>
-      ),
+      key: "owner",
     },
     {
-      title: t("workspace.columns.member"),
-      dataIndex: "members",
-      render: (count: number) => (
-        <span className="text-white">
-          {count}{" "}
-          <a className="underline text-fuchsia-500 cursor-pointer">
-            {t("workspace.view_detail")}
-          </a>
-        </span>
-      ),
+      title: t("workspace.desc"),
+      dataIndex: "desc",
+      key: "desc",
     },
     {
-      title: t("workspace.columns.action"),
+      title: t("common.actions"),
+      key: "actions",
       render: (_: any, record: any) => (
-        <div className="flex gap-2">
-          <Tooltip title={t("workspace.tooltip.permission")}>
-            {" "}
-            <UserAddOutlined className="text-white cursor-pointer" />
-          </Tooltip>
-          <Tooltip title={t("workspace.tooltip.change_password")}>
-            {" "}
-            <LockOutlined className="text-white cursor-pointer" />
-          </Tooltip>
-          <Tooltip title={t("workspace.tooltip.edit")}>
-            {" "}
-            <EditOutlined className="text-white cursor-pointer" />
-          </Tooltip>
-          <Tooltip title={t("workspace.tooltip.delete")}>
-            {" "}
-            <DeleteOutlined
-              onClick={() => handleDelete(record.id)}
-              className="text-red-500 cursor-pointer"
-            />
-          </Tooltip>
-        </div>
+        <Space>
+          <Button
+            type="link"
+            onClick={() => {
+              setEditingWorkspace(record);
+              setModalVisible(true);
+            }}
+          >
+            {t("common.edit")}
+          </Button>
+          <Popconfirm
+            title={t("workspace.confirmDelete")}
+            onConfirm={() => handleDelete(record.id)}
+            okText={t("common.yes")}
+            cancelText={t("common.no")}
+          >
+            <Button danger type="link">
+              {t("common.delete")}
+            </Button>
+          </Popconfirm>
+        </Space>
       ),
     },
   ];
 
   return (
-    <Spin spinning={loading} size="large">
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-6 gap-3 flex-wrap">
-          <h2 className="text-xl font-semibold text-white">
-            {t("workspace.title")}
-          </h2>
-          <div className="flex gap-2">
-            <Input
-              placeholder={t("workspace.search")}
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              className="w-[300px] text-white bg-white/10 border-white/20"
-            />
-            <Button
-              icon={<PlusOutlined />}
-              onClick={() => navigate("/system/workspace-mng/create")}
-            >
-              {t("workspace.add")}
-            </Button>
-          </div>
-        </div>
-
-        <Table
-          rowKey="id"
-          dataSource={list}
-          columns={columns}
-          pagination={false}
-          className="!bg-transparent [&_.ant-table-cell]:!text-white"
-        />
-
-        <div className="flex justify-between items-center mt-4 text-white">
-          <span className="text-sm">
-            {list.length === 0
-              ? "0"
-              : `${(currentPage - 1) * pageSize + 1} - ${
-                  (currentPage - 1) * pageSize + list.length
-                } of ${total}`}
-          </span>
-          <div className="flex gap-2">
-            <button
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              className="w-8 h-8 bg-[#1d152f] rounded text-white/70 hover:text-white disabled:opacity-40"
-            >
-              &lt;
-            </button>
-            <button
-              disabled={currentPage * pageSize >= total}
-              onClick={() =>
-                setCurrentPage((prev) =>
-                  Math.min(prev + 1, Math.ceil(total / pageSize))
-                )
-              }
-              className="w-8 h-8 bg-[#1d152f] rounded text-white/70 hover:text-white disabled:opacity-40"
-            >
-              &gt;
-            </button>
-          </div>
-        </div>
+    <div className="w-full px-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">
+          {t("workspace.title") || "Workspaces"}
+        </h2>
+        <Button
+          type="primary"
+          onClick={() => {
+            setEditingWorkspace(null);
+            setModalVisible(true);
+          }}
+        >
+          {t("workspace.add")}
+        </Button>
       </div>
-    </Spin>
+
+      <Table
+        columns={columns}
+        dataSource={workspaces}
+        loading={loading}
+        rowKey="id"
+        bordered
+      />
+
+      {modalVisible && (
+        <ModalWorkspace
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          onSubmit={() => {
+            setModalVisible(false);
+            dispatch(fetchWorkspacesThunk());
+          }}
+          initialValues={editingWorkspace}
+        />
+      )}
+    </div>
   );
 };
 
-export default WorkspaceManagement;
+export default WorkspaceList;

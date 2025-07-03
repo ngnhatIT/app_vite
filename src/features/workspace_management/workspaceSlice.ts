@@ -1,27 +1,25 @@
-// 📁 src/features/workspace/workspaceSlice.ts
 import { createSlice } from "@reduxjs/toolkit";
 import {
   fetchWorkspacesThunk,
   createWorkspaceThunk,
   updateWorkspaceThunk,
   deleteWorkspaceThunk,
-  addUserToWorkspaceThunk,
-  removeUsersFromWorkspaceThunk,
-  updateWorkspaceUserThunk,
-  changeWorkspacePasswordThunk,
+  addUserThunk,
+  removeUsersThunk,
+  updateUserThunk,
+  changePasswordThunk,
 } from "./workspaceThunk";
+import type { Workspace } from "../workspace/dto/workspaceDTO";
 
-interface WorkspaceState {
-  list: any[];
-  total: number;
-  status: "idle" | "loading" | "succeeded" | "failed";
-  error?: string | null;
-}
+type WorkspaceState = {
+  list: Workspace[];
+  loading: boolean;
+  error: string | null;
+};
 
 const initialState: WorkspaceState = {
   list: [],
-  total: 0,
-  status: "idle",
+  loading: false,
   error: null,
 };
 
@@ -31,92 +29,44 @@ const workspaceSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // FETCH
       .addCase(fetchWorkspacesThunk.pending, (state) => {
-        state.status = "loading";
+        state.loading = true;
+        state.error = null;
       })
       .addCase(fetchWorkspacesThunk.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.list = action.payload.list;
-        state.total = action.payload.total;
+        state.loading = false;
+        state.list = action.payload;
       })
       .addCase(fetchWorkspacesThunk.rejected, (state, action) => {
-        state.status = "failed";
+        state.loading = false;
         state.error = action.payload as string;
       })
 
-      // CREATE
-      .addCase(createWorkspaceThunk.pending, (state) => {
-        state.status = "loading";
+      .addCase(createWorkspaceThunk.fulfilled, (state, action) => {
+        state.list.push(action.payload);
       })
-      .addCase(createWorkspaceThunk.fulfilled, (state) => {
-        state.status = "succeeded";
-      })
-      .addCase(createWorkspaceThunk.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload as string;
-      })
-
-      // UPDATE
-      .addCase(updateWorkspaceThunk.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(updateWorkspaceThunk.fulfilled, (state) => {
-        state.status = "succeeded";
-      })
-      .addCase(updateWorkspaceThunk.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload as string;
-      })
-
-      // DELETE
-      .addCase(deleteWorkspaceThunk.pending, (state) => {
-        state.status = "loading";
+      .addCase(updateWorkspaceThunk.fulfilled, (state, action) => {
+        const idx = state.list.findIndex(
+          (w: any) => w.id === action.payload.id
+        );
+        if (idx >= 0) state.list[idx] = action.payload;
       })
       .addCase(deleteWorkspaceThunk.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.list = state.list.filter((w) => w.id !== action.payload);
-        state.total -= 1;
-      })
-      .addCase(deleteWorkspaceThunk.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload as string;
+        state.list = state.list.filter((w: any) => w.id !== action.payload);
       })
 
-      // ADD USER
-      .addCase(addUserToWorkspaceThunk.fulfilled, (state) => {
-        state.status = "succeeded";
+      // Manage Users
+      .addCase(addUserThunk.fulfilled, (state, action) => {
+        // optionally: update state if needed
       })
-      .addCase(addUserToWorkspaceThunk.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload as string;
+      .addCase(removeUsersThunk.fulfilled, (state, action) => {
+        // optionally: update state if needed
       })
-
-      // REMOVE USERS
-      .addCase(removeUsersFromWorkspaceThunk.fulfilled, (state) => {
-        state.status = "succeeded";
+      .addCase(updateUserThunk.fulfilled, (state, action) => {
+        // optionally: update state if needed
       })
-      .addCase(removeUsersFromWorkspaceThunk.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload as string;
-      })
-
-      // UPDATE USER ROLE
-      .addCase(updateWorkspaceUserThunk.fulfilled, (state) => {
-        state.status = "succeeded";
-      })
-      .addCase(updateWorkspaceUserThunk.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload as string;
-      })
-
-      // CHANGE PASSWORD
-      .addCase(changeWorkspacePasswordThunk.fulfilled, (state) => {
-        state.status = "succeeded";
-      })
-      .addCase(changeWorkspacePasswordThunk.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload as string;
+      .addCase(changePasswordThunk.fulfilled, (state, action) => {
+        // optionally: update state if needed
       });
   },
 });

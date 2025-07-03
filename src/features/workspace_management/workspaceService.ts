@@ -4,8 +4,7 @@ import axiosInstance from "../../api/AxiosIntance";
 import { handleApiCall } from "../../api/HandApiCall";
 
 export const workspaceService = {
-  fetch: (params: { page: number; pageSize: number; search?: string }) =>
-    handleApiCall(() => axiosInstance.get("/workspaces", { params })),
+  fetch: () => handleApiCall(() => axiosInstance.get("/workspaces")),
 
   create: (formData: FormData) =>
     handleApiCall(() => axiosInstance.post("/workspaces", formData)),

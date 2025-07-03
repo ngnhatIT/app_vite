@@ -1,307 +1,247 @@
 import { useEffect, useState } from "react";
-import { Form, Select, message, Button, Spin, Checkbox } from "antd";
-import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { Form, Select, message, Checkbox, Spin } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import type { RootState, AppDispatch } from "../../../app/store";
 
 import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
-import PrimaryButton from "../../../components/ButtonComponent";
+import ButtonComponent from "../../../components/ButtonComponent";
 
-import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../../app/store";
-import {
-  createUserThunk,
-  updateUserThunk,
-  getUserDetailThunk,
-} from "../userThunk";
+import { createUserThunk, updateUserThunk } from "../userThunk";
+import { UserSchema, type UserFormType } from "../userSchema";
 import { userService } from "../userService";
 import type { RoleDTO } from "../dto/RoleDTO";
 import type { WorkSpaceDTO } from "../dto/WorkSpace.DTO";
 
-const UserForm: React.FC = () => {
+const UserForm = ({
+  mode = "create",
+  userId,
+  initialValues,
+}: {
+  mode?: "create" | "edit";
+  userId?: string;
+  initialValues?: Partial<UserFormType>;
+}) => {
   const [form] = Form.useForm();
-  const navigate = useNavigate();
-  const { state } = useLocation();
   const dispatch = useDispatch<AppDispatch>();
-  const userId = state?.user_id;
-  const isEdit = !!userId;
-
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
-  const currentUser = useSelector(
-    (state: RootState) => state.user.selectedUser
-  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [roles, setRoles] = useState<RoleDTO[]>([]);
-  const [wsps, setWsp] = useState<WorkSpaceDTO[]>([]);
+  const [wsps, setWsps] = useState<WorkSpaceDTO[]>([]);
   const [loading, setLoading] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (isEdit && userId) {
+    if (initialValues) {
+      form.setFieldsValue(initialValues);
+    }
+  }, [initialValues, form]);
+
+  useEffect(() => {
+    const fetchData = async () => {
       setLoading(true);
-      dispatch(getUserDetailThunk(userId)).finally(() => setLoading(false));
-    }
-  }, [isEdit, userId]);
-
-  useEffect(() => {
-    console.log("Current user:", currentUser);
-    if (isEdit && currentUser) {
-      form.setFieldsValue(currentUser);
-    }
-  }, [currentUser]);
-
-  useEffect(() => {
-    const fetchRoles = async () => {
       try {
-        const res = await userService.getRoles();
-        setRoles(res);
+        const [rolesRes, wspsRes] = await Promise.all([
+          userService.getRoles(),
+          userService.getWorkSpaces(),
+        ]);
+        setRoles(rolesRes);
+        setWsps(wspsRes);
       } catch {
-        message.error(t("role.fetchFailed") || "Failed to load roles");
+        message.error(t("user_list.role.fetchFailed"));
+      } finally {
+        setLoading(false);
       }
     };
-    const fetchWsp = async () => {
-      try {
-        const res = await userService.getWorkSpaces();
-        setWsp(res);
-      } catch {
-        message.error(t("role.fetchFailed") || "Failed to load roles");
-      }
-    };
-    fetchRoles();
-    fetchWsp();
+    fetchData();
   }, []);
 
-  const onFinish = async (values: any) => {
-    console.log(values);
-    setSubmitting(true);
+  const onFinish = async () => {
+    const values = await form.validateFields();
+    const parsed = UserSchema.safeParse(values);
+
+    if (!parsed.success) {
+      const fieldErrors = parsed.error.flatten().fieldErrors;
+
+      form.setFields(
+        Object.entries(fieldErrors).map(([name, errors]) => ({
+          name: [name],
+          errors: errors || [],
+        }))
+      );
+      return;
+    }
+
+    form.setFields(
+      Object.keys(values).map((name) => ({ name: [name], errors: [] }))
+    );
+
+    setIsSubmitting(true);
     try {
-      if (isEdit && userId) {
+      if (mode === "edit" && userId) {
         await dispatch(
           updateUserThunk({ ...values, user_id: userId })
         ).unwrap();
-        message.success(t("user.updated"));
+        message.success(t("user_list.user.updated"));
       } else {
         await dispatch(createUserThunk(values)).unwrap();
-        message.success(t("user.created"));
+        message.success(t("user_list.user.created"));
       }
+
       navigate("/users");
-    } catch {
-      message.error(t("form.submitFailed"));
+    } catch (err: any) {
+      message.error(err?.message || t("user_list.form.submitFailed"));
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="w-full px-6 py-4">
-      <div className="w-full h-full max-w-[1180px] mx-auto">
-        <Spin spinning={loading} size="large">
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={onFinish}
-            autoComplete="off"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              <div className="flex flex-col gap-6">
-                <Form.Item
-                  label={
-                    <LabelComponent
-                      isDark={isDark}
-                      label={t("Username")}
-                      required
-                    />
-                  }
-                  name="username"
-                  rules={[{ required: true, message: t("username.required") }]}
-                >
-                  <InputComponent
-                    placeholder={t("Enter username")}
-                    height={48}
+    <div className="w-full h-full max-w-[920px] mx-auto pt-8 ">
+      <Spin spinning={loading}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+          autoComplete="off"
+          validateTrigger="onChange"
+          className=""
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            {/* LEFT COLUMN */}
+            <div className="flex flex-col gap-6 w-full">
+              <h3 className="text-xl font-semibold text-white mb-4">
+                {t("user_list.basic_info") || "Basic Information"}
+              </h3>
+
+              <Form.Item
+                name="username"
+                label={
+                  <LabelComponent label="Username" required isDark={isDark} />
+                }
+              >
+                <InputComponent placeholder="Enter username" isDark={isDark} />
+              </Form.Item>
+
+              <Form.Item
+                name="email"
+                label={
+                  <LabelComponent label="Email" required isDark={isDark} />
+                }
+              >
+                <InputComponent placeholder="Enter email" isDark={isDark} />
+              </Form.Item>
+
+              <Form.Item
+                name="password"
+                label={
+                  <LabelComponent label="Password" required isDark={isDark} />
+                }
+              >
+                <InputComponent
+                  type="password"
+                  placeholder="Enter password"
+                  isDark={isDark}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="confirm_password"
+                label={
+                  <LabelComponent
+                    label="Confirm Password"
+                    required
                     isDark={isDark}
                   />
-                </Form.Item>
-
-                <Form.Item
-                  label={
-                    <LabelComponent
-                      isDark={isDark}
-                      label={t("Email")}
-                      required
-                    />
-                  }
-                  name="email"
-                  rules={[
-                    { required: true, message: t("email.required") },
-                    { type: "email", message: t("email.invalid") },
-                  ]}
-                >
-                  <InputComponent
-                    placeholder={t("Enter email")}
-                    height={48}
-                    isDark={isDark}
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  label={
-                    <LabelComponent
-                      isDark={isDark}
-                      label={t("Full Name")}
-                      required
-                    />
-                  }
-                  name="fullname"
-                  rules={[{ required: true, message: t("fullname.required") }]}
-                >
-                  <InputComponent
-                    placeholder={t("Enter full name")}
-                    height={48}
-                    isDark={isDark}
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  label={
-                    <LabelComponent
-                      isDark={isDark}
-                      label={t("Password")}
-                      required
-                    />
-                  }
-                  name="password"
-                  rules={[
-                    { required: !isEdit, message: t("password.required") },
-                  ]}
-                >
-                  <InputComponent
-                    type="password"
-                    placeholder={t("Enter password")}
-                    height={48}
-                    isDark={isDark}
-                  />
-                </Form.Item>
-
-                <Form.Item
-                  label={
-                    <LabelComponent
-                      isDark={isDark}
-                      label={t("Confirm Password")}
-                      required
-                    />
-                  }
-                  name="confirm_password"
-                  dependencies={["password"]}
-                  rules={[
-                    {
-                      required: !isEdit,
-                      message: t("confirmPassword.required"),
-                    },
-                    ({ getFieldValue }) => ({
-                      validator(_, value) {
-                        if (!value || getFieldValue("password") === value) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(
-                          new Error(t("password.notMatch"))
-                        );
-                      },
-                    }),
-                  ]}
-                >
-                  <InputComponent
-                    type="password"
-                    placeholder={t("Re-enter password")}
-                    height={48}
-                    isDark={isDark}
-                  />
-                </Form.Item>
-              </div>
-
-              <div className="flex flex-col gap-6">
-                <Form.Item
-                  label={
-                    <LabelComponent
-                      isDark={isDark}
-                      label={t("Role")}
-                      required
-                    />
-                  }
-                  name="role"
-                  rules={[{ required: true, message: t("role.required") }]}
-                >
-                  <Select
-                    placeholder={t("Select role")}
-                    size="large"
-                    loading={!roles.length}
-                    className="rounded-md bg-[#1A132D] text-white border border-[#2f2542]"
-                  >
-                    {roles.map((role) => (
-                      <Select.Option key={role.role_id} value={role.role_id}>
-                        {role.role_name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-
-                <Form.Item
-                  label={
-                    <LabelComponent isDark={isDark} label={t("Workspace")} />
-                  }
-                  name="workspace"
-                >
-                  <Select
-                    placeholder={t("Select workspace")}
-                    size="large"
-                    className="rounded-md bg-[#1A132D] text-white border border-[#2f2542]"
-                  >
-                    {wsps.map((ws) => (
-                      <Select.Option
-                        key={ws.workspaceId}
-                        value={ws.workspaceId}
-                      >
-                        {ws.workspaceName}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-                <Form.Item
-                  label={<LabelComponent label="Is check IP" isDark={isDark} />}
-                  name="ip_check"
-                  valuePropName="checked"
-                >
-                  <Checkbox></Checkbox>
-                </Form.Item>
-              </div>
+                }
+              >
+                <InputComponent
+                  type="password"
+                  placeholder="Confirm password"
+                  isDark={isDark}
+                />
+              </Form.Item>
             </div>
 
-            <div className="w-full flex flex-col md:flex-row justify-between gap-4 mt-10">
-              <Button
-                icon={<ArrowLeftOutlined />}
-                size="large"
-                onClick={() => navigate("/users")}
-                className="flex-1 h-12 text-white text-sm rounded-lg bg-[#292929] border-none hover:opacity-80 max-w-[160px]"
-                style={{
-                  background: "rgba(255,255,255,0.1)",
-                  border: "1px solid #4b3b61",
-                }}
-              >
-                {t("Back")}
-              </Button>
+            {/* RIGHT COLUMN */}
+            <div className="flex flex-col gap-6 w-full">
+              <h3 className="text-xl font-semibold text-white mb-4">
+                {t("user_list.permissions") || "User Permissions"}
+              </h3>
 
-              <PrimaryButton
-                htmlType="submit"
-                className="px-10 max-w-[160px]"
-                loading={submitting}
+              <Form.Item
+                name="role"
+                label={<LabelComponent label="Role" required isDark={isDark} />}
               >
-                {isEdit ? t("Update User") : t("Create User")}
-              </PrimaryButton>
+                <Select
+                  placeholder="Select role"
+                  size="large"
+                  loading={!roles.length}
+                  className="rounded-md w-full"
+                >
+                  {roles.map((role) => (
+                    <Select.Option key={role.role_id} value={role.role_id}>
+                      {role.role_name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                name="workspace"
+                label={<LabelComponent label="Workspace" isDark={isDark} />}
+              >
+                <Select
+                  placeholder="Select workspace"
+                  size="large"
+                  loading={!wsps.length}
+                  className="rounded-md w-full"
+                >
+                  {wsps.map((ws) => (
+                    <Select.Option key={ws.workspaceId} value={ws.workspaceId}>
+                      {ws.workspaceName}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                name="ip_check"
+                valuePropName="checked"
+                label={
+                  <LabelComponent label="Enable IP Check" isDark={isDark} />
+                }
+              >
+                <Checkbox />
+              </Form.Item>
             </div>
-          </Form>
-        </Spin>
-      </div>
+          </div>
+
+          {/* ACTION BUTTONS */}
+          <div className="w-full flex flex-col md:flex-row justify-between gap-4 mt-10">
+            <ButtonComponent
+              onClick={() => navigate("/users")}
+              className="flex-1"
+              variant="secondary"
+            >
+              Back
+            </ButtonComponent>
+
+            <ButtonComponent
+              htmlType="submit"
+              variant="primary"
+              loading={isSubmitting}
+              className="flex-4"
+            >
+              {mode === "create" ? "Create User" : "Update User"}
+            </ButtonComponent>
+          </div>
+        </Form>
+      </Spin>
     </div>
   );
 };

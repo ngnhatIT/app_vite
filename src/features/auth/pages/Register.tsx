@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form } from "antd";
+import { Form, message } from "antd";
 import {
   UserOutlined,
   LockOutlined,
@@ -15,11 +15,8 @@ import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
 import { sendOtpThunk } from "../authThunk";
-import { showDialog } from "../../../components/DialogService";
-import {
-  RegisterSchema,
-  type RegisterFormType,
-} from "../../../utils/registerSchema";
+import { RegisterSchema } from "../authSchema";
+import type { RegisterFormType } from "../authSchema";
 import { User2 } from "lucide-react";
 
 const Register = () => {
@@ -27,7 +24,7 @@ const Register = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [form] = Form.useForm<RegisterFormType>();
+  const [form] = Form.useForm(); // ❌ KHÔNG dùng generic ở đây, TS sẽ dễ chịu hơn
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleRegister = async () => {
@@ -37,14 +34,23 @@ const Register = () => {
 
       if (!parsed.success) {
         const fieldErrors = parsed.error.flatten().fieldErrors;
+
         form.setFields(
           Object.entries(fieldErrors).map(([name, errors]) => ({
-            name: name as keyof RegisterFormType,
+            name: [name as keyof RegisterFormType], // ✅ fix TS: đảm bảo name hợp lệ
             errors: errors || [],
           }))
         );
         return;
       }
+
+      // ✅ Clear lỗi nếu ok
+      form.setFields(
+        Object.keys(values).map((name) => ({
+          name: [name as keyof RegisterFormType], // ✅ fix TS
+          errors: [],
+        }))
+      );
 
       setIsSubmitting(true);
 
@@ -53,20 +59,20 @@ const Register = () => {
 
       const { otplimit } = await dispatch(sendOtpThunk({ payload })).unwrap();
 
+      message.info(t("register.otpSent"));
+
       navigate("/auth/check-mail", {
         state: {
-          user: { email, userName, password,fullName },
+          user: { email, userName, password, fullName },
           otpCountdownStart: Date.now(),
           flowType: "register",
-          otplimit : otplimit
+          otplimit,
         },
       });
-    } catch (err) {
-      showDialog({
-        title: t("common.error"),
-        content: (err as Error)?.message || t("error.general"),
-        isDark,
-      });
+    } catch (err: any) {
+      message.error(
+        t("register.failed", { reason: err?.message ?? t("error.general") })
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -100,13 +106,14 @@ const Register = () => {
       </div>
 
       {/* Form */}
-      <div className="flex flex-col items-start w-full mt-[34px]">
+      <div className="flex flex-col items-start w-full mt-[14px]">
         <Form
           form={form}
           layout="vertical"
           onFinish={handleRegister}
           className="w-full"
           autoComplete="off"
+          validateTrigger="onChange"
         >
           <Form.Item
             name="userName"
@@ -144,7 +151,7 @@ const Register = () => {
             name="fullName"
             label={
               <LabelComponent
-                label="register.fullName"
+                label="register.fullname"
                 isDark={isDark}
                 required
               />

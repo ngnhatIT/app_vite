@@ -8,7 +8,9 @@
     "usernamePlaceholder": "ユーザー名を入力してください",
     "passwordPlaceholder": "パスワードを入力してください",
     "forgotPassword": "パスワードをお忘れですか？",
-    "submit": "ログイン"
+    "submit": "ログイン",
+    "success": "ログイン成功！",
+    "failed": "ログイン失敗: {{reason}}"
   },
   "register": {
     "title": "登録",
@@ -17,13 +19,17 @@
     "username": "ユーザー名",
     "email": "メールアドレス",
     "password": "パスワード",
+    "fullnamePlaceholder": "氏名を入力してください",
+    "fullname": "氏名",
     "confirmPassword": "パスワード（確認）",
     "usernamePlaceholder": "ユーザー名を入力してください",
     "emailPlaceholder": "メールアドレスを入力してください",
     "passwordPlaceholder": "パスワードを入力してください",
     "confirmPasswordPlaceholder": "確認用のパスワードを入力してください",
     "back": "戻る",
-    "submit": "登録"
+    "submit": "登録",
+    "otpSent": "OTPが正常に送信されました！",
+    "failed": "登録に失敗しました: {{reason}}"
   },
   "forgot": {
     "title": "パスワードを忘れた",
@@ -31,7 +37,9 @@
     "email": "メールアドレス",
     "emailPlaceholder": "メールアドレスを入力してください",
     "back": "戻る",
-    "submit": "リクエストを送信"
+    "submit": "リクエストを送信",
+    "otpSent": "OTPが正常に送信されました！",
+    "failed": "パスワードリセットに失敗しました: {{reason}}"
   },
   "reset": {
     "title": "パスワードをリセット",
@@ -41,7 +49,9 @@
     "newPasswordPlaceholder": "新しいパスワードを入力してください",
     "confirmPasswordPlaceholder": "もう一度新しいパスワードを入力してください",
     "back": "戻る",
-    "submit": "パスワードをリセット"
+    "submit": "パスワードをリセット",
+    "success": "パスワードが正常にリセットされました！",
+    "failed": "パスワードリセットに失敗しました: {{reason}}"
   },
   "otp": {
     "title": "メールアドレスを確認してください",
@@ -52,7 +62,13 @@
     "resendTitle": "確認コードが届いていない場合",
     "resend": "確認コードを再送信",
     "back": "キャンセル",
-    "submit": "確認"
+    "submit": "確認",
+    "registerSuccess": "OTP確認後に登録が完了しました！",
+    "verified": "OTPが確認されました！",
+    "failed": "OTP確認に失敗しました: {{reason}}",
+    "resent": "OTPが再送信されました！",
+    "resendFailed": "OTPの再送信に失敗しました: {{reason}}",
+    "invalidLength": "OTPは6桁である必要があります。"
   },
   "checkMail": {
     "title": "メールを確認してください",
@@ -147,5 +163,20 @@
     "securityEvents": "セキュリティイベント",
     "securityIncidents": "セキュリティインシデント",
     "statistical": "統計"
+  },
+  "validation": {
+    "usernameMin": "ユーザー名は8文字以上である必要があります",
+    "usernameMax": "ユーザー名は50文字以下である必要があります",
+    "usernameRequired": "ユーザー名は必須です",
+    "passwordMin": "パスワードは8文字以上である必要があります",
+    "passwordMax": "パスワードは12文字以下である必要があります",
+    "passwordInvalid": "パスワードには大文字、小文字、数字、特殊文字を各1つ以上含める必要があります",
+    "passwordRequired": "パスワードは必須です",
+    "emailInvalid": "メールアドレスの形式が無効です",
+    "emailRequired": "メールアドレスは必須です",
+    "fullnameMin": "フルネームは1文字以上である必要があります",
+    "fullnameMax": "フルネームは50文字以下である必要があります",
+    "confirmPasswordRequired": "確認パスワードは必須です",
+    "passwordsMismatch": "パスワードが一致しません"
   }
 }

@@ -1,18 +1,15 @@
-// 📁 src/features/workspace/workspaceThunk.ts
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { workspaceService } from "./workspaceService";
 
+// Workspaces
 export const fetchWorkspacesThunk = createAsyncThunk(
-  "workspace/fetchList",
-  async (
-    params: { page: number; pageSize: number; search?: string },
-    { rejectWithValue }
-  ) => {
+  "workspace/fetch",
+  async (_, { rejectWithValue }) => {
     try {
-      const res = await workspaceService.fetch(params);
-      return { list: res.data.data, total: res.data.total };
-    } catch (err: any) {
-      return rejectWithValue(err.message);
+      const res = await workspaceService.fetch();
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err);
     }
   }
 );
@@ -23,8 +20,8 @@ export const createWorkspaceThunk = createAsyncThunk(
     try {
       const res = await workspaceService.create(formData);
       return res.data;
-    } catch (err: any) {
-      return rejectWithValue(err.message);
+    } catch (err) {
+      return rejectWithValue(err);
     }
   }
 );
@@ -38,8 +35,8 @@ export const updateWorkspaceThunk = createAsyncThunk(
     try {
       const res = await workspaceService.update(id, formData);
       return res.data;
-    } catch (err: any) {
-      return rejectWithValue(err.message);
+    } catch (err) {
+      return rejectWithValue(err);
     }
   }
 );
@@ -50,13 +47,14 @@ export const deleteWorkspaceThunk = createAsyncThunk(
     try {
       await workspaceService.delete(id);
       return id;
-    } catch (err: any) {
-      return rejectWithValue(err.message);
+    } catch (err) {
+      return rejectWithValue(err);
     }
   }
 );
 
-export const addUserToWorkspaceThunk = createAsyncThunk(
+// Manage Users
+export const addUserThunk = createAsyncThunk(
   "workspace/addUser",
   async (
     { workspaceId, userId }: { workspaceId: string; userId: string },
@@ -65,13 +63,13 @@ export const addUserToWorkspaceThunk = createAsyncThunk(
     try {
       const res = await workspaceService.addUser(workspaceId, userId);
       return res.data;
-    } catch (err: any) {
-      return rejectWithValue(err.message);
+    } catch (err) {
+      return rejectWithValue(err);
     }
   }
 );
 
-export const removeUsersFromWorkspaceThunk = createAsyncThunk(
+export const removeUsersThunk = createAsyncThunk(
   "workspace/removeUsers",
   async (
     { workspaceId, userIds }: { workspaceId: string; userIds: string[] },
@@ -80,13 +78,13 @@ export const removeUsersFromWorkspaceThunk = createAsyncThunk(
     try {
       const res = await workspaceService.removeUsers(workspaceId, userIds);
       return res.data;
-    } catch (err: any) {
-      return rejectWithValue(err.message);
+    } catch (err) {
+      return rejectWithValue(err);
     }
   }
 );
 
-export const updateWorkspaceUserThunk = createAsyncThunk(
+export const updateUserThunk = createAsyncThunk(
   "workspace/updateUser",
   async (
     {
@@ -99,13 +97,13 @@ export const updateWorkspaceUserThunk = createAsyncThunk(
     try {
       const res = await workspaceService.updateUser(workspaceId, userId, role);
       return res.data;
-    } catch (err: any) {
-      return rejectWithValue(err.message);
+    } catch (err) {
+      return rejectWithValue(err);
     }
   }
 );
 
-export const changeWorkspacePasswordThunk = createAsyncThunk(
+export const changePasswordThunk = createAsyncThunk(
   "workspace/changePassword",
   async (
     {
@@ -122,8 +120,8 @@ export const changeWorkspacePasswordThunk = createAsyncThunk(
         next
       );
       return res.data;
-    } catch (err: any) {
-      return rejectWithValue(err.message);
+    } catch (err) {
+      return rejectWithValue(err);
     }
   }
 );

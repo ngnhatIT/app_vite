@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Form } from "antd";
+import { Form, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -9,13 +9,10 @@ import type { AppDispatch, RootState } from "../../../app/store";
 import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
-import { showDialog } from "../../../components/DialogService";
 import { loginThunk } from "../authThunk";
 import { setNavigate } from "../../../api/AxiosIntance";
-import {
-  LoginSchema,
-  type LoginFormType,
-} from "../authSchema";
+import { LoginSchema } from "../authSchema";
+import type { LoginFormType } from "../authSchema";
 
 const Login = () => {
   const [form] = Form.useForm();
@@ -36,11 +33,10 @@ const Login = () => {
     try {
       const values = await form.validateFields();
       const parsed = LoginSchema.safeParse(values);
-      console.log(parsed);
-      
+
       if (!parsed.success) {
-        console.log("aaaa");
         const fieldErrors = parsed.error.flatten().fieldErrors;
+
         form.setFields(
           Object.entries(fieldErrors).map(([name, errors]) => ({
             name: name as keyof LoginFormType,
@@ -49,19 +45,25 @@ const Login = () => {
         );
         return;
       }
- console.log("bbbb");
+
+      // ✅ clear errors nếu có
+      form.setFields(
+        Object.keys(values).map((name) => ({
+          name,
+          errors: [],
+        }))
+      );
+
       setIsSubmitting(true);
       const loginData = parsed.data;
-console.log("dispatching loginThunk", loginData);
 
       await dispatch(loginThunk({ payload: loginData })).unwrap();
+      message.info(t("login.success"));
       navigate("/");
     } catch (err: any) {
-      showDialog({
-        title: t("common.error"),
-        content: err?.message ?? t("error.general"),
-        isDark,
-      });
+      message.error(
+        t("login.failed", { reason: err?.message ?? t("error.general") })
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -100,6 +102,7 @@ console.log("dispatching loginThunk", loginData);
           layout="vertical"
           className="w-full"
           autoComplete="off"
+          validateTrigger="onChange" // 👈 xoá lỗi ngay khi sửa
         >
           {/* Username */}
           <Form.Item
@@ -149,10 +152,9 @@ console.log("dispatching loginThunk", loginData);
           {/* Submit */}
           <Form.Item className="mb-0">
             <ButtonComponent
-           
               loading={isSubmitting}
               disabled={isSubmitting}
-            onClick = {onSubmit}
+              onClick={onSubmit}
             >
               {t("login.submit")}
             </ButtonComponent>

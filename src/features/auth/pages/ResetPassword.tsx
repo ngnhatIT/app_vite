@@ -1,17 +1,16 @@
-// ✅ Refactored ResetPassword.tsx to use local loading state and keep dispatch logic
-
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Form } from "antd";
+import { Form, message } from "antd";
 import { useTranslation } from "react-i18next";
 import type { AppDispatch, RootState } from "../../../app/store";
+
 import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
-import type { ResetPasswordRequestDTO } from "../dto/ResetPasswordDTO";
 import { resetPasswordThunk } from "../authThunk";
-import { showDialog } from "../../../components/DialogService";
+import { ResetPasswordSchema } from "../authSchema"; // 👈 schema Zod
+import type { ResetPasswordFormType } from "../authSchema";
 
 const ResetPasswordForm = () => {
   const { t } = useTranslation();
@@ -31,22 +30,46 @@ const ResetPasswordForm = () => {
     }
   }, [email, otp, navigate]);
 
-  const handleSubmit = async (values: ResetPasswordRequestDTO) => {
-    const payload = {
-      newpassword: values.newpassword,
-      email: email,
-      otpCode: otp,
-    };
-    setIsSubmitting(true);
+  const handleSubmit = async () => {
     try {
+      const values = await form.validateFields();
+      const parsed = ResetPasswordSchema.safeParse(values);
+
+      if (!parsed.success) {
+        const fieldErrors = parsed.error.flatten().fieldErrors;
+
+        form.setFields(
+          Object.entries(fieldErrors).map(([name, errors]) => ({
+            name: [name as keyof ResetPasswordFormType],
+            errors: errors || [],
+          }))
+        );
+        return;
+      }
+
+      form.setFields(
+        Object.keys(values).map((name) => ({
+          name: [name as keyof ResetPasswordFormType],
+          errors: [],
+        }))
+      );
+
+      const payload = {
+        newpassword: parsed.data.newPassword,
+        email,
+        otpCode: otp,
+      };
+
+      setIsSubmitting(true);
+
       await dispatch(resetPasswordThunk({ payload })).unwrap();
+
+      message.info(t("reset.success"));
       navigate("/auth/login");
     } catch (err: any) {
-      showDialog({
-        title: t("common.error"),
-        content: err ?? t("error.general"),
-        isDark: isDark,
-      });
+      message.error(
+        t("reset.failed", { reason: err?.message ?? t("error.general") })
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -72,6 +95,8 @@ const ResetPasswordForm = () => {
           className="w-full"
           form={form}
           onFinish={handleSubmit}
+          autoComplete="off"
+          validateTrigger="onChange"
         >
           <Form.Item
             label={
@@ -81,15 +106,7 @@ const ResetPasswordForm = () => {
                 required
               />
             }
-            name="newpassword"
-            rules={[
-              { required: true, message: t("register.passwordRequired") },
-              {
-                pattern:
-                  /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,12}$/,
-                message: t("register.passwordInvalid"),
-              },
-            ]}
+            name="newPassword"
           >
             <InputComponent
               type="password"
@@ -108,23 +125,6 @@ const ResetPasswordForm = () => {
               />
             }
             name="confirmPassword"
-            dependencies={["newPassword"]}
-            rules={[
-              {
-                required: true,
-                message: t("reset.confirmPasswordRequired"),
-              },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue("newpassword") === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(
-                    new Error(t("reset.passwordsMismatch"))
-                  );
-                },
-              }),
-            ]}
           >
             <InputComponent
               type="password"

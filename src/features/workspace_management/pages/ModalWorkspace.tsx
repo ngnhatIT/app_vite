@@ -1,98 +1,127 @@
-// 📁 src/features/workspace/WorkspaceModals.tsx
-import {
-  Modal,
-  Input,
-  Select,
-  Button,
-  Upload,
-  Checkbox,
-  Avatar,
-  Table,
-  message,
-} from "antd";
-import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Modal, message, Checkbox, Input } from "antd";
 import { useTranslation } from "react-i18next";
+import * as z from "zod";
 
-export const AddEditWorkspaceModal = ({
-  open,
+const ModalWorkspace = ({
+  visible,
   onClose,
   onSubmit,
-  initialData,
-}: any) => {
+  initialValues,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  onSubmit: (data: any) => void;
+  initialValues?: any;
+}) => {
   const { t } = useTranslation();
-  const [name, setName] = useState(initialData?.name || "");
-  const [owner, setOwner] = useState(initialData?.owner || "");
-  const [desc, setDesc] = useState(initialData?.desc || "");
-  const [file, setFile] = useState<File | null>(null);
-  const [usePassword, setUsePassword] = useState(false);
+
+  const [name, setName] = useState("");
+  const [owner, setOwner] = useState("");
+  const [desc, setDesc] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [usePassword, setUsePassword] = useState(false);
+
+  useEffect(() => {
+    if (initialValues) {
+      setName(initialValues.name || "");
+      setOwner(initialValues.owner || "");
+      setDesc(initialValues.desc || "");
+      setUsePassword(!!initialValues.password);
+      setPassword(initialValues.password || "");
+      setConfirm(initialValues.password || "");
+    } else {
+      setName("");
+      setOwner("");
+      setDesc("");
+      setUsePassword(false);
+      setPassword("");
+      setConfirm("");
+    }
+  }, [initialValues, visible]);
+
+  const WorkspaceSchema = z.object({
+    name: z.string().min(1, t("workspace.validation.name")),
+    owner: z.string().min(1, t("workspace.validation.owner")),
+    desc: z.string().optional(),
+    password: z.string().optional(),
+    confirm: z.string().optional(),
+    usePassword: z.boolean(),
+  });
 
   const handleOk = () => {
-    if (!name || !owner) return message.warning("Required fields missing");
-    if (usePassword && password !== confirm)
-      return message.error("Passwords do not match");
+    const data = {
+      name,
+      owner,
+      desc,
+      password: usePassword ? password : undefined,
+      confirm: usePassword ? confirm : undefined,
+      usePassword,
+    };
+
+    const result = WorkspaceSchema.safeParse(data);
+    if (!result.success) {
+      const errorMsg = Object.values(
+        result.error.flatten().fieldErrors
+      )[0]?.[0];
+      return message.error(errorMsg || t("common.error"));
+    }
+
+    if (usePassword && password !== confirm) {
+      return message.error(t("workspace.validation.passwordNotMatch"));
+    }
+
     onSubmit({
       name,
       owner,
       desc,
-      file,
       password: usePassword ? password : undefined,
     });
   };
 
   return (
     <Modal
-      open={open}
-      title={t("workspace.modal.title")}
+      open={visible}
       onCancel={onClose}
       onOk={handleOk}
-      okText={t("workspace.save")}
+      title={
+        initialValues ? t("workspace.editTitle") : t("workspace.createTitle")
+      }
+      okText={initialValues ? t("common.update") : t("common.create")}
+      cancelText={t("common.cancel")}
     >
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <Input
+          placeholder={t("workspace.name")}
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Workspace Name *"
         />
-        <Select
+        <Input
+          placeholder={t("workspace.owner")}
           value={owner}
-          onChange={setOwner}
-          placeholder="Select Workspace Owner *"
-          options={[]}
+          onChange={(e) => setOwner(e.target.value)}
         />
         <Input.TextArea
-          rows={3}
+          placeholder={t("workspace.desc")}
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
-          placeholder="Enter description"
         />
-        <Upload
-          beforeUpload={(file) => {
-            setFile(file);
-            return false;
-          }}
-        >
-          <Button icon={<UploadOutlined />}>
-            Upload Google Service Account
-          </Button>
-        </Upload>
         <Checkbox
           checked={usePassword}
           onChange={(e) => setUsePassword(e.target.checked)}
         >
-          Enable password protection
+          {t("workspace.usePassword")}
         </Checkbox>
         {usePassword && (
           <>
             <Input.Password
-              placeholder="Password *"
+              placeholder={t("workspace.password")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
             <Input.Password
-              placeholder="Confirm Password *"
+              placeholder={t("workspace.confirmPassword")}
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
             />
@@ -103,114 +132,4 @@ export const AddEditWorkspaceModal = ({
   );
 };
 
-export const ManageMembersModal = ({
-  open,
-  onClose,
-  members,
-  onDeleteMembers,
-}: any) => {
-  const { t } = useTranslation();
-  const [selected, setSelected] = useState<string[]>([]);
-
-  const columns = [
-    {
-      title: "#",
-      render: (_: any, __: any, index: number) => index + 1,
-    },
-    {
-      title: "Username",
-      dataIndex: "username",
-      render: (_: any, record: any) => (
-        <div className="flex gap-2 items-center">
-          <Avatar src={record.avatar} />
-          <div>
-            <div>{record.username}</div>
-            <div className="text-white/60 text-sm">{record.email}</div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "Action",
-      render: (_: any, record: any) => (
-        <DeleteOutlined
-          className="text-red-500 cursor-pointer"
-          onClick={() => onDeleteMembers([record.id])}
-        />
-      ),
-    },
-  ];
-
-  return (
-    <Modal open={open} onCancel={onClose} footer={null} title="Member Listing">
-      <Table
-        rowKey="id"
-        rowSelection={{
-          selectedRowKeys: selected,
-          onChange: (keys) => setSelected(keys as string[]),
-        }}
-        columns={columns}
-        dataSource={members}
-        pagination={false}
-        className="!bg-transparent [&_.ant-table-cell]:!text-white"
-      />
-      <div className="flex justify-end mt-4 gap-2">
-        <Button onClick={onClose}>Cancel</Button>
-        <Button danger onClick={() => onDeleteMembers(selected)}>
-          Delete Member
-        </Button>
-      </div>
-    </Modal>
-  );
-};
-
-export const AddMemberModal = ({ open, onClose, onSubmit }: any) => {
-  const [username, setUsername] = useState("");
-  return (
-    <Modal
-      open={open}
-      onCancel={onClose}
-      onOk={() => onSubmit(username)}
-      title="Add New Member"
-    >
-      <Input
-        placeholder="Enter username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-    </Modal>
-  );
-};
-
-export const ChangePasswordModal = ({ open, onClose, onSubmit }: any) => {
-  const [current, setCurrent] = useState("");
-  const [next, setNext] = useState("");
-  const [confirm, setConfirm] = useState("");
-
-  return (
-    <Modal
-      open={open}
-      onCancel={onClose}
-      onOk={() => onSubmit({ current, next, confirm })}
-      title="Change Workspace Password"
-    >
-      <Input.Password
-        placeholder="Enter current password"
-        value={current}
-        onChange={(e) => setCurrent(e.target.value)}
-      />
-      <Input.Password
-        placeholder="Enter new password"
-        value={next}
-        onChange={(e) => setNext(e.target.value)}
-        className="mt-2"
-      />
-      <Input.Password
-        placeholder="Confirm new password"
-        value={confirm}
-        onChange={(e) => setConfirm(e.target.value)}
-        className="mt-2"
-      />
-    </Modal>
-  );
-};
+export default ModalWorkspace;

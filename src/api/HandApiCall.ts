@@ -1,6 +1,6 @@
 // 📁 src/api/handleApiCall.ts
 
-import { handleAxiosError } from "./HandleAxiosError";
+import { handleAxiosError } from "./handleAxiosError";
 
 export const handleApiCall = async <T>(
   apiCall: () => Promise<T>

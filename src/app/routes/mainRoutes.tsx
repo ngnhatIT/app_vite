@@ -4,8 +4,7 @@ import UserForm from "../../features/users/pages/UserForm";
 import UserList from "../../features/users/pages/UserList";
 import { DivideCircle } from "lucide-react";
 import WorkspaceManagement from "../../features/workspace_management/pages/WorkspaceList";
-import { AddEditWorkspaceModal } from "../../features/workspace_management/pages/ModalWorkspace";
-import AddEditWorkspaceScreen from "../../features/workspace_management/pages/WorkspaceForm";
+import WorkspaceForm from "../../features/workspace_management/pages/WorkspaceForm";
 
 export const securityRoutes = {
   path: "/security",
@@ -37,7 +36,7 @@ export const systemRoutes = {
       path: "workspace-mng",
       element: <WorkspaceManagement />,
     },
-    { path: "workspace-mng/create", element: <AddEditWorkspaceScreen /> },
+    { path: "workspace-mng/create", element: <div>Device & IP</div> },
     { path: "device-ip", element: <div>Device & IP</div> },
     { path: "system-setting", element: <SystemSettings /> },
   ],

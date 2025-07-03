@@ -9,6 +9,7 @@ import {
   Modal,
   Spin,
   Checkbox,
+  message,
 } from "antd";
 import {
   PlusOutlined,
@@ -50,9 +51,15 @@ const UserList = () => {
 
   useEffect(() => {
     if (userStatus.toggleStatus === "succeeded") {
-      // success message
+      message.success(
+        t("user_list.user.updated") || "User status updated successfully"
+      );
     } else if (userStatus.toggleStatus === "failed" && error) {
-      // error message
+      message.error(
+        error ||
+          t("user_list.form.submitFailed") ||
+          "Failed to update user status"
+      );
     }
   }, [userStatus.toggleStatus, error]);
 

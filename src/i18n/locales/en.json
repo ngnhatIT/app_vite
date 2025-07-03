@@ -10,22 +10,28 @@
     "usernamePlaceholder": "Enter your username",
     "passwordPlaceholder": "Enter your password",
     "forgotPassword": "Forgot password?",
-    "submit": "Login"
+    "submit": "Login",
+    "success": "Login successful!",
+    "failed": "Login failed: {{reason}}"
   },
   "register": {
     "title": "Register",
     "subTitle": "Already have an account?",
     "signIn": "Login",
     "username": "Username",
+    "fullname": "Fullname",
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm password",
     "usernamePlaceholder": "Enter your username",
     "emailPlaceholder": "Enter your email",
+    "fullnamePlaceholder": "Enter your fullname",
     "passwordPlaceholder": "Enter your password",
     "confirmPasswordPlaceholder": "Enter your confirm password",
     "back": "Back",
-    "submit": "Register"
+    "submit": "Register",
+    "otpSent": "OTP sent successfully!",
+    "failed": "Register failed: {{reason}}"
   },
   "forgot": {
     "title": "Forgot password",
@@ -33,7 +39,9 @@
     "email": "Email",
     "emailPlaceholder": "Enter your email",
     "back": "Back",
-    "submit": "Send Reset"
+    "submit": "Send Reset",
+    "otpSent": "OTP sent successfully!",
+    "failed": "Forgot password failed: {{reason}}"
   },
   "reset": {
     "title": "Reset Password",
@@ -44,7 +52,9 @@
     "newPasswordPlaceholder": "Enter new password",
     "confirmPasswordPlaceholder": "Confirm new password",
     "back": "Back",
-    "submit": "Change Password"
+    "submit": "Change Password",
+    "success": "Password reset successfully!",
+    "failed": "Reset password failed: {{reason}}"
   },
   "otp": {
     "title": "Email verification",
@@ -54,7 +64,13 @@
     "enterPrompt": "Type your 6 digit verification code",
     "resendTitle": "Haven’t received the verification code?",
     "back": "Back",
-    "submit": "Confirm"
+    "submit": "Confirm",
+    "registerSuccess": "Registration completed after OTP!",
+    "verified": "OTP verified!",
+    "failed": "OTP verification failed: {{reason}}",
+    "resent": "OTP resent successfully!",
+    "resendFailed": "Failed to resend OTP: {{reason}}",
+    "invalidLength": "OTP must be 6 digits."
   },
   "checkMail": {
     "title": "Check Your Email",
@@ -84,7 +100,7 @@
       "name": "Name",
       "role": "Role",
       "status": "Status",
-      "isCheck":"Check IP",
+      "isCheck": "Check IP",
       "action": "Action"
     },
     "status": {
@@ -150,5 +166,20 @@
     "securityEvents": "Security Events",
     "securityIncidents": "Security Incidents",
     "statistical": "Statistical"
+  },
+  "validation": {
+    "usernameMin": "Username must be at least 8 characters",
+    "usernameMax": "Username must be at most 50 characters",
+    "usernameRequired": "Username cannot be empty",
+    "passwordMin": "Password must be at least 8 characters",
+    "passwordMax": "Password must be at most 12 characters",
+    "passwordInvalid": "Password must include at least 1 uppercase, 1 lowercase, 1 number, and 1 special character",
+    "passwordRequired": "Password cannot be empty",
+    "emailInvalid": "Invalid email format",
+    "emailRequired": "Email cannot be empty",
+    "fullnameMin": "Fullname must be at least 1 character",
+    "fullnameMax": "Fullname must be at most 50 characters",
+    "confirmPasswordRequired": "Confirm Password cannot be empty",
+    "passwordsMismatch": "Passwords do not match"
   }
 }

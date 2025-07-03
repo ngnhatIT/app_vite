@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form } from "antd";
+import { Form, message } from "antd";
 import { MailOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,7 +11,10 @@ import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
 import SliderCaptcha from "../../../components/SliderCaptcha";
 import { sendOtpThunk } from "../authThunk";
-import { showDialog } from "../../../components/DialogService";
+import {
+  ForgotPasswordSchema,
+  type ForgotPasswordFormType,
+} from "../authSchema";
 
 const ForgotPassword = () => {
   const { t } = useTranslation();
@@ -22,29 +25,52 @@ const ForgotPassword = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [captchaVerified, setCaptchaVerified] = useState(false);
 
-  const handleSubmit = async (values: { email: string }) => {
-    setIsSubmitting(true);
+  const handleSubmit = async () => {
     try {
+      const values = await form.validateFields();
+      const parsed = ForgotPasswordSchema.safeParse(values);
+
+      if (!parsed.success) {
+        const fieldErrors = parsed.error.flatten().fieldErrors;
+
+        form.setFields(
+          Object.entries(fieldErrors).map(([name, errors]) => ({
+            name: [name as keyof ForgotPasswordFormType],
+            errors: errors || [],
+          }))
+        );
+        return;
+      }
+
+      // clear lỗi cũ
+      form.setFields(
+        Object.keys(values).map((name) => ({
+          name: [name as keyof ForgotPasswordFormType],
+          errors: [],
+        }))
+      );
+
+      setIsSubmitting(true);
+
       await dispatch(
         sendOtpThunk({
-          payload: { email: values.email, flowType: "forgot-password" },
-          onSuccess: () => {},
+          payload: { email: parsed.data.email, flowType: "forgot-password" },
         })
       ).unwrap();
 
+      message.info(t("forgot.otpSent"));
+
       navigate("/auth/check-mail", {
         state: {
-          user: { email: values.email },
+          user: { email: parsed.data.email },
           otpCountdownStart: Date.now(),
           flowType: "forgot-password",
         },
       });
     } catch (err: any) {
-      showDialog({
-        title: t("common.error"),
-        content: err.message ?? t("error.general"),
-        isDark: isDark,
-      });
+      message.error(
+        t("forgot.failed", { reason: err?.message ?? t("error.general") })
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -60,7 +86,7 @@ const ForgotPassword = () => {
           isDark={isDark}
           className="text-[48px] capitalize leading-[40px]"
         />
-        <div className="flex justify-start items-center gap-2 ">
+        <div className="flex justify-start items-center gap-2">
           <LabelComponent
             label="forgot.subTitle"
             checkSpecial
@@ -76,6 +102,7 @@ const ForgotPassword = () => {
           className="w-full"
           form={form}
           onFinish={handleSubmit}
+          validateTrigger="onChange"
         >
           {/* EMAIL */}
           <Form.Item

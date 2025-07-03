@@ -1,78 +1,75 @@
-// File: utils/authSchema.ts
-
 import { z } from "zod";
+import i18n from "../../i18n/i18n";
 
-export const LoginSchema = z.object({
+const t = i18n.t;
+
+export const AuthSchema = z.object({
   userName: z
     .string()
-    .min(1, "login.usernameRequired")
-    .max(50, "login.usernameTooLong")
-    .regex(/^\S+$/, "login.usernameNoSpaces"),
+    .min(2, t("validation.usernameMin"))
+    .max(50, t("validation.usernameMax"))
+    .nonempty(t("validation.usernameRequired")),
 
   password: z
     .string()
-    .min(1, "login.passwordRequired")
-    .max(100, "login.passwordTooLong")
-    .refine((val) => !val.includes(" "), {
-      message: "login.passwordNoSpaces",
-    }),
+    .min(8, t("validation.passwordMin"))
+    .max(12, t("validation.passwordMax"))
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])/,
+      t("validation.passwordInvalid")
+    )
+    .nonempty(t("validation.passwordRequired")),
+
+  email: z
+    .string()
+    .email(t("validation.emailInvalid"))
+    .nonempty(t("validation.emailRequired")),
+
+  fullName: z
+    .string()
+    .min(1, t("validation.fullnameMin"))
+    .max(50, t("validation.fullnameMax")),
 });
 
-export type LoginFormType = z.infer<typeof LoginSchema>;
+export const LoginSchema = AuthSchema.pick({
+  userName: true,
+  password: true,
+});
 
-// Schema đăng ký vẫn giữ nguyên
-export const RegisterSchema = z
+export const RegisterSchema = AuthSchema.extend({
+  confirmPassword: z.string().nonempty(t("validation.confirmPasswordRequired")),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: t("validation.passwordsMismatch"),
+  path: ["confirmPassword"],
+});
+
+export const ResetPasswordSchema = z
   .object({
-    userName: z
+    newPassword: z
       .string()
-      .min(1, "register.usernameRequired")
-      .max(50, "register.usernameTooLong")
-      .regex(/^\S+$/, "register.usernameNoSpaces"),
-
-    email: z
-      .string()
-      .min(1, { message: "register.emailRequired" })
-      .max(50, { message: "register.emailTooLong" })
-      .email({ message: "register.emailInvalid" })
-      .refine((val) => !/\s/.test(val), {
-        message: "register.emailNoSpaces",
-      })
-      .refine((val) => /^[\x00-\x7F]+$/.test(val), {
-        message: "register.emailAsciiOnly",
-      }),
-
-    password: z
-      .string()
-      .min(1, "register.passwordRequired")
+      .min(8, t("validation.passwordMin"))
+      .max(12, t("validation.passwordMax"))
       .regex(
-        /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,12}$/,
-        "register.passwordInvalid"
-      )
-      .refine((val) => !val.includes(" "), {
-        message: "register.passwordNoSpaces",
-      }),
-
-    confirmPassword: z.string().min(1, "register.confirmPasswordRequired"),
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])/,
+        t("validation.passwordInvalid")
+      ),
+    confirmPassword: z.string(),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "register.passwordsMismatch",
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: t("validation.passwordsMismatch"),
     path: ["confirmPassword"],
   });
 
-export type RegisterFormType = z.infer<typeof RegisterSchema>;
-
+// ✅ ForgotPasswordSchema
 export const ForgotPasswordSchema = z.object({
   email: z
     .string()
-    .min(1, { message: "forgot.emailRequired" })
-    .max(50, { message: "forgot.emailTooLong" })
-    .email({ message: "forgot.emailInvalid" })
-    .refine((val) => !/\s/.test(val), {
-      message: "forgot.emailNoSpaces",
-    })
-    .refine((val) => /^[\x00-\x7F]+$/.test(val), {
-      message: "forgot.emailAsciiOnly",
-    }),
+    .email(t("validation.emailInvalid"))
+    .nonempty(t("validation.emailRequired")),
 });
 
+export type AuthFormType = z.infer<typeof AuthSchema>;
+export type LoginFormType = z.infer<typeof LoginSchema>;
+export type RegisterFormType = z.infer<typeof RegisterSchema>;
+export type ResetPasswordFormType = z.infer<typeof ResetPasswordSchema>;
 export type ForgotPasswordFormType = z.infer<typeof ForgotPasswordSchema>;
