@@ -52,11 +52,13 @@ const ForgotPassword = () => {
 
       setIsSubmitting(true);
 
-      await dispatch(
+      const { otplimit } = await dispatch(
         sendOtpThunk({
           payload: { email: parsed.data.email, flowType: "forgot-password" },
         })
       ).unwrap();
+
+      console.log("✅ otplimit:", otplimit);
 
       message.info(t("forgot.otpSent"));
 
@@ -65,6 +67,7 @@ const ForgotPassword = () => {
           user: { email: parsed.data.email },
           otpCountdownStart: Date.now(),
           flowType: "forgot-password",
+          otplimit
         },
       });
     } catch (err: any) {

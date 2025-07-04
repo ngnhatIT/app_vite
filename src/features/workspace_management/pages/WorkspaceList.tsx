@@ -1,7 +1,5 @@
-// WorkspaceList.tsx — Updated Table Background Transparent
-
 import { useEffect, useState } from "react";
-import { Table, Avatar, Spin, message, Tooltip, Pagination } from "antd";
+import { Table, Avatar, Spin, message, Tooltip, Pagination, Modal } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
@@ -24,19 +22,29 @@ import {
   removeMembersThunk,
   changePasswordThunk,
 } from "../workspaceThunk";
+
+import {
+  addMemberLocal,
+  removeMembersLocal,
+} from "../workspaceSlice";
+
 import InputComponent from "../../../components/InputComponent";
+import ButtonComponent from "../../../components/ButtonComponent";
+import LabelComponent from "../../../components/LabelComponent";
 import {
   AddEditWorkspaceModal,
   ManageMembersModal,
   AddMemberModal,
   ChangePasswordModal,
 } from "./ModalWorkspace";
-import ButtonComponent from "../../../components/ButtonComponent";
+
+import "./wsp.css";
 
 const WorkspaceList = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const isDark = useSelector((s: RootState) => s.theme.darkMode);
 
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,7 +68,7 @@ const WorkspaceList = () => {
   const filteredList = list.filter(
     (w) =>
       w.workspaceName.toLowerCase().includes(searchText.toLowerCase()) ||
-      w.wspOwner.toLowerCase().includes(searchText.toLowerCase())
+      w.workspaceOwner.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const paginatedList = filteredList.slice(
@@ -78,48 +86,55 @@ const WorkspaceList = () => {
     setModalType(null);
   };
 
-  const handleDelete = (workspaceId: string) => {
-    dispatch(deleteWorkspaceThunk(workspaceId))
-      .then(() => message.success(t("workspace.deleted")))
-      .catch((err) => message.error(err?.message || "Delete failed"));
+  const confirmDelete = (workspaceId: string) => {
+    Modal.confirm({
+      title: t("workspace.confirmDeleteTitle"),
+      content: t("workspace.confirmDeleteContent"),
+      okText: t("common.yes"),
+      cancelText: t("common.no"),
+      onOk: () => {
+        dispatch(deleteWorkspaceThunk(workspaceId))
+          .then(() => message.success(t("workspace.deleted")))
+          .catch((err) => message.error(err?.message || "Delete failed"));
+      },
+    });
   };
 
   const columns = [
     {
-      title: "#",
+      title: <LabelComponent label="#" isDark={isDark} />,
       render: (_: any, __: any, index: number) => (
-        <span className="text-white">
-          {(currentPage - 1) * pageSize + index + 1}
-        </span>
+        <LabelComponent
+          label={((currentPage - 1) * pageSize + index + 1).toString()}
+          isDark={isDark}
+        />
       ),
       width: 50,
     },
     {
-      title: t("workspace.columns.workspaceName"),
+      title: <LabelComponent label="workspace.columns.workspaceName" isDark={isDark} />,
       dataIndex: "workspaceName",
-      render: (text: string) => (
-        <span className="text-white font-medium">{text}</span>
-      ),
+      render: (text: string) => <LabelComponent label={text} isDark={isDark} />,
     },
     {
-      title: t("workspace.columns.wspOwner"),
+      title: <LabelComponent label="workspace.columns.wspOwner" isDark={isDark} />,
       dataIndex: "wspOwner",
       render: (_: unknown, record: Workspace) => (
         <div className="flex items-center gap-2">
           <Avatar src={record.avatar} />
-          <div className="text-white">
-            <div>{record.wspOwner}</div>
-            <div className="text-white/60 text-sm">{record.email}</div>
+          <div>
+            <LabelComponent label={record.workspaceOwner} isDark={isDark} />
+            <div className="text-xs">{record.email}</div>
           </div>
         </div>
       ),
     },
     {
-      title: t("workspace.columns.member"),
+      title: <LabelComponent label="workspace.columns.member" isDark={isDark} />,
       dataIndex: "members",
       render: (_: unknown, record: Workspace) => (
-        <span className="text-white">
-          {record.members}{" "}
+        <span>
+         {record.members.toString()} {" "}
           <a
             className="underline text-fuchsia-500 cursor-pointer"
             onClick={() => openModal("members", record)}
@@ -130,30 +145,34 @@ const WorkspaceList = () => {
       ),
     },
     {
-      title: t("workspace.columns.action"),
+      title: <LabelComponent label="workspace.columns.action" isDark={isDark} />,
       render: (_: unknown, record: Workspace) => (
         <div className="flex gap-2">
           <Tooltip title={t("workspace.tooltip.permission")}>
             <UserAddOutlined
               onClick={() => openModal("addMember", record)}
-              className="text-white cursor-pointer"
+              className="cursor-pointer"
             />
           </Tooltip>
           <Tooltip title={t("workspace.tooltip.change_password")}>
             <LockOutlined
               onClick={() => openModal("changePassword", record)}
-              className="text-white cursor-pointer"
+              className="cursor-pointer"
             />
           </Tooltip>
           <Tooltip title={t("workspace.tooltip.edit")}>
             <EditOutlined
-              onClick={() => openModal("edit", record)}
-              className="text-white cursor-pointer"
+              onClick={() =>
+                navigate(`/system/workspace-mng/create/`, {
+                  state: { mode: "edit", id: record.workspaceId },
+                })
+              }
+              className="cursor-pointer"
             />
           </Tooltip>
           <Tooltip title={t("workspace.tooltip.delete")}>
             <DeleteOutlined
-              onClick={() => handleDelete(record.workspaceId)}
+              onClick={() => confirmDelete(record.workspaceId)}
               className="text-red-500 cursor-pointer"
             />
           </Tooltip>
@@ -163,123 +182,77 @@ const WorkspaceList = () => {
   ];
 
   return (
-    <Spin spinning={loading} size="large">
+    <Spin spinning={loading}>
       <div className="p-4">
-        <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-          <h2 className="text-xl font-semibold text-white">
-            {t("workspace.title")}
-          </h2>
-
+        {/* Header */}
+        <div className="flex justify-between mb-6 gap-4">
+          <LabelComponent label="workspace.title" isDark={isDark} as="h2" />
           <div className="flex gap-3">
             <InputComponent
               type="text"
               icon={<SearchOutlined />}
               placeholder={t("workspace.search_placeholder")}
-              isDark
-              height="48px"
-              width={600}
-              className="rounded-lg border border-white/10 bg-white/5 text-white placeholder:text-white/50"
+              isDark={isDark}
               value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
+              onChange={(e) => {
+                setSearchText(e.target.value);
+                setCurrentPage(1);
+              }}
             />
-
             <ButtonComponent
-              variant="primary"
+              icon={<PlusOutlined />}
               onClick={() =>
                 navigate(`/system/workspace-mng/create`, {
                   state: { mode: "create" },
                 })
               }
-              className="px-4 py-2 flex-1"
-            >
-              <PlusOutlined /> {t("workspace.add")}
-            </ButtonComponent>
+              isDark={isDark}
+              variant="primary"
+              label="workspace.add"
+            />
           </div>
         </div>
 
+        {/* Table */}
         <Table
           dataSource={paginatedList}
           rowKey="workspaceId"
           columns={columns}
           pagination={false}
-          className="!bg-transparent [&_.ant-table]:!bg-transparent [&_.ant-table-cell]:!bg-transparent [&_.ant-table-thead]:!bg-transparent [&_.ant-table-tbody]:!bg-transparent [&_.ant-table-cell]:!text-white"
+          className="custom-user-table"
         />
 
-        <div className="mt-2 flex items-center justify-between w-full">
-          <div className="flex items-center gap-2 text-white text-sm">
-            <select
-              className="bg-transparent border border-gray-500 rounded px-2 py-[2px] text-sm text-white"
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                setCurrentPage(1);
-              }}
-            >
-              {[8, 16, 24].map((size) => (
-                <option key={size} value={size} className="text-black">
-                  {size}
-                </option>
-              ))}
-            </select>
-            <span className="text-white/70">
-              {(currentPage - 1) * pageSize + 1}–
-              {Math.min(currentPage * pageSize, filteredList.length)} of{" "}
-              {filteredList.length}
-            </span>
-          </div>
-
+        {/* Pagination */}
+        <div className="mt-2 flex justify-between">
           <Pagination
             current={currentPage}
             pageSize={pageSize}
-            total={filteredList.length}
-            onChange={(page) => setCurrentPage(page)}
+            total={list.length}
+            onChange={setCurrentPage}
             showSizeChanger={false}
-            prevIcon={null}
-            nextIcon={null}
-            className="text-white [&_.ant-pagination-item-active]:!bg-[#9747FF] [&_.ant-pagination-item-active>a]:!text-white"
           />
-
-          <div className="flex gap-2">
-            <button
-              disabled={currentPage === 1 || filteredList.length === 0}
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              className="w-8 h-8 rounded-md bg-[#1d152f] flex items-center justify-center text-white/70 hover:text-white disabled:opacity-40"
-            >
-              &lt;
-            </button>
-            <button
-              disabled={
-                currentPage === Math.ceil(filteredList.length / pageSize) ||
-                filteredList.length === 0
-              }
-              onClick={() =>
-                setCurrentPage((prev) =>
-                  Math.min(prev + 1, Math.ceil(filteredList.length / pageSize))
-                )
-              }
-              className="w-8 h-8 rounded-md bg-[#1d152f] flex items-center justify-center text-white/70 hover:text-white disabled:opacity-40"
-            >
-              &gt;
-            </button>
-          </div>
         </div>
 
-        {/* Modals remain as before */}
-        {modalType === "edit" && selectedWorkspace && (
-          <AddEditWorkspaceModal
+        {/* Modals */}
+        {modalType === "addMember" && selectedWorkspace && (
+          <AddMemberModal
             open
             onClose={closeModal}
-            initialData={selectedWorkspace}
-            onSubmit={(payload) => {
+            onSubmit={(user_id) => {
               dispatch(
-                updateWorkspaceThunk({
-                  id: selectedWorkspace.workspaceId,
-                  ...payload,
+                addMemberThunk({
+                  workspaceId: selectedWorkspace.workspaceId,
+                  user_id,
                 })
-              ).then(() => {
-                message.success("Updated");
-                closeModal();
-              });
+              )
+                .unwrap()
+                .then(() => {
+                  message.success(t("workspace.memberAdded"));
+                  dispatch(
+                    addMemberLocal({ workspaceId: selectedWorkspace.workspaceId })
+                  );
+                })
+                .catch(() => message.error(t("common.error")));
             }}
           />
         )}
@@ -289,31 +262,48 @@ const WorkspaceList = () => {
             open
             onClose={closeModal}
             workspaceId={selectedWorkspace.workspaceId}
-            onDeleteMembers={(memberIds) => {
-              dispatch(
-                removeMembersThunk({
-                  workspaceId: selectedWorkspace.workspaceId,
-                  memberIds,
-                })
-              ).then(() => message.success("Members removed"));
+            onDeleteMembers={async (memberIds) => {
+              try {
+                await dispatch(
+                  removeMembersThunk({
+                    workspaceId: selectedWorkspace.workspaceId,
+                    memberIds,
+                  })
+                ).unwrap();
+
+                message.success(t("workspace.membersRemoved"));
+                dispatch(
+                  removeMembersLocal({
+                    workspaceId: selectedWorkspace.workspaceId,
+                    count: memberIds.length,
+                  })
+                );
+                return "ok";
+              } catch {
+                message.error(t("common.error"));
+                return "error";
+              }
             }}
           />
         )}
 
-        {modalType === "addMember" && selectedWorkspace && (
-          <AddMemberModal
+        {modalType === "edit" && selectedWorkspace && (
+          <AddEditWorkspaceModal
             open
             onClose={closeModal}
-            onSubmit={(userId) => {
+            initialData={selectedWorkspace}
+            onSubmit={(payload: any) => {
               dispatch(
-                addMemberThunk({
-                  workspaceId: selectedWorkspace.workspaceId,
-                  userId,
+                updateWorkspaceThunk({
+                  id: selectedWorkspace.workspaceId,
+                  ...payload,
                 })
-              ).then(() => {
-                message.success("Member added");
-                closeModal();
-              });
+              )
+                .unwrap()
+                .then(() => {
+                  message.success(t("workspace.updated"));
+                })
+                .catch(() => message.error(t("common.error")));
             }}
           />
         )}
@@ -324,7 +314,7 @@ const WorkspaceList = () => {
             onClose={closeModal}
             onSubmit={({ current, next, confirm }) => {
               if (next !== confirm) {
-                message.error("Passwords do not match");
+                message.error(t("workspace.passwordMismatch"));
                 return;
               }
               dispatch(
@@ -334,10 +324,13 @@ const WorkspaceList = () => {
                   password: next,
                   confirmPassword: confirm,
                 })
-              ).then(() => {
-                message.success("Password changed");
-                closeModal();
-              });
+              )
+                .unwrap()
+                .then(() => {
+                  message.success(t("workspace.passwordChanged"));
+                  closeModal();
+                })
+                .catch(() => message.error(t("common.error")));
             }}
           />
         )}

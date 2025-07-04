@@ -1,9 +1,10 @@
 import { Button, Tooltip } from "antd";
+import { useTranslation } from "react-i18next";
 import type { ReactNode, CSSProperties } from "react";
 
 interface ButtonComponentProps {
   children?: ReactNode;
-  label?: string; // 👈 thêm label
+  label?: string; // 👈 i18n key
   htmlType?: "button" | "submit" | "reset";
   loading?: boolean;
   onClick?: () => void;
@@ -32,6 +33,8 @@ const ButtonComponent = ({
   height = "46px",
   tooltip,
 }: ButtonComponentProps) => {
+  const { t } = useTranslation();
+
   const baseClass =
     "w-full font-['Poppins'] text-[.9375rem] font-medium leading-5 border-none";
 
@@ -70,7 +73,9 @@ const ButtonComponent = ({
     ...(disabled ? disabledStyle : styleByVariant[variant]),
   };
 
-  const content = children ?? label ?? null; // 👈 ưu tiên children > label > null
+  const content =
+    children ??
+    (label ? t(label) : null); // 👈 Ưu tiên children > label (đã dịch) > null
 
   const buttonElement = (
     <Button

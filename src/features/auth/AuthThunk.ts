@@ -63,17 +63,22 @@ export const resetPasswordThunk = createAsyncThunk<
 });
 
 export const sendOtpThunk = createAsyncThunk<
-  {otplimit:number},
-  LocalizedPayload<SendOtpRequestDTO>,
-  { rejectValue: string }
->("auth/sendOtp", async ({ payload }, { rejectWithValue }) => {
-  try {
-    const {otplimit} = await authService.sendOtp(payload);
-    console.log(otplimit);
-    return {otplimit};
-  } catch (error: any) {
-    return rejectWithValue(error);
+  { otplimit: number },                    // return type
+  LocalizedPayload<SendOtpRequestDTO>,    // payload
+  { rejectValue: string }                 // error
+>(
+  "auth/sendOtp",
+  async ({ payload }, { rejectWithValue }) => {
+    try {
+      const res = await authService.sendOtp(payload);
+      console.log(res.data.otplimit ) ;// SendOtpResponseDTO
+      return { otplimit: res.data.otplimit };
+    } catch (error: any) {
+      return rejectWithValue(
+        error?.message || "Unexpected error while sending OTP"
+      );
+    }
   }
-});
+);
 
 

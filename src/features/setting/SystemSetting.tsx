@@ -39,7 +39,6 @@ export default function SystemSettings() {
   }, [form]);
 
   const onFinish = (values: SystemSettings) => {
-    console.log("Submit values:", values);
     message.success("Saved system configuration successfully.");
   };
 

@@ -8,12 +8,14 @@ import ButtonComponent from "../../../components/ButtonComponent";
 import InputComponent from "../../../components/InputComponent";
 import LabelComponent from "../../../components/LabelComponent";
 import UploadField from "../../../components/UpdateFieldComponent";
-
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../app/store";
 
 const WorkspaceForm = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const isDark = useSelector((state: RootState) => state.theme.darkMode);
 
   const { mode, id } = (location.state || {}) as {
     mode: "create" | "edit";
@@ -35,7 +37,9 @@ const WorkspaceForm = () => {
   const [editFileName, setEditFileName] = useState("");
   const [commentFileName, setCommentFileName] = useState("");
 
-  const [owners, setOwners] = useState<{ userId: string; userName: string }[]>([]);
+  const [owners, setOwners] = useState<{ userId: string; userName: string }[]>(
+    []
+  );
   const [loadingOwners, setLoadingOwners] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
 
@@ -43,9 +47,14 @@ const WorkspaceForm = () => {
     setLoadingOwners(true);
     try {
       const res = await axiosInstance.get<{
-        data: { userId: string; userName: string }[];
+        data: { user_id: string; username: string }[];
       }>("/system/workspaces/select-owner");
-      setOwners(res.data.data || []);
+      setOwners(
+        (res.data.data || []).map((o) => ({
+          userId: o.user_id,
+          userName: o.username,
+        }))
+      );
     } catch {
       message.error(t("common.error"));
     } finally {
@@ -60,7 +69,9 @@ const WorkspaceForm = () => {
     }
     setLoadingDetail(true);
     try {
-      const res = await axiosInstance.get<{ data: any }>(`/system/workspaces/${id}`);
+      const res = await axiosInstance.get<{ data: any }>(
+        `/system/workspaces/${id}`
+      );
       const detail = res.data.data;
 
       setName(detail.workspaceName);
@@ -149,31 +160,39 @@ const WorkspaceForm = () => {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto text-white">
-      <h2 className="text-xl font-semibold mb-6">
+    <div className="p-6 max-w-4xl mx-auto">
+      <h2
+        className={`text-xl font-semibold mb-6 ${
+          isDark ? "text-white" : "text-black"
+        }`}
+      >
         {mode === "edit" ? t("workspace.edit") : t("workspace.add")}
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <LabelComponent label="workspace.name" required isDark />
+          <LabelComponent label="workspace.name" required isDark={isDark} />
           <InputComponent
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={t("workspace.namePlaceholder")}
-            isDark
+            isDark={isDark}
             allowClear
           />
         </div>
 
         <div>
-          <LabelComponent label="workspace.owner" required isDark />
+          <LabelComponent label="workspace.owner" required isDark={isDark} />
           <Select
             loading={loadingOwners}
             value={owner}
             onChange={setOwner}
             placeholder={t("workspace.ownerPlaceholder")}
-            className="w-full rounded-[8px]"
+            className={`w-full rounded-[8px] ${
+              isDark
+                ? "bg-gray-800 text-white border-gray-600"
+                : "bg-white text-black border-gray-300"
+            }`}
           >
             {owners.map((o) => (
               <Select.Option key={o.userId} value={o.userId}>
@@ -184,14 +203,17 @@ const WorkspaceForm = () => {
         </div>
 
         <div className="md:col-span-2">
-          <LabelComponent label="workspace.desc" isDark />
-          <InputComponent
+          <LabelComponent label="workspace.desc" isDark={isDark} />
+          <textarea
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
             placeholder={t("workspace.descPlaceholder")}
-            isDark
-            allowClear
-            height={100}
+            className={`w-full mt-1 rounded-md p-2 border ${
+              isDark
+                ? "bg-gray-800 text-white border-gray-600"
+                : "bg-white text-black border-gray-300"
+            }`}
+            rows={4}
           />
         </div>
 
@@ -201,7 +223,7 @@ const WorkspaceForm = () => {
           setFile={setViewConfig}
           fileName={viewFileName}
           setFileName={setViewFileName}
-          t={t}
+          isDark={isDark}
         />
 
         <UploadField
@@ -210,7 +232,7 @@ const WorkspaceForm = () => {
           setFile={setEditConfig}
           fileName={editFileName}
           setFileName={setEditFileName}
-          t={t}
+          isDark={isDark}
         />
 
         <UploadField
@@ -219,14 +241,14 @@ const WorkspaceForm = () => {
           setFile={setCommentConfig}
           fileName={commentFileName}
           setFileName={setCommentFileName}
-          t={t}
+          isDark={isDark}
         />
 
         <div className="md:col-span-2">
           <Checkbox
             checked={usePassword}
             onChange={(e) => setUsePassword(e.target.checked)}
-            className="text-white"
+            className={isDark ? "text-white" : "text-black"}
           >
             {t("workspace.enablePassword")}
           </Checkbox>
@@ -235,24 +257,32 @@ const WorkspaceForm = () => {
         {usePassword && (
           <>
             <div>
-              <LabelComponent label="workspace.password" required isDark />
+              <LabelComponent
+                label="workspace.password"
+                required
+                isDark={isDark}
+              />
               <InputComponent
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder={t("workspace.passwordPlaceholder")}
-                isDark
+                isDark={isDark}
                 allowClear
               />
             </div>
             <div>
-              <LabelComponent label="workspace.confirm" required isDark />
+              <LabelComponent
+                label="workspace.confirm"
+                required
+                isDark={isDark}
+              />
               <InputComponent
                 type="password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 placeholder={t("workspace.confirmPlaceholder")}
-                isDark
+                isDark={isDark}
                 allowClear
               />
             </div>
@@ -264,7 +294,7 @@ const WorkspaceForm = () => {
         <ButtonComponent
           variant="secondary"
           onClick={() => navigate(-1)}
-          isDark
+          isDark={isDark}
           height={44}
           className="w-[120px]"
         >
@@ -272,7 +302,7 @@ const WorkspaceForm = () => {
         </ButtonComponent>
         <ButtonComponent
           onClick={handleSubmit}
-          isDark
+          isDark={isDark}
           height={44}
           className="w-[140px]"
         >

@@ -98,10 +98,10 @@ export const workspaceService = {
   /**
    * Thêm thành viên
    */
-  addMember: (workspaceId: string, userId: string) =>
+  addMember: (workspaceId: string, user_id: string) =>
     handleApiCall(async () => {
       const res = await axiosInstance.post(`system/workspaces/${workspaceId}/members`, {
-        userId,
+        user_id : user_id,
       });
       return res.data;
     }),

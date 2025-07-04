@@ -11,8 +11,8 @@ import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
 import { loginThunk } from "../authThunk";
 import { setNavigate } from "../../../api/AxiosIntance";
-import { LoginSchema } from "../authSchema";
-import type { LoginFormType } from "../authSchema";
+import { type LoginFormType, LoginSchema } from "../authSchema";
+
 
 const Login = () => {
   const [form] = Form.useForm();
@@ -29,36 +29,26 @@ const Login = () => {
     };
   }, [navigate]);
 
-  const onSubmit = async () => {
-    try {
-      const values = await form.validateFields();
-      const parsed = LoginSchema.safeParse(values);
+  const handleFinish = async (values: LoginFormType) => {
+    const parsed = LoginSchema.safeParse(values);
 
-      if (!parsed.success) {
-        const fieldErrors = parsed.error.flatten().fieldErrors;
+    if (!parsed.success) {
+      const fieldErrors = parsed.error.flatten().fieldErrors;
 
-        form.setFields(
-          Object.entries(fieldErrors).map(([name, errors]) => ({
-            name: name as keyof LoginFormType,
-            errors: errors || [],
-          }))
-        );
-        return;
-      }
-
-      // ✅ clear errors nếu có
       form.setFields(
-        Object.keys(values).map((name) => ({
-          name,
-          errors: [],
+        Object.entries(fieldErrors).map(([name, errors]) => ({
+          name: [name as keyof LoginFormType],
+          errors: (errors as string[]) || [],
         }))
       );
+      return;
+    }
 
-      setIsSubmitting(true);
-      const loginData = parsed.data;
+    setIsSubmitting(true);
 
-      await dispatch(loginThunk({ payload: loginData })).unwrap();
-      message.info(t("login.success"));
+    try {
+      await dispatch(loginThunk({ payload: parsed.data })).unwrap();
+      message.success(t("login.success"));
       navigate("/");
     } catch (err: any) {
       message.error(
@@ -79,7 +69,7 @@ const Login = () => {
           isDark={isDark}
           className="text-[48px] capitalize leading-[40px]"
         />
-        <div className="flex justify-start items-center gap-2 ">
+        <div className="flex justify-start items-center gap-2">
           <LabelComponent
             label="login.subTitle"
             checkSpecial
@@ -102,7 +92,8 @@ const Login = () => {
           layout="vertical"
           className="w-full"
           autoComplete="off"
-          validateTrigger="onChange" // 👈 xoá lỗi ngay khi sửa
+          validateTrigger="onChange"
+          onFinish={handleFinish}
         >
           {/* Username */}
           <Form.Item
@@ -152,9 +143,9 @@ const Login = () => {
           {/* Submit */}
           <Form.Item className="mb-0">
             <ButtonComponent
+              htmlType="submit"
               loading={isSubmitting}
               disabled={isSubmitting}
-              onClick={onSubmit}
             >
               {t("login.submit")}
             </ButtonComponent>

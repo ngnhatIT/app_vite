@@ -79,6 +79,20 @@
     "resendTitle": "Didn't receive an email?",
     "resendLink": "Resend"
   },
+  "authValidation": {
+    "usernameMin": "Username must be at least 2 characters",
+    "usernameMax": "Username must be at most 50 characters",
+    "usernameNoSpace": "Username cannot contain spaces",
+    "emailInvalid": "Invalid email format",
+    "emailRequired": "Email is required",
+    "fullnameMin": "Full name must be at least 2 characters",
+    "fullnameMax": "Full name must be at most 100 characters",
+    "passwordMin": "Password must be at least 8 characters",
+    "passwordMax": "Password must be at most 12 characters",
+    "passwordInvalid": "Password must include uppercase, lowercase, number and special character",
+    "passwordsMismatch": "Passwords do not match",
+    "confirmPasswordRequired": "Please confirm your password"
+  },
   "captcha": {
     "label": "Slide to verify",
     "slideToVerify": "Swipe to complete verification",
@@ -120,13 +134,30 @@
       "cancel": "No"
     },
     "empty": "No users found",
-    "Enable IP Check": "Enable IP Check",
+    "pagination": {
+      "of": "of"
+    },
+    "basic_info": "Basic Information",
+    "permissions": "User Permissions",
     "user": {
       "created": "User created successfully",
       "updated": "User updated successfully"
     },
     "form": {
-      "submitFailed": "Something went wrong, please try again"
+      "username": "Username",
+      "email": "Email",
+      "password": "Password",
+      "confirm_password": "Confirm Password",
+      "role": "Role",
+      "workspace": "Workspace",
+      "ip_check": "Enable IP Check",
+      "submitFailed": "Something went wrong, please try again",
+      "fetchFailed": "Failed to fetch data"
+    },
+    "button": {
+      "back": "Back",
+      "create": "Create User",
+      "update": "Update User"
     },
     "username.required": "Please enter a username",
     "email.required": "Please enter an email",
@@ -138,6 +169,29 @@
     "role.fetchFailed": "Failed to load roles",
     "Workspace": "Workspace",
     "Select workspace": "Select a workspace"
+  },
+  "user_form": {
+    "username": {
+      "required": "Username is required",
+      "no_space": "Username cannot contain spaces"
+    },
+    "email": {
+      "required": "Email is required",
+      "invalid": "Invalid email format (Google rules)"
+    },
+    "fullname": {
+      "min": "Full name must be at least 2 characters",
+      "max": "Full name must be at most 100 characters"
+    },
+    "password": {
+      "invalid": "Password must be 8–12 characters, include at least 1 uppercase letter, 1 special character, letters and numbers"
+    },
+    "role": {
+      "required": "Role is required"
+    },
+    "confirm_password": {
+      "mismatch": "Passwords do not match"
+    }
   },
   "menu": {
     "dashboard": "Dashboard",

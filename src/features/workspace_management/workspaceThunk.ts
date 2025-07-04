@@ -64,10 +64,10 @@ export const deleteWorkspaceThunk = createAsyncThunk<
 
 export const addMemberThunk = createAsyncThunk<
   any, // hoặc Workspace nếu bạn trả về toàn bộ workspace
-  { workspaceId: string; userId: string }
->("workspace/addMember", async ({ workspaceId, userId }, { rejectWithValue }) => {
+  { workspaceId: string; user_id: string }
+>("workspace/addMember", async ({ workspaceId, user_id }, { rejectWithValue }) => {
   try {
-    return await workspaceService.addMember(workspaceId, userId);
+    return await workspaceService.addMember(workspaceId, user_id);
   } catch (err) {
     return rejectWithValue(err);
   }

@@ -31,7 +31,6 @@ const createWindow = () => {
     // }
     mainWindow.loadFile(path_1.default.join(__dirname, "../dist/index.html"));
     const devURL = process.env.VITE_DEV_SERVER_URL;
-    console.log("Loading from dev:", devURL);
     if (devURL) {
         mainWindow.loadURL(devURL);
     }

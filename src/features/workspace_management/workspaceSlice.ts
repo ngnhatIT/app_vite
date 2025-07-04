@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-
 import {
   fetchWorkspacesThunk,
   createWorkspaceThunk,
@@ -35,7 +34,7 @@ function mapDetailToWorkspace(detail: WorkspaceDetail): Workspace {
   return {
     workspaceId: detail.workspaceId,
     workspaceName: detail.workspaceName,
-    wspOwner: detail.ownerUsername || "",
+    workspaceOwner: detail.ownerUsername || "",
     email: "", // optional
     avatar: "", // optional
     members: 0, // optional
@@ -54,10 +53,26 @@ const workspaceSlice = createSlice({
     clearError(state) {
       state.error = null;
     },
+
+    // ✅ Thêm/giảm members local
+    addMemberLocal(state, action) {
+      const { workspaceId } = action.payload;
+      const idx = state.list.findIndex((w) => w.workspaceId === workspaceId);
+      if (idx >= 0) {
+        state.list[idx].members += 1;
+      }
+    },
+    removeMembersLocal(state, action) {
+      const { workspaceId, count } = action.payload;
+      const idx = state.list.findIndex((w) => w.workspaceId === workspaceId);
+      if (idx >= 0) {
+        state.list[idx].members = Math.max(0, state.list[idx].members - count);
+      }
+    },
   },
+
   extraReducers: (builder) => {
     builder
-      // 📋 List
       .addCase(fetchWorkspacesThunk.pending, (state) => {
         state.status = "loading";
         state.error = null;
@@ -81,8 +96,6 @@ const workspaceSlice = createSlice({
       })
       .addCase(updateWorkspaceThunk.fulfilled, (state, action) => {
         state.updating = false;
-
-        // chỉ update list
         const idx = state.list.findIndex(
           (w) => w.workspaceId === action.payload.workspaceId
         );
@@ -103,17 +116,20 @@ const workspaceSlice = createSlice({
         const idx = state.list.findIndex(
           (w) => w.workspaceId === action.payload.workspaceId
         );
-        if (idx >= 0) state.list[idx] = action.payload as any;
+        if (idx >= 0) {
+          state.list[idx] = action.payload as any;
+        }
       })
 
       .addCase(removeMembersThunk.fulfilled, (state, action) => {
         const idx = state.list.findIndex(
           (w) => w.workspaceId === action.payload.workspaceId
         );
-        if (idx >= 0) state.list[idx] = action.payload as any;
+        if (idx >= 0) {
+          state.list[idx] = action.payload as any;
+        }
       })
 
-      // 📋 Detail
       .addCase(getWorkspaceDetailThunk.pending, (state) => {
         state.loadingDetail = true;
         state.error = null;
@@ -129,6 +145,7 @@ const workspaceSlice = createSlice({
   },
 });
 
-export const { clearDetail, clearError } = workspaceSlice.actions;
+export const { clearDetail, clearError, addMemberLocal, removeMembersLocal } =
+  workspaceSlice.actions;
 
 export default workspaceSlice.reducer;

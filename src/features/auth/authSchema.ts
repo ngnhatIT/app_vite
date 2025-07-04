@@ -1,34 +1,39 @@
 import { z } from "zod";
 import i18n from "../../i18n/i18n";
 
-const t = i18n.t;
+// 👇 gọi t 1 lần duy nhất
+const t = i18n.t.bind(i18n);
+
+const googleEmailRegex =
+  /^[a-zA-Z0-9]+([._+-]?[a-zA-Z0-9]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+$/;
+
+const passwordRegex =
+  /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*[a-zA-Z])(?=.*\d).{8,12}$/;
 
 export const AuthSchema = z.object({
   userName: z
     .string()
-    .min(2, t("validation.usernameMin"))
-    .max(50, t("validation.usernameMax"))
-    .nonempty(t("validation.usernameRequired")),
-
-  password: z
-    .string()
-    .min(8, t("validation.passwordMin"))
-    .max(12, t("validation.passwordMax"))
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])/,
-      t("validation.passwordInvalid")
-    )
-    .nonempty(t("validation.passwordRequired")),
+    .min(2, { message: t("authValidation.usernameMin") })
+    .max(50, { message: t("authValidation.usernameMax") })
+    .regex(/^\S+$/, { message: t("authValidation.usernameNoSpace") }),
 
   email: z
     .string()
-    .email(t("validation.emailInvalid"))
-    .nonempty(t("validation.emailRequired")),
+    .min(1, { message: t("authValidation.emailRequired") })
+    .regex(googleEmailRegex, { message: t("authValidation.emailInvalid") }),
 
   fullName: z
     .string()
-    .min(1, t("validation.fullnameMin"))
-    .max(50, t("validation.fullnameMax")),
+    .min(2, { message: t("authValidation.fullnameMin") })
+    .max(100, { message: t("authValidation.fullnameMax") }),
+
+  password: z
+    .string()
+    .min(8, { message: t("authValidation.passwordMin") })
+    .max(12, { message: t("authValidation.passwordMax") })
+    .regex(passwordRegex, { message: t("authValidation.passwordInvalid") }),
+
+  confirmPassword: z.string().optional(),
 });
 
 export const LoginSchema = AuthSchema.pick({
@@ -37,9 +42,9 @@ export const LoginSchema = AuthSchema.pick({
 });
 
 export const RegisterSchema = AuthSchema.extend({
-  confirmPassword: z.string().nonempty(t("validation.confirmPasswordRequired")),
+  confirmPassword: z.string({ required_error: t("authValidation.confirmPasswordRequired") }),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: t("validation.passwordsMismatch"),
+  message: t("authValidation.passwordsMismatch"),
   path: ["confirmPassword"],
 });
 
@@ -47,25 +52,21 @@ export const ResetPasswordSchema = z
   .object({
     newPassword: z
       .string()
-      .min(8, t("validation.passwordMin"))
-      .max(12, t("validation.passwordMax"))
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])/,
-        t("validation.passwordInvalid")
-      ),
+      .min(8, { message: t("authValidation.passwordMin") })
+      .max(12, { message: t("authValidation.passwordMax") })
+      .regex(passwordRegex, { message: t("authValidation.passwordInvalid") }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: t("validation.passwordsMismatch"),
+    message: t("authValidation.passwordsMismatch"),
     path: ["confirmPassword"],
   });
 
-// ✅ ForgotPasswordSchema
 export const ForgotPasswordSchema = z.object({
   email: z
     .string()
-    .email(t("validation.emailInvalid"))
-    .nonempty(t("validation.emailRequired")),
+    .min(1, { message: t("authValidation.emailRequired") })
+    .regex(googleEmailRegex, { message: t("authValidation.emailInvalid") }),
 });
 
 export type AuthFormType = z.infer<typeof AuthSchema>;

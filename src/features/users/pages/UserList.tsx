@@ -52,7 +52,6 @@ const UserList = () => {
   const userStatus = useSelector((state: RootState) => state.user.status);
   const error = useSelector((state: RootState) => state.user.error);
 
-  // 🚀 Chỉ fetch 1 lần khi mount
   useEffect(() => {
     dispatch(fetchUsersThunk());
   }, [dispatch]);
@@ -115,7 +114,7 @@ const UserList = () => {
       render: () => <Checkbox />,
     },
     {
-      title: t("user_list.columns.name"),
+      title: <LabelComponent label="user_list.columns.name" isDark={isDark} />,
       dataIndex: "username",
       width: "45%",
       sorter: (a: User, b: User) => a.username.localeCompare(b.username),
@@ -123,20 +122,24 @@ const UserList = () => {
         <div className="flex items-center gap-2">
           <Avatar src={record.avatar} />
           <div>
-            <div>{record.username}</div>
+            <div>
+              <LabelComponent label={record.username} isDark={isDark} />
+            </div>
             <div className="text-sm text-gray-400">{record.email}</div>
           </div>
         </div>
       ),
     },
     {
-      title: t("user_list.columns.role"),
+      title: <LabelComponent label="user_list.columns.role" isDark={isDark} />,
       dataIndex: "role",
       width: "15%",
       render: (role: string) => <span className="capitalize">{role}</span>,
     },
     {
-      title: t("user_list.columns.status"),
+      title: (
+        <LabelComponent label="user_list.columns.status" isDark={isDark} />
+      ),
       dataIndex: "is_active",
       width: "15%",
       render: (active: boolean) => (
@@ -152,7 +155,9 @@ const UserList = () => {
       ),
     },
     {
-      title: t("user_list.columns.ipCheck"),
+      title: (
+        <LabelComponent label="user_list.columns.ipCheck" isDark={isDark} />
+      ),
       dataIndex: "ip_check",
       width: "10%",
       render: (_: unknown, record: User) => (
@@ -160,32 +165,58 @@ const UserList = () => {
       ),
     },
     {
-      title: t("user_list.columns.action"),
+      title: (
+        <LabelComponent label="user_list.columns.action" isDark={isDark} />
+      ),
       width: "10%",
       render: (_: unknown, record: User) => (
         <Space>
-          <Tooltip title={t("user_list.tooltip.edit")}>
+          <Tooltip
+            title={t("user_list.tooltip.edit")}
+            color={isDark ? "#000" : "#555"}
+          >
             <button
               onClick={() => handleEdit(record.user_id)}
               className="text-white hover:text-purple-400"
             >
-              <EditOutlined />
+              <EditOutlined style={{ color: isDark ? "#fff" : "#000" }} />
             </button>
           </Tooltip>
-          <button
-            onClick={() => handleStatusToggle(record.user_id, record.is_active)}
-            className={`${
+          <Tooltip
+            title={
               record.is_active
-                ? "text-green-500 hover:text-green-400"
-                : "text-red-500 hover:text-red-400"
-            }`}
+                ? t("user_list.tooltip.deactivate")
+                : t("user_list.tooltip.activate")
+            }
+            color={isDark ? "#000" : "#555"}
           >
-            {record.is_active ? (
-              <CheckCircleOutlined style={{ fontSize: 16 }} />
-            ) : (
-              <StopOutlined style={{ fontSize: 16 }} />
-            )}
-          </button>
+            <button
+              onClick={() =>
+                handleStatusToggle(record.user_id, record.is_active)
+              }
+              className={`${
+                record.is_active
+                  ? "text-green-500 hover:text-green-400"
+                  : "text-red-500 hover:text-red-400"
+              }`}
+            >
+              {record.is_active ? (
+                <CheckCircleOutlined
+                  style={{
+                    fontSize: 16,
+                    color: isDark ? "lightgreen" : "green",
+                  }}
+                />
+              ) : (
+                <StopOutlined
+                  style={{
+                    fontSize: 16,
+                    color: isDark ? "red" : "#f00",
+                  }}
+                />
+              )}
+            </button>
+          </Tooltip>
         </Space>
       ),
     },
@@ -206,7 +237,9 @@ const UserList = () => {
             <div className="flex-2">
               <InputComponent
                 type="text"
-                icon={<EditOutlined />}
+                icon={
+                  <EditOutlined style={{ color: isDark ? "#fff" : "#000" }} />
+                }
                 placeholder={t("user_list.search_placeholder")}
                 isDark={isDark}
                 height="48px"
@@ -221,7 +254,9 @@ const UserList = () => {
 
             <div>
               <ButtonComponent
-                icon={<PlusOutlined />}
+                icon={
+                  <PlusOutlined style={{ color: isDark ? "#fff" : "#000" }} />
+                }
                 onClick={() => navigate("/users/create")}
                 isDark={isDark}
                 variant="primary"
@@ -252,19 +287,46 @@ const UserList = () => {
         <div className="mt-2 flex items-center justify-between w-full flex-wrap gap-2">
           <div className="flex items-center gap-2 text-white text-sm">
             <select
-              className="bg-transparent border border-gray-500 rounded px-2 py-[2px] text-sm text-white"
               value={pageSize}
               onChange={(e) => {
                 setPageSize(Number(e.target.value));
                 setCurrentPage(1);
               }}
+              className={`
+    rounded-md border px-3 py-1 text-sm font-medium
+    min-w-[80px] cursor-pointer appearance-none
+    focus:outline-none
+    ${
+      isDark
+        ? "bg-gray-800 border-gray-600 text-white"
+        : "bg-white border-gray-300 text-black"
+    }
+  `}
+              style={{
+                WebkitAppearance: "none", // Safari + Chrome
+                MozAppearance: "none", // Firefox
+                appearance: "none",
+                color: isDark ? "#fff" : "#000", // giá trị hiển thị chính
+                backgroundImage: `url("data:image/svg+xml,%3Csvg fill='%23${
+                  isDark ? "ffffff" : "000000"
+                }' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E")`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "right 0.5rem center",
+                backgroundSize: "1rem",
+                WebkitTextFillColor: isDark ? "#fff" : "#000", // fix Webkit render
+              }}
             >
               {[8, 16, 24].map((size) => (
-                <option key={size} value={size} className="text-black">
+                <option
+                  key={size}
+                  value={size}
+                  className="text-black" // option màu đen (trình duyệt tự lo)
+                >
                   {size}
                 </option>
               ))}
             </select>
+
             <span className="text-white/70">
               {(currentPage - 1) * pageSize + 1}–
               {Math.min(currentPage * pageSize, filteredUsers.length)}{" "}

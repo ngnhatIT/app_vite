@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Form, Select, message, Checkbox, Spin } from "antd";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import type { AppDispatch } from "../../../app/store";
+import type { AppDispatch, RootState } from "../../../app/store";
 
 import LabelComponent from "../../../components/LabelComponent";
 import InputComponent from "../../../components/InputComponent";
@@ -25,6 +25,8 @@ const UserForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+
+  const isDark = useSelector((state: RootState) => state.theme.darkMode);
 
   const userId = location.state?.userId;
   const mode = userId ? "edit" : "create";
@@ -51,9 +53,7 @@ const UserForm = () => {
           form.setFieldsValue(detail);
         }
       } catch {
-        message.error(
-          t("user_list.role.fetchFailed") || "Failed to fetch data."
-        );
+        message.error(t("user_list.role.fetchFailed"));
       } finally {
         setLoading(false);
       }
@@ -115,51 +115,92 @@ const UserForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             {/* LEFT COLUMN */}
             <div className="flex flex-col gap-6 w-full">
-              <h3 className="text-xl font-semibold text-white mb-4">
-                {t("user_list.basic_info") || "Basic Information"}
-              </h3>
+              <LabelComponent
+                label="user_list.basic_info"
+                as="h3"
+                isDark={isDark}
+                className="text-xl font-semibold mb-4"
+              />
 
               <Form.Item
                 name="username"
-                label={<LabelComponent label="Username" required />}
+                label={
+                  <LabelComponent
+                    label="user_list.form.username"
+                    required
+                    isDark={isDark}
+                  />
+                }
               >
-                <InputComponent placeholder="Enter username" />
+                <InputComponent placeholder="Enter username" isDark={isDark} />
               </Form.Item>
 
               <Form.Item
                 name="email"
-                label={<LabelComponent label="Email" required />}
+                label={
+                  <LabelComponent
+                    label="user_list.form.email"
+                    required
+                    isDark={isDark}
+                  />
+                }
               >
-                <InputComponent placeholder="Enter email" />
+                <InputComponent placeholder="Enter email" isDark={isDark} />
               </Form.Item>
 
               <Form.Item
                 name="password"
-                label={<LabelComponent label="Password" required />}
+                label={
+                  <LabelComponent
+                    label="user_list.form.password"
+                    required
+                    isDark={isDark}
+                  />
+                }
               >
-                <InputComponent type="password" placeholder="Enter password" />
+                <InputComponent
+                  type="password"
+                  placeholder="Enter password"
+                  isDark={isDark}
+                />
               </Form.Item>
 
               <Form.Item
                 name="confirm_password"
-                label={<LabelComponent label="Confirm Password" required />}
+                label={
+                  <LabelComponent
+                    label="user_list.form.confirm_password"
+                    required
+                    isDark={isDark}
+                  />
+                }
               >
                 <InputComponent
                   type="password"
                   placeholder="Confirm password"
+                  isDark={isDark}
                 />
               </Form.Item>
             </div>
 
             {/* RIGHT COLUMN */}
             <div className="flex flex-col gap-6 w-full">
-              <h3 className="text-xl font-semibold text-white mb-4">
-                {t("user_list.permissions") || "User Permissions"}
-              </h3>
+              <LabelComponent
+                label="user_list.permissions"
+                as="h3"
+                isDark={isDark}
+                className="text-xl font-semibold mb-4"
+              />
 
               <Form.Item
                 name="role"
-                label={<LabelComponent label="Role" required />}
+                label={
+                  <LabelComponent
+                    label="user_list.form.role"
+                    required
+                    isDark={isDark}
+                  />
+                }
               >
                 <Select
                   placeholder="Select role"
@@ -178,7 +219,12 @@ const UserForm = () => {
 
               <Form.Item
                 name="workspace"
-                label={<LabelComponent label="Workspace" />}
+                label={
+                  <LabelComponent
+                    label="user_list.form.workspace"
+                    isDark={isDark}
+                  />
+                }
               >
                 <Select
                   placeholder="Select workspace"
@@ -186,6 +232,7 @@ const UserForm = () => {
                   loading={!wsps.length}
                   className="rounded-md w-full"
                   style={{ height: 42 }}
+                  disabled={mode === "edit"}
                 >
                   {wsps.map((ws) => (
                     <Select.Option key={ws.workspaceId} value={ws.workspaceId}>
@@ -198,7 +245,12 @@ const UserForm = () => {
               <Form.Item
                 name="ip_check"
                 valuePropName="checked"
-                label={<LabelComponent label="Enable IP Check" />}
+                label={
+                  <LabelComponent
+                    label="user_list.form.ip_check"
+                    isDark={isDark}
+                  />
+                }
               >
                 <Checkbox />
               </Form.Item>
@@ -211,17 +263,21 @@ const UserForm = () => {
               onClick={() => navigate("/users")}
               className="flex-1"
               variant="secondary"
+              isDark={isDark}
             >
-              Back
+              {t("user_list.button.back")}
             </ButtonComponent>
 
             <ButtonComponent
               htmlType="submit"
               variant="primary"
               loading={isSubmitting}
-              className="flex-4"
+              isDark={isDark}
+              className="flex-1"
             >
-              {mode === "create" ? "Create User" : "Update User"}
+              {mode === "create"
+                ? t("user_list.button.create")
+                : t("user_list.button.update")}
             </ButtonComponent>
           </div>
         </Form>

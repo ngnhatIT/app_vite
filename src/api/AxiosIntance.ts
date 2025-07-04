@@ -3,6 +3,7 @@ import axios, { type AxiosResponse, AxiosError } from "axios";
 import { logout } from "../features/auth/authSlice";
 import { store } from "../app/store";
 import type { NavigateFunction } from "react-router-dom";
+import i18n from "../i18n/i18n";
 
 let navigate: NavigateFunction | null = null;
 
@@ -47,7 +48,7 @@ axiosInstance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
     config.headers["Accept-Language"] =
-      localStorage.getItem("language") ?? "ja";
+      i18n.language ?? localStorage.getItem("language") ?? "ja";
 
     try {
       const device = await (window as any)?.deviceInfo?.get?.();

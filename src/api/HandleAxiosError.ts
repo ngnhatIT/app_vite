@@ -46,6 +46,8 @@ export const handleAxiosError = (err: unknown): ErrorDetails => {
   const status = res.status;
   const data = res.data;
 
+  console.log(data);
+
   const code = data?.code?.toString() ?? "UNKNOWN";
 
   const message =

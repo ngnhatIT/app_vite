@@ -12,7 +12,7 @@ export interface WorkspaceMember {
 export interface Workspace {
   workspaceId: string;
   workspaceName: string;
-  wspOwner: string;
+  workspaceOwner: string;
   email: string;
   avatar: string;
   desc?: string;

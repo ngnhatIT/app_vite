@@ -5,7 +5,10 @@ export interface SendOtpRequestDTO {
 }
 
 export interface SendOtpResponseDTO {
-  success: boolean;
-  message?: string;
-  otplimit: number;
+  code: number;
+  msg: string;
+  data: {
+    message: string;
+    otplimit: number;
+  };
 }

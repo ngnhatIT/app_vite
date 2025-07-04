@@ -38,7 +38,7 @@ export const authService = {
         ENDPOINT.SEND_OTP,
         data
       );
-      console.log(res.data);
+      console.log(res);
       return res.data;
     }),
 
