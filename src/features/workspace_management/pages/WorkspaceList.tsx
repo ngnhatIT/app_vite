@@ -1,38 +1,46 @@
+// WorkspaceList.tsx — Updated Table Background Transparent
+
 import { useEffect, useState } from "react";
-import { Table, Avatar, Spin, message, Tooltip } from "antd";
+import { Table, Avatar, Spin, message, Tooltip, Pagination } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
   UserAddOutlined,
   LockOutlined,
   PlusOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+
 import type { AppDispatch, RootState } from "../../../app/store";
 import type { Workspace } from "../dto/workSpaceDTO";
 import {
   fetchWorkspacesThunk,
   deleteWorkspaceThunk,
   updateWorkspaceThunk,
-  removeMembersThunk,
   addMemberThunk,
+  removeMembersThunk,
   changePasswordThunk,
 } from "../workspaceThunk";
+import InputComponent from "../../../components/InputComponent";
 import {
   AddEditWorkspaceModal,
   ManageMembersModal,
   AddMemberModal,
   ChangePasswordModal,
 } from "./ModalWorkspace";
+import ButtonComponent from "../../../components/ButtonComponent";
 
 const WorkspaceList = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+  const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(8);
   const [modalType, setModalType] = useState<
     null | "edit" | "members" | "addMember" | "changePassword"
   >(null);
@@ -43,37 +51,46 @@ const WorkspaceList = () => {
   const { list, status } = useSelector(
     (state: RootState) => state.workspaceMng
   );
-
   const loading = status === "loading";
 
   useEffect(() => {
     dispatch(fetchWorkspacesThunk());
   }, [dispatch]);
 
-  const openModal = (
-    type: typeof modalType,
-    record: Workspace | null = null
-  ) => {
-    setSelectedWorkspace(record);
+  const filteredList = list.filter(
+    (w) =>
+      w.workspaceName.toLowerCase().includes(searchText.toLowerCase()) ||
+      w.wspOwner.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+  const paginatedList = filteredList.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  const openModal = (type: typeof modalType, workspace: Workspace | null) => {
+    setSelectedWorkspace(workspace);
     setModalType(type);
   };
 
   const closeModal = () => {
-    setModalType(null);
     setSelectedWorkspace(null);
+    setModalType(null);
   };
 
   const handleDelete = (workspaceId: string) => {
-    dispatch(deleteWorkspaceThunk(workspaceId)).then(() => {
-      message.success(t("workspace.deleted"));
-    });
+    dispatch(deleteWorkspaceThunk(workspaceId))
+      .then(() => message.success(t("workspace.deleted")))
+      .catch((err) => message.error(err?.message || "Delete failed"));
   };
 
   const columns = [
     {
       title: "#",
-      render: (_: unknown, __: unknown, index: number) => (
-        <span className="text-white">{index + 1}</span>
+      render: (_: any, __: any, index: number) => (
+        <span className="text-white">
+          {(currentPage - 1) * pageSize + index + 1}
+        </span>
       ),
       width: 50,
     },
@@ -130,11 +147,7 @@ const WorkspaceList = () => {
           </Tooltip>
           <Tooltip title={t("workspace.tooltip.edit")}>
             <EditOutlined
-              onClick={() =>
-                navigate(`/system/workspace-mng/create/`, {
-                   state: { mode: "edit", id: record.workspaceId }
-                })
-              }
+              onClick={() => openModal("edit", record)}
               className="text-white cursor-pointer"
             />
           </Tooltip>
@@ -152,32 +165,106 @@ const WorkspaceList = () => {
   return (
     <Spin spinning={loading} size="large">
       <div className="p-4">
-        <div className="flex justify-between items-center mb-6 gap-3 flex-wrap">
+        <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
           <h2 className="text-xl font-semibold text-white">
             {t("workspace.title")}
           </h2>
-          <button
-            onClick={() =>
-              navigate(`/system/workspace-mng/create`, {
-                state: { mode: "create" },
-              })
-            }
-            className="px-4 py-2 bg-blue-500 rounded text-white flex items-center gap-1"
-          >
-            <PlusOutlined />
-            {t("workspace.add")}
-          </button>
+
+          <div className="flex gap-3">
+            <InputComponent
+              type="text"
+              icon={<SearchOutlined />}
+              placeholder={t("workspace.search_placeholder")}
+              isDark
+              height="48px"
+              width={600}
+              className="rounded-lg border border-white/10 bg-white/5 text-white placeholder:text-white/50"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+
+            <ButtonComponent
+              variant="primary"
+              onClick={() =>
+                navigate(`/system/workspace-mng/create`, {
+                  state: { mode: "create" },
+                })
+              }
+              className="px-4 py-2 flex-1"
+            >
+              <PlusOutlined /> {t("workspace.add")}
+            </ButtonComponent>
+          </div>
         </div>
 
         <Table
-          rowKey="id"
-          dataSource={list}
+          dataSource={paginatedList}
+          rowKey="workspaceId"
           columns={columns}
           pagination={false}
-          className="!bg-transparent [&_.ant-table-cell]:!text-white"
+          className="!bg-transparent [&_.ant-table]:!bg-transparent [&_.ant-table-cell]:!bg-transparent [&_.ant-table-thead]:!bg-transparent [&_.ant-table-tbody]:!bg-transparent [&_.ant-table-cell]:!text-white"
         />
 
-        {/* MODALS */}
+        <div className="mt-2 flex items-center justify-between w-full">
+          <div className="flex items-center gap-2 text-white text-sm">
+            <select
+              className="bg-transparent border border-gray-500 rounded px-2 py-[2px] text-sm text-white"
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+            >
+              {[8, 16, 24].map((size) => (
+                <option key={size} value={size} className="text-black">
+                  {size}
+                </option>
+              ))}
+            </select>
+            <span className="text-white/70">
+              {(currentPage - 1) * pageSize + 1}–
+              {Math.min(currentPage * pageSize, filteredList.length)} of{" "}
+              {filteredList.length}
+            </span>
+          </div>
+
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={filteredList.length}
+            onChange={(page) => setCurrentPage(page)}
+            showSizeChanger={false}
+            prevIcon={null}
+            nextIcon={null}
+            className="text-white [&_.ant-pagination-item-active]:!bg-[#9747FF] [&_.ant-pagination-item-active>a]:!text-white"
+          />
+
+          <div className="flex gap-2">
+            <button
+              disabled={currentPage === 1 || filteredList.length === 0}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              className="w-8 h-8 rounded-md bg-[#1d152f] flex items-center justify-center text-white/70 hover:text-white disabled:opacity-40"
+            >
+              &lt;
+            </button>
+            <button
+              disabled={
+                currentPage === Math.ceil(filteredList.length / pageSize) ||
+                filteredList.length === 0
+              }
+              onClick={() =>
+                setCurrentPage((prev) =>
+                  Math.min(prev + 1, Math.ceil(filteredList.length / pageSize))
+                )
+              }
+              className="w-8 h-8 rounded-md bg-[#1d152f] flex items-center justify-center text-white/70 hover:text-white disabled:opacity-40"
+            >
+              &gt;
+            </button>
+          </div>
+        </div>
+
+        {/* Modals remain as before */}
         {modalType === "edit" && selectedWorkspace && (
           <AddEditWorkspaceModal
             open
@@ -208,9 +295,7 @@ const WorkspaceList = () => {
                   workspaceId: selectedWorkspace.workspaceId,
                   memberIds,
                 })
-              ).then(() => {
-                message.success("Members removed");
-              });
+              ).then(() => message.success("Members removed"));
             }}
           />
         )}
@@ -237,15 +322,7 @@ const WorkspaceList = () => {
           <ChangePasswordModal
             open
             onClose={closeModal}
-            onSubmit={({
-              current,
-              next,
-              confirm,
-            }: {
-              current: string;
-              next: string;
-              confirm: string;
-            }) => {
+            onSubmit={({ current, next, confirm }) => {
               if (next !== confirm) {
                 message.error("Passwords do not match");
                 return;

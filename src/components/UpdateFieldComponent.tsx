@@ -1,52 +1,35 @@
-import { Upload, Typography } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
-import ButtonComponent from "./ButtonComponent";
+import { Upload } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 
 type UploadFieldProps = {
-  label: string;
+  label?: string; // optional vì trong ảnh không thấy label
   file: File | null;
   setFile: (f: File | null) => void;
   fileName: string;
   setFileName: (name: string) => void;
-  t: (key: string) => string;
 };
 
 const UploadField = ({
-  label,
   file,
   setFile,
   fileName,
   setFileName,
-  t,
 }: UploadFieldProps) => {
   return (
     <div className="md:col-span-2">
-      <div className="text-sm font-medium mb-1">{label}</div>
-
-      <div className="border border-dashed rounded-lg p-4 bg-[#1e1e2e]">
-        {file ? (
-          <div className="flex justify-between">
-            <span>{file.name}</span>
-            <ButtonComponent
-              variant="secondary"
-              onClick={() => setFile(null)}
-              isDark
-              height="36px"
+      <div className="flex flex-col items-center justify-center border border-dashed border-purple-500 rounded-lg bg-gradient-to-r from-[#1e1e2e] to-[#1e1e2e] p-6 text-center text-white">
+        {file || fileName ? (
+          <div className="flex flex-col gap-2">
+            <span className="text-sm">{file?.name || fileName}</span>
+            <button
+              onClick={() => {
+                setFile(null);
+                setFileName("");
+              }}
+              className="px-3 py-1 bg-red-500 rounded text-white text-xs"
             >
-              {t("workspace.remove")}
-            </ButtonComponent>
-          </div>
-        ) : fileName ? (
-          <div className="flex justify-between">
-            <span>{fileName}</span>
-            <ButtonComponent
-              variant="secondary"
-              onClick={() => setFileName("")}
-              isDark
-              height="36px"
-            >
-              {t("workspace.remove")}
-            </ButtonComponent>
+              Remove
+            </button>
           </div>
         ) : (
           <Upload
@@ -57,15 +40,15 @@ const UploadField = ({
             }}
             showUploadList={false}
           >
-            <ButtonComponent icon={<UploadOutlined />} isDark height="36px">
-              {t("workspace.uploadBtn")}
-            </ButtonComponent>
+            <div className="flex flex-col items-center justify-center gap-1 cursor-pointer">
+              <div className="w-8 h-8 flex items-center justify-center rounded-full bg-purple-700 text-white">
+                <PlusOutlined />
+              </div>
+              <p className="mt-2 text-sm font-medium">Upload File</p>
+              <p className="text-xs text-gray-400">(Upload file up to 20MB)</p>
+            </div>
           </Upload>
         )}
-
-        <Typography.Text className="block mt-1 text-xs text-gray-400">
-          {t("workspace.uploadNote")}
-        </Typography.Text>
       </div>
     </div>
   );

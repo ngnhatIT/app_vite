@@ -3,6 +3,7 @@ import type { ReactNode, CSSProperties } from "react";
 
 interface ButtonComponentProps {
   children?: ReactNode;
+  label?: string; // 👈 thêm label
   htmlType?: "button" | "submit" | "reset";
   loading?: boolean;
   onClick?: () => void;
@@ -18,6 +19,7 @@ interface ButtonComponentProps {
 
 const ButtonComponent = ({
   children,
+  label,
   htmlType = "button",
   loading = false,
   onClick,
@@ -68,6 +70,8 @@ const ButtonComponent = ({
     ...(disabled ? disabledStyle : styleByVariant[variant]),
   };
 
+  const content = children ?? label ?? null; // 👈 ưu tiên children > label > null
+
   const buttonElement = (
     <Button
       icon={icon}
@@ -79,7 +83,7 @@ const ButtonComponent = ({
       className={`${baseClass} ${className}`}
       style={finalStyle}
     >
-      {children}
+      {content}
     </Button>
   );
 

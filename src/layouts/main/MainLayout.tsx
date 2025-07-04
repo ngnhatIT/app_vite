@@ -9,7 +9,7 @@ import SubMenuPanel from "./SubMenuPanel";
 import { AppstoreOutlined } from "@ant-design/icons";
 import "../../css/main_layout.css";
 import "../../css/layout.css";
-import { fetchWorkspacesThunk } from "../../features/workspace/workspceThunk";
+// import { fetchWorkspacesThunk } from "../../features/workspace/workspaceThunk";
 
 const { Footer, Sider, Content } = Layout;
 
@@ -22,9 +22,19 @@ const MainLayout = () => {
   const [submenusMap, setSubmenusMap] = useState<Record<string, any[]>>({});
   const [subMenuCollapsed, setSubMenuCollapsed] = useState(false);
 
-  const workspaces = useSelector(
-    (state: RootState) => state.workspace.list || []
-  );
+  // 🚀 Khi chạy thật → bỏ comment 2 dòng dưới
+  // const workspaces = useSelector(
+  //   (state: RootState) => state.workspace.list || []
+  // );
+
+  // 🚀 Khi chạy thật → bỏ comment để fetch workspace
+  /*
+  useEffect(() => {
+    if (activeGroup === "/workspace" && workspaces.length === 0) {
+      dispatch(fetchWorkspacesThunk());
+    }
+  }, [activeGroup, dispatch, workspaces.length]);
+  */
 
   useEffect(() => {
     const path = location.pathname.split("/")[1];
@@ -32,29 +42,33 @@ const MainLayout = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (activeGroup === "/workspace" && workspaces.length === 0) {
-      dispatch(fetchWorkspacesThunk());
-    }
-  }, [activeGroup, dispatch, workspaces.length]);
-
-  useEffect(() => {
     const map: Record<string, any[]> = {};
 
+    // Thêm menu tĩnh
     for (const item of menuItems) {
       if (item.isGroup && item.submenus) {
         map[item.key] = item.submenus;
       }
     }
 
-    map["/workspace"] = workspaces.map((ws: any) => ({
-      key: `/workspace/${ws.id}`,
-      link: `/workspace/${ws.id}`,
+    const workspaces = [
+      { id: "ddfa210a-0654-4c54-a97d-86c287056ce6", name: "Workspace One" },
+      { id: "workspace-2", name: "Workspace Two" },
+      { id: "workspace-3", name: "Workspace Three" },
+      { id: "workspace-4", name: "Workspace Four" }, // 👉 bạn có thể thêm bao nhiêu tùy ý
+      { id: "workspace-5", name: "Workspace Five" },
+    ];
+
+    map["/workspace"] = workspaces.map((ws) => ({
+      key: `${ws.id}`,
+      link: `/workspace/login`,
       icon: <AppstoreOutlined className="text-2xl" />,
       title: ws.name,
+      workspaceId: ws.id,
     }));
 
     setSubmenusMap(map);
-  }, [workspaces]);
+  }, []);
 
   const backgroundClass = isDark
     ? "bg-gradient-238 text-white"

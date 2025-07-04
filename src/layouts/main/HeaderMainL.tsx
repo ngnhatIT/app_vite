@@ -1,7 +1,7 @@
 import { Breadcrumb, Avatar, Dropdown } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { toggleTheme } from "../../features/setting/themeSlice";
+import { toggleTheme } from "../../features/setting/ThemeSlice";
 import type { RootState } from "../../app/store";
 import { MoonIcon, SunIcon } from "lucide-react";
 import LanguageSelectorMain from "../../components/LanguageSelectorMain";

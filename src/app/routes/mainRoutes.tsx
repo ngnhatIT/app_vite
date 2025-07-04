@@ -5,6 +5,9 @@ import UserList from "../../features/users/pages/UserList";
 import { DivideCircle } from "lucide-react";
 import WorkspaceManagement from "../../features/workspace_management/pages/WorkspaceList";
 import WorkspaceForm from "../../features/workspace_management/pages/WorkspaceForm";
+import WorkspaceFiles from "../../features/workspace/pages/WorkspaceFiles";
+import WorkspacePermissions from "../../features/workspace/pages/WorkspacePermissions";
+import WorkspaceLogin from "../../features/workspace/pages/WorkspaceLogin";
 
 export const securityRoutes = {
   path: "/security",
@@ -44,7 +47,12 @@ export const systemRoutes = {
 
 export const workspaceRoutes = {
   path: "/workspace",
-  element: <div>workspace</div>,
+  element: <Outlet />,
+  children: [
+    { path: "login", element: <WorkspaceLogin /> },
+    { path: "files", element: <WorkspaceFiles /> },
+    { path: "permissions", element: <WorkspacePermissions /> },
+  ],
 };
 
 export const statisticalRoutes = {
