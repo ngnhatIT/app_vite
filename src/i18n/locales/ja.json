@@ -94,6 +94,12 @@
     "title": "ユーザー一覧",
     "search_placeholder": "ユーザー名で検索",
     "add_user": "新しいユーザーを追加",
+    "pagination": {
+      "of": "of",
+      "prev": "Previous",
+      "next": "Next",
+      "items_per_page": "items per page"
+    },
     "columns": {
       "name": "名前",
       "role": "役割",

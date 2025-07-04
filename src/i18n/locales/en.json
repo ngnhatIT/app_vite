@@ -100,7 +100,7 @@
       "name": "Name",
       "role": "Role",
       "status": "Status",
-      "isCheck": "Check IP",
+      "ipCheck": "Check IP",
       "action": "Action"
     },
     "status": {
