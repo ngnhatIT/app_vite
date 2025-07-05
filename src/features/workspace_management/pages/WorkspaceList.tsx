@@ -197,7 +197,12 @@ const WorkspaceList = () => {
       <div className="p-4">
         {/* Header */}
         <div className="flex justify-between mb-6 gap-4">
-          <LabelComponent label="workspace.title" isDark={isDark} as="h2" />
+          <LabelComponent
+            label="workspace.title"
+            isDark={isDark}
+            as="h2"
+            className="text-[32px] font-semibold flex-5"
+          />
           <div className="flex gap-3">
             <InputComponent
               type="text"
@@ -233,6 +238,7 @@ const WorkspaceList = () => {
           className="custom-user-table"
         />
 
+        {/* Pagination */}
         {/* Pagination */}
         <div className="mt-2 flex items-center justify-between w-full flex-wrap gap-2">
           <div className="flex items-center gap-2 text-white text-sm">

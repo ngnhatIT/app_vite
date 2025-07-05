@@ -54,10 +54,10 @@ export interface DelUserSheetDTO {
 // 📌 DTO RESPONSE
 
 /** Response chung */
-export interface ResponseDTO<T = unknown> {
-  message: string;
-  success?: boolean;
-  list?: T;
+export interface ResponseDTO<T = any> {
+  code: number;
+  msg: string;
+  data: T;
 }
 
 // 📌 DTO CHO DANH SÁCH FILE
@@ -91,6 +91,7 @@ export interface UpdateUserPermissionDTO {
   }[];
 }
 
+// 📌 Workspace
 export interface WorkspaceListByUserResponseDto {
   workspaceId: string;
   workspaceName: string;

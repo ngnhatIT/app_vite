@@ -1,17 +1,23 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { workspaceService } from "./workspaceService";
-import type { Workspace, CreateWorkspaceDTO, UpdateWorkspaceDTO, AddMemberDTO, RemoveMembersDTO, ChangePasswordDTO, WorkspaceDetail } from "./dto/workSpaceDTO";
+import type {
+  Workspace,
+  CreateWorkspaceDTO,
+  RemoveMembersDTO,
+  ChangePasswordDTO,
+  WorkspaceDetail,
+} from "./dto/workSpaceDTO";
 
-
-export const fetchWorkspacesThunk = createAsyncThunk<
-  Workspace[]
->("workspace/fetchAll", async (_, { rejectWithValue }) => {
-  try {
-    return await workspaceService.fetchAll();
-  } catch (err) {
-    return rejectWithValue(err);
+export const fetchWorkspacesThunk = createAsyncThunk<Workspace[]>(
+  "workspace/fetchAll",
+  async (_, { rejectWithValue }) => {
+    try {
+      return await workspaceService.fetchAll();
+    } catch (err) {
+      return rejectWithValue(err);
+    }
   }
-});
+);
 
 export const createWorkspaceThunk = createAsyncThunk<
   Workspace,
@@ -39,7 +45,16 @@ export const getWorkspaceDetailThunk = createAsyncThunk<
 
 export const updateWorkspaceThunk = createAsyncThunk<
   WorkspaceDetail,
-  { id: string; payload: Partial<WorkspaceDetail> & { viewConfig?: File; editConfig?: File; commentConfig?: File; password?: string; confirmPassword?: string } },
+  {
+    id: string;
+    payload: Partial<WorkspaceDetail> & {
+      viewConfig?: File;
+      editConfig?: File;
+      commentConfig?: File;
+      password?: string;
+      confirmPassword?: string;
+    };
+  },
   { rejectValue: string }
 >("workspace/update", async ({ id, payload }, { rejectWithValue }) => {
   try {
@@ -50,47 +65,50 @@ export const updateWorkspaceThunk = createAsyncThunk<
   }
 });
 
-export const deleteWorkspaceThunk = createAsyncThunk<
-  string,
-  string
->("workspace/delete", async (id, { rejectWithValue }) => {
-  try {
-    await workspaceService.delete(id);
-    return id;
-  } catch (err) {
-    return rejectWithValue(err);
+export const deleteWorkspaceThunk = createAsyncThunk<string, string>(
+  "workspace/delete",
+  async (id, { rejectWithValue }) => {
+    try {
+      await workspaceService.delete(id);
+      return id;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
   }
-});
+);
 
 export const addMemberThunk = createAsyncThunk<
   any, // hoặc Workspace nếu bạn trả về toàn bộ workspace
   { workspaceId: string; user_id: string }
->("workspace/addMember", async ({ workspaceId, user_id }, { rejectWithValue }) => {
-  try {
-    return await workspaceService.addMember(workspaceId, user_id);
-  } catch (err) {
-    return rejectWithValue(err);
+>(
+  "workspace/addMember",
+  async ({ workspaceId, user_id }, { rejectWithValue }) => {
+    try {
+      return await workspaceService.addMember(workspaceId, user_id);
+    } catch (err) {
+      return rejectWithValue(err);
+    }
   }
-});
+);
 
-export const removeMembersThunk = createAsyncThunk<
-  Workspace,
-  RemoveMembersDTO
->("workspace/removeMembers", async (payload, { rejectWithValue }) => {
-  try {
-    return await workspaceService.removeMembers(payload);
-  } catch (err) {
-    return rejectWithValue(err);
+export const removeMembersThunk = createAsyncThunk<Workspace, RemoveMembersDTO>(
+  "workspace/removeMembers",
+  async (payload, { rejectWithValue }) => {
+    try {
+      return await workspaceService.removeMembers(payload);
+    } catch (err) {
+      return rejectWithValue(err);
+    }
   }
-});
+);
 
-export const changePasswordThunk = createAsyncThunk<
-  void,
-  ChangePasswordDTO
->("workspace/changePassword", async (payload, { rejectWithValue }) => {
-  try {
-    await workspaceService.changePassword(payload);
-  } catch (err) {
-    return rejectWithValue(err);
+export const changePasswordThunk = createAsyncThunk<void, ChangePasswordDTO>(
+  "workspace/changePassword",
+  async (payload, { rejectWithValue }) => {
+    try {
+      await workspaceService.changePassword(payload);
+    } catch (err) {
+      return rejectWithValue(err);
+    }
   }
-});
+);

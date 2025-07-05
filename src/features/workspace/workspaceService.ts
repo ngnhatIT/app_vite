@@ -23,15 +23,24 @@ export const workspaceService = {
     ),
 
   checkPassword: (dto: CheckUserInWspDTO): Promise<ResponseDTO> =>
-    handleApiCall(() => axiosInstance.post("/googlesheet/checkpass-wsp", dto)),
+    handleApiCall(async () => {
+      const res = await axiosInstance.post("/googlesheet/checkpass-wsp", dto);
+      return res.data;
+    }),
 
   login: (dto: LoginWspDTO): Promise<ResponseDTO> =>
-    handleApiCall(() => axiosInstance.post("/googlesheet/login-wsp", dto)),
+    handleApiCall(async () => {
+      const res = await axiosInstance.post("/googlesheet/login-wsp", dto);
+      return res.data;
+    }),
 
   listFiles: (
     dto: ListFileGoogleSheetDTO
-  ): Promise<ResponseDTO<GoogleSheetFile[]>> =>
-    handleApiCall(() => axiosInstance.post("/googlesheet/list-file", dto)),
+  ): Promise<ResponseDTO<{ list: GoogleSheetFile[] }>> =>
+    handleApiCall(async () => {
+      const res = await axiosInstance.post("/googlesheet/list-file", dto);
+      return res.data;
+    }),
 
   createFile: (dto: CreateFileGoogleSheetDTO): Promise<ResponseDTO> =>
     handleApiCall(() => axiosInstance.post("/googlesheet/create-file", dto)),
@@ -55,5 +64,11 @@ export const workspaceService = {
   /** 🔷 BỔ SUNG: Lấy danh sách workspace theo user */
   listWorkspacesByUser: (): Promise<
     ResponseDTO<WorkspaceListByUserResponseDto[]>
-  > => handleApiCall(() => axiosInstance.get("/sub-menu")),
+  > =>
+    handleApiCall(async () => {
+      const res = await axiosInstance.get<
+        ResponseDTO<WorkspaceListByUserResponseDto[]>
+      >("system/workspaces/sub-menu");
+      return res.data;
+    }),
 };

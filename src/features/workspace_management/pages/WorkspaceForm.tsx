@@ -82,8 +82,8 @@ const WorkspaceForm = () => {
       setViewFileName(detail.viewFileName || "");
       setEditFileName(detail.editFileName || "");
       setCommentFileName(detail.commentFileName || "");
-    } catch {
-      message.error(t("common.error"));
+    } catch (err: any) {
+      message.error(err.message);
     } finally {
       setLoadingDetail(false);
     }
@@ -150,8 +150,7 @@ const WorkspaceForm = () => {
       message.success(t("common.saved"));
       navigate(-1);
     } catch (err: any) {
-      console.error(err);
-      message.error(t("common.error"));
+      message.error(err.message ?? t("common.error"));
     }
   };
 
@@ -187,6 +186,7 @@ const WorkspaceForm = () => {
             loading={loadingOwners}
             value={owner}
             onChange={setOwner}
+            style={{ height: 42 }}
             placeholder={t("workspace.ownerPlaceholder")}
             className={`w-full rounded-[8px] ${
               isDark

@@ -44,8 +44,16 @@ type User = {
 };
 
 // Add/Edit Workspace
-export const AddEditWorkspaceModal = ({ open, onClose, onSubmit, initialData }: {
-  open: boolean; onClose: () => void; onSubmit: (data: any) => void; initialData?: any;
+export const AddEditWorkspaceModal = ({
+  open,
+  onClose,
+  onSubmit,
+  initialData,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: any) => void;
+  initialData?: any;
 }) => {
   const { t } = useTranslation();
   const isDark = useSelector((s: RootState) => s.theme.darkMode);
@@ -60,8 +68,15 @@ export const AddEditWorkspaceModal = ({ open, onClose, onSubmit, initialData }: 
 
   const handleOk = () => {
     if (!name || !owner) return message.warning(t("workspace.requiredFields"));
-    if (usePassword && password !== confirm) return message.error(t("workspace.passwordMismatch"));
-    onSubmit({ name, owner, desc, file, password: usePassword ? password : undefined });
+    if (usePassword && password !== confirm)
+      return message.error(t("workspace.passwordMismatch"));
+    onSubmit({
+      name,
+      owner,
+      desc,
+      file,
+      password: usePassword ? password : undefined,
+    });
   };
 
   return (
@@ -71,11 +86,20 @@ export const AddEditWorkspaceModal = ({ open, onClose, onSubmit, initialData }: 
       footer={null}
       className={getModalClassName(isDark)}
       centered
-      title={<LabelComponent label={initialData ? "workspace.editTitle" : "workspace.createTitle"} isDark />}
+      title={
+        <LabelComponent
+          label={initialData ? "workspace.editTitle" : "workspace.createTitle"}
+          isDark
+        />
+      }
     >
       <div className="flex flex-col gap-3">
         <LabelComponent label="workspace.name" isDark />
-        <InputComponent value={name} onChange={(e) => setName(e.target.value)} isDark />
+        <InputComponent
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          isDark
+        />
 
         <LabelComponent label="workspace.owner" isDark />
         <Select value={owner} onChange={setOwner} className="w-full">
@@ -83,31 +107,58 @@ export const AddEditWorkspaceModal = ({ open, onClose, onSubmit, initialData }: 
         </Select>
 
         <LabelComponent label="workspace.description" isDark />
-        <InputComponent value={desc} onChange={(e) => setDesc(e.target.value)} isDark />
+        <InputComponent
+          value={desc}
+          onChange={(e) => setDesc(e.target.value)}
+          isDark
+        />
 
         <LabelComponent label="workspace.googleService" isDark />
-        <Upload beforeUpload={(f) => { setFile(f); return false; }} showUploadList={false}>
+        <Upload
+          beforeUpload={(f) => {
+            setFile(f);
+            return false;
+          }}
+          showUploadList={false}
+        >
           <ButtonComponent icon={<UploadOutlined />} isDark>
             {t("workspace.uploadGoogleService")}
           </ButtonComponent>
         </Upload>
 
-        <Checkbox checked={usePassword} onChange={(e) => setUsePassword(e.target.checked)}>
+        <Checkbox
+          checked={usePassword}
+          onChange={(e) => setUsePassword(e.target.checked)}
+        >
           {t("workspace.enablePassword")}
         </Checkbox>
 
         {usePassword && (
           <>
             <LabelComponent label="workspace.password" isDark />
-            <InputComponent type="password" value={password} onChange={(e) => setPassword(e.target.value)} isDark />
+            <InputComponent
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              isDark
+            />
             <LabelComponent label="workspace.confirmPassword" isDark />
-            <InputComponent type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} isDark />
+            <InputComponent
+              type="password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              isDark
+            />
           </>
         )}
 
         <div className="flex justify-end mt-4 gap-2">
-          <ButtonComponent onClick={onClose} isDark>{t("common.cancel")}</ButtonComponent>
-          <ButtonComponent onClick={handleOk} isDark>{t("common.save")}</ButtonComponent>
+          <ButtonComponent onClick={onClose} isDark>
+            {t("common.cancel")}
+          </ButtonComponent>
+          <ButtonComponent onClick={handleOk} isDark>
+            {t("common.save")}
+          </ButtonComponent>
         </div>
       </div>
     </Modal>
@@ -152,7 +203,7 @@ export const ManageMembersModal = ({
   const handleDelete = async (ids: string[]) => {
     const result = await onDeleteMembers(ids);
     if (result === "ok") {
-      setMembers(prev => prev.filter(m => !ids.includes(m.user_id)));
+      setMembers((prev) => prev.filter((m) => !ids.includes(m.user_id)));
       setSelected([]);
     } else {
       message.error(t("common.error"));
@@ -175,7 +226,9 @@ export const ManageMembersModal = ({
           <Avatar src={record.avatar} />
           <div>
             <div className="text-white">{record.username || "-"}</div>
-            <div className="text-gray-400 text-xs">{record.fullname || "-"}</div>
+            <div className="text-gray-400 text-xs">
+              {record.fullname || "-"}
+            </div>
           </div>
         </div>
       ),
@@ -239,7 +292,6 @@ export const ManageMembersModal = ({
   );
 };
 
-
 // Add Member
 export const AddMemberModal = ({
   open,
@@ -298,8 +350,15 @@ export const AddMemberModal = ({
           onChange={setSelectedUserId}
           className="w-full"
           filterOption={(input, option) => {
-            const text = option?.children?.toString().toLowerCase() || "";
-            return text.includes(input.toLowerCase());
+            const value = option?.value;
+            if (!value) return false;
+
+            const keyword = input.toLowerCase();
+
+            const user = users.find((u) => u.user_id === value);
+            if (!user) return false;
+
+            return user.username.toLowerCase().includes(keyword);
           }}
         >
           {users.map((u) => (
@@ -312,11 +371,17 @@ export const AddMemberModal = ({
     </Modal>
   );
 };
-// Change Password
-export const ChangePasswordModal = ({ open, onClose, onSubmit }: {
-  open: boolean; onClose: () => void; onSubmit: (data: { current: string; next: string; confirm: string }) => void;
-}) => {
 
+// Change Password
+export const ChangePasswordModal = ({
+  open,
+  onClose,
+  onSubmit,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: { current: string; next: string; confirm: string }) => void;
+}) => {
   const isDark = useSelector((s: RootState) => s.theme.darkMode);
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
@@ -334,11 +399,26 @@ export const ChangePasswordModal = ({ open, onClose, onSubmit }: {
       title={<LabelComponent label="workspace.changePassword" isDark />}
     >
       <LabelComponent label="workspace.currentPassword" isDark />
-      <InputComponent type="password" value={current} onChange={(e) => setCurrent(e.target.value)} isDark />
+      <InputComponent
+        type="password"
+        value={current}
+        onChange={(e) => setCurrent(e.target.value)}
+        isDark
+      />
       <LabelComponent label="workspace.newPassword" isDark />
-      <InputComponent type="password" value={next} onChange={(e) => setNext(e.target.value)} isDark />
+      <InputComponent
+        type="password"
+        value={next}
+        onChange={(e) => setNext(e.target.value)}
+        isDark
+      />
       <LabelComponent label="workspace.confirmPassword" isDark />
-      <InputComponent type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} isDark />
+      <InputComponent
+        type="password"
+        value={confirm}
+        onChange={(e) => setConfirm(e.target.value)}
+        isDark
+      />
     </Modal>
   );
 };

@@ -14,13 +14,13 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../app/store";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import logo from ".././../assets/logo_main.svg";
+import logo from "../../assets/logo_main.svg";
 import logoLight from "../../assets/logo_main_light.svg";
 
 export const menuItems = [
   { key: "/", icon: <HomeOutlined />, label: "menu.dashboard" },
   { key: "/users/", icon: <UserOutlined />, label: "menu.users" },
-  { key: "/workspace", icon: <LockOutlined />, label: "menu.workspace" },
+  { key: "/workspace", icon: <AppstoreOutlined />, label: "menu.workspace" },
   {
     key: "/security",
     icon: <SecurityScanOutlined />,
@@ -79,6 +79,7 @@ const SiderMenu = ({
   const location = useLocation();
   const navigate = useNavigate();
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
+
   const [activeGroupKey, setActiveGroupKey] = useState<string | null>(null);
   const [activeItemKey, setActiveItemKey] = useState<string | null>(null);
 
@@ -109,19 +110,21 @@ const SiderMenu = ({
 
   return (
     <div className="h-full w-full flex flex-col items-center py-4">
-      {/* Logo SVG giữ nguyên như cũ, đã rút gọn tại đây */}
+      {/* Logo */}
       <img
         src={isDark ? logo : logoLight}
         alt="Logo"
         width={37.5}
         height={50}
-        className=" pb-[36px]"
+        className="pb-[36px]"
       />
+
       {/* Menu List */}
-      <div className="flex flex-col gap-3 w-full px-1 flex-grow py-6 px-7">
+      <div className="flex flex-col gap-3 w-full flex-grow px-7">
         {menuItems.map((item) => {
           const isActive =
             item.key === activeItemKey || item.key === activeGroupKey;
+
           return (
             <div
               key={item.key}
@@ -130,8 +133,8 @@ const SiderMenu = ({
                 ${
                   isActive
                     ? `${
-                        isDark ? "bg-[#5b21b6]/30" : "#FFFFFF"
-                      } text-[#a855f7] font-medium shadow-[0_4px_12px_rgba(100,35,216,0.08)]`
+                        isDark ? "bg-[#5b21b6]/30" : "bg-white"
+                      } text-[#a855f7] font-medium shadow`
                     : `${
                         isDark ? "text-white" : "text-gray-700"
                       } hover:text-[#a855f7]`
@@ -140,9 +143,11 @@ const SiderMenu = ({
               {isActive && (
                 <div className="absolute left-0 top-6 bottom-6 w-1 rounded-r bg-[#a855f7]" />
               )}
+
               <div className={`text-xl ${isActive ? "text-[#5b21b6]" : ""}`}>
                 {item.icon}
               </div>
+
               <div
                 className={`text-xs mt-1 text-center leading-tight ${
                   isActive ? "" : isDark ? "text-white" : "text-gray-700"

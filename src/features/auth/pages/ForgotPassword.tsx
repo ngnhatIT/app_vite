@@ -58,8 +58,6 @@ const ForgotPassword = () => {
         })
       ).unwrap();
 
-      console.log("✅ otplimit:", otplimit);
-
       message.info(t("forgot.otpSent"));
 
       navigate("/auth/check-mail", {
@@ -67,7 +65,7 @@ const ForgotPassword = () => {
           user: { email: parsed.data.email },
           otpCountdownStart: Date.now(),
           flowType: "forgot-password",
-          otplimit
+          otplimit,
         },
       });
     } catch (err: any) {

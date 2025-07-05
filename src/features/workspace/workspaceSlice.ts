@@ -1,5 +1,4 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-
 import {
   checkPassword,
   loginWorkspace,
@@ -48,8 +47,6 @@ const workspaceSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-
-      // 📝 checkPassword
       .addCase(checkPassword.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -62,8 +59,6 @@ const workspaceSlice = createSlice({
         state.error =
           (action.payload as any)?.message || "Check password failed";
       })
-
-      // 🔑 loginWorkspace
       .addCase(loginWorkspace.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -76,22 +71,18 @@ const workspaceSlice = createSlice({
         state.loading = false;
         state.error = (action.payload as any)?.message || "Login failed";
       })
-
-      // 📄 fetchFiles
       .addCase(fetchFiles.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchFiles.fulfilled, (state, action) => {
         state.loading = false;
-        state.files = action.payload;
+        state.files = action.payload || [];
       })
       .addCase(fetchFiles.rejected, (state, action) => {
         state.loading = false;
         state.error = (action.payload as any)?.message || "Fetch files failed";
       })
-
-      // ➕ createFile
       .addCase(createFile.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -105,8 +96,6 @@ const workspaceSlice = createSlice({
         state.loading = false;
         state.error = (action.payload as any)?.message || "Create file failed";
       })
-
-      // ❌ deleteFile
       .addCase(deleteFile.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -120,8 +109,6 @@ const workspaceSlice = createSlice({
         state.loading = false;
         state.error = (action.payload as any)?.message || "Delete file failed";
       })
-
-      // 👥 fetchUsersBySheet
       .addCase(fetchUsersBySheet.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -134,8 +121,6 @@ const workspaceSlice = createSlice({
         state.loading = false;
         state.error = (action.payload as any)?.message || "Fetch users failed";
       })
-
-      // ➕ addUserToSheet
       .addCase(addUserToSheet.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -149,8 +134,6 @@ const workspaceSlice = createSlice({
         state.loading = false;
         state.error = (action.payload as any)?.message || "Add user failed";
       })
-
-      // ❌ removeUserFromSheet
       .addCase(removeUserFromSheet.pending, (state) => {
         state.loading = true;
         state.error = null;

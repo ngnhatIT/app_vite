@@ -13,7 +13,6 @@ import { loginThunk } from "../authThunk";
 import { setNavigate } from "../../../api/AxiosIntance";
 import { type LoginFormType, LoginSchema } from "../authSchema";
 
-
 const Login = () => {
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -30,6 +29,15 @@ const Login = () => {
   }, [navigate]);
 
   const handleFinish = async (values: LoginFormType) => {
+    // Xóa toàn bộ lỗi cũ dựa theo các trường trong Schema
+    form.setFields(
+      Object.keys(LoginSchema.shape).map((name) => ({
+        name,
+        errors: [],
+      }))
+    );
+
+    // Validate dữ liệu
     const parsed = LoginSchema.safeParse(values);
 
     if (!parsed.success) {

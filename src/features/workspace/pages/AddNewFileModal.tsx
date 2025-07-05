@@ -5,41 +5,52 @@ import { createFile, fetchFiles } from "../workspceThunk";
 import { clearError, clearSuccessMsg } from "../workspaceSlice";
 import ButtonComponent from "../../../components/ButtonComponent";
 import LabelComponent from "../../../components/LabelComponent";
+import { useTranslation } from "react-i18next";
 
 interface AddNewFileModalProps {
   onClose: () => void;
+  onFileAdded: () => void;
+  workspaceId: string;
 }
 
-export default function AddNewFileModal({ onClose }: AddNewFileModalProps) {
+export default function AddNewFileModal({
+  onClose,
+  onFileAdded,
+  workspaceId,
+}: AddNewFileModalProps) {
   const dispatch = useDispatch<AppDispatch>();
-  const { currentWorkspaceId, loading, error, successMsg } = useSelector(
+  const { loading, error, successMsg } = useSelector(
     (state: RootState) => state.workspace
   );
   const darkMode = useSelector((state: RootState) => state.theme.darkMode);
+  const { t } = useTranslation();
 
   const [fileName, setFileName] = useState("");
 
-  const handleCreate = () => {
-    if (!fileName || !currentWorkspaceId) return;
+  const handleCreate = async () => {
+    if (!fileName || !workspaceId) {
+      dispatch(clearError());
+      dispatch(clearSuccessMsg());
+      return;
+    }
 
-    dispatch(clearError());
-    dispatch(clearSuccessMsg());
-
-    dispatch(createFile({ wspId: currentWorkspaceId, fileName }))
-      .unwrap()
-      .then(() => {
-        dispatch(fetchFiles({ wspId: currentWorkspaceId })); // refresh list
-        setFileName("");
-        onClose();
-      })
-      .catch(() => {});
+    try {
+      await dispatch(createFile({ wspId: workspaceId, fileName })).unwrap();
+      dispatch(fetchFiles({ wspId: workspaceId }));
+      onFileAdded(); // Notify parent to refetch files
+      setFileName("");
+      dispatch(clearSuccessMsg());
+      // Không đóng modal ngay, để người dùng thấy successMsg
+    } catch (error) {
+      // Lỗi đã được xử lý trong Redux store (state.workspace.error)
+    }
   };
 
   useEffect(() => {
-    if (!currentWorkspaceId) {
+    if (!workspaceId) {
       onClose();
     }
-  }, [currentWorkspaceId, onClose]);
+  }, [workspaceId, onClose]);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -48,11 +59,14 @@ export default function AddNewFileModal({ onClose }: AddNewFileModalProps) {
           darkMode ? "bg-gray-800 text-white" : "bg-white text-black"
         }`}
       >
-        <h2 className="text-xl font-semibold mb-4">Create New Google Sheet</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          {t("workspace.files.addFile")}
+        </h2>
 
         <LabelComponent
-          label="Enter file name"
+          label={t("workspace.files.enterFilename")}
           className="text-sm mb-2 block"
+          isDark={darkMode}
         />
 
         <input
@@ -60,12 +74,15 @@ export default function AddNewFileModal({ onClose }: AddNewFileModalProps) {
           value={fileName}
           onChange={(e) => setFileName(e.target.value)}
           className={`w-full mb-4 px-3 py-2 rounded outline-none ${
-            darkMode ? "bg-gray-700 text-white" : "bg-gray-100 text-black"
-          }`}
+            darkMode
+              ? "bg-gray-700 text-white border-gray-600"
+              : "bg-gray-100 text-black border-gray-300"
+          } border`}
+          placeholder={t("workspace.files.filenamePlaceholder")}
         />
 
         {error && (
-          <div className="text-red-400 text-sm mb-2">
+          <div className="text-red-400 text-sm mb-2 flex items-center">
             {error}
             <button
               className="ml-2 underline"
@@ -77,7 +94,7 @@ export default function AddNewFileModal({ onClose }: AddNewFileModalProps) {
         )}
 
         {successMsg && (
-          <div className="text-green-400 text-sm mb-2">
+          <div className="text-green-400 text-sm mb-2 flex items-center">
             {successMsg}
             <button
               className="ml-2 underline"
@@ -90,11 +107,16 @@ export default function AddNewFileModal({ onClose }: AddNewFileModalProps) {
 
         <div className="flex justify-end gap-2 mt-4">
           <ButtonComponent
+            label={t("workspace.files.cancel")}
             onClick={onClose}
+            isDark={darkMode}
             className="!bg-gray-400 hover:!bg-gray-500"
+            disabled={loading}
           />
           <ButtonComponent
+            label={t("workspace.files.create")}
             onClick={handleCreate}
+            isDark={darkMode}
             disabled={loading || !fileName}
             className="!bg-purple-600 hover:!bg-purple-700"
           />

@@ -1,4 +1,4 @@
-import { Layout } from "antd";
+import { Layout, message } from "antd";
 import { useSelector, useDispatch } from "react-redux";
 import { Outlet, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -9,7 +9,7 @@ import SubMenuPanel from "./SubMenuPanel";
 import { AppstoreOutlined } from "@ant-design/icons";
 import "../../css/main_layout.css";
 import "../../css/layout.css";
-// import { fetchWorkspacesThunk } from "../../features/workspace/workspaceThunk";
+import { listWorkspacesByUserThunk } from "../../features/workspace/workspceThunk";
 
 const { Footer, Sider, Content } = Layout;
 
@@ -22,20 +22,6 @@ const MainLayout = () => {
   const [submenusMap, setSubmenusMap] = useState<Record<string, any[]>>({});
   const [subMenuCollapsed, setSubMenuCollapsed] = useState(false);
 
-  // 🚀 Khi chạy thật → bỏ comment 2 dòng dưới
-  // const workspaces = useSelector(
-  //   (state: RootState) => state.workspace.list || []
-  // );
-
-  // 🚀 Khi chạy thật → bỏ comment để fetch workspace
-  /*
-  useEffect(() => {
-    if (activeGroup === "/workspace" && workspaces.length === 0) {
-      dispatch(fetchWorkspacesThunk());
-    }
-  }, [activeGroup, dispatch, workspaces.length]);
-  */
-
   useEffect(() => {
     const path = location.pathname.split("/")[1];
     setActiveGroup(`/${path}`);
@@ -44,31 +30,44 @@ const MainLayout = () => {
   useEffect(() => {
     const map: Record<string, any[]> = {};
 
-    // Thêm menu tĩnh
+    // static menus
     for (const item of menuItems) {
       if (item.isGroup && item.submenus) {
         map[item.key] = item.submenus;
       }
     }
 
-    const workspaces = [
-      { id: "ddfa210a-0654-4c54-a97d-86c287056ce6", name: "Workspace One" },
-      { id: "workspace-2", name: "Workspace Two" },
-      { id: "workspace-3", name: "Workspace Three" },
-      { id: "workspace-4", name: "Workspace Four" }, // 👉 bạn có thể thêm bao nhiêu tùy ý
-      { id: "workspace-5", name: "Workspace Five" },
-    ];
-
-    map["/workspace"] = workspaces.map((ws) => ({
-      key: `${ws.id}`,
-      link: `/workspace/login`,
-      icon: <AppstoreOutlined className="text-2xl" />,
-      title: ws.name,
-      workspaceId: ws.id,
-    }));
-
     setSubmenusMap(map);
   }, []);
+
+  useEffect(() => {
+    if (activeGroup === "/workspace") {
+      dispatch(listWorkspacesByUserThunk())
+        .unwrap()
+        .then((data) => {
+          console.log("✅ Workspaces:", data);
+
+          setSubmenusMap((prev) => ({
+            ...prev,
+            ["/workspace"]: data.map((ws) => ({
+              key: ws.workspaceId,
+              link: `/workspace/login`,
+              icon: <AppstoreOutlined className="text-2xl" />,
+              title: ws.workspaceName,
+              workspaceId: ws.workspaceId,
+              workspaceName: ws.workspaceName,
+            })),
+          }));
+        })
+        .catch((err) => {
+          message.error(err);
+          setSubmenusMap((prev) => ({
+            ...prev,
+            ["/workspace"]: [],
+          }));
+        });
+    }
+  }, [activeGroup, dispatch]);
 
   const backgroundClass = isDark
     ? "bg-gradient-238 text-white"

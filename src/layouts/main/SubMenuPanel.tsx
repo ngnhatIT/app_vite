@@ -10,6 +10,8 @@ interface SubMenuItem {
   icon: ReactNode;
   title: string;
   link: string;
+  workspaceId?: string;
+  workspaceName?: string;
 }
 
 interface SubMenuPanelProps {
@@ -32,13 +34,22 @@ const SubMenuPanel = ({
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
 
   const items = submenus[group] || [];
-  const groupTitle = group.replace("/", "").replace(/-/g, " ");
+  const currentWorkspaceId = location.state?.workspaceId;
 
-  const handleNavigate = (link: string) => {
-    navigate(link);
+  const handleNavigate = (item: SubMenuItem) => {
+    if (group === "/workspace") {
+      navigate(item.link, {
+        state: {
+          workspaceId: item.workspaceId,
+          workspaceName: item.workspaceName,
+        },
+      });
+    } else {
+      navigate(item.key);
+    }
     onClosePanel?.();
   };
-  if (!items.length) return null;
+
   return (
     <div
       className="h-full py-4 flex flex-col gap-4 relative"
@@ -51,40 +62,35 @@ const SubMenuPanel = ({
         backdropFilter: "blur(12px)",
       }}
     >
-      {/* Toggle Collapse Button */}
       <button
         onClick={onToggleCollapse}
-        className="absolute -right-3 top-1/2 transform -translate-y-1/2 z-10 w-6 h-6 bg-white dark:bg-[#1c1c1c] border border-gray-300 dark:border-gray-700 rounded-full flex items-center justify-center shadow transition hover:bg-gray-100"
+        className={`absolute -right-3 top-1/2 transform -translate-y-1/2 z-10 w-6 h-6 border rounded-full flex items-center justify-center shadow transition
+    ${
+      isDark
+        ? "bg-black text-white border-gray-700"
+        : "bg-white text-black border-gray-300 hover:bg-gray-100"
+    }
+  `}
       >
         {collapsed ? <RightOutlined /> : <LeftOutlined />}
       </button>
 
-      {/* Title */}
-      {!collapsed && (
-        <>
-          <h2
-            className={`text-lg font-semibold px-5 capitalize ${
-              isDark ? "text-white" : "text-black"
-            }`}
-          >
-            {groupTitle}
-          </h2>
-          <div className="mt-2 border-b border-gray-200" />
-        </>
-      )}
-
-      {/* Submenu grid */}
       <div
         className={`w-full p-2 grid ${
           collapsed ? "grid-cols-1" : "grid-cols-2"
         } gap-3`}
       >
         {items.map((item) => {
-          const isActive = location.pathname === item.key;
+          let isActive =
+            group === "/workspace"
+              ? location.pathname === item.link &&
+                currentWorkspaceId === item.workspaceId
+              : location.pathname === item.key;
+
           return (
             <div
               key={item.key}
-              onClick={() => handleNavigate(item.key)}
+              onClick={() => handleNavigate(item)}
               className={`flex flex-col items-center justify-center text-center p-2 rounded-xl cursor-pointer transition
                 ${
                   isActive

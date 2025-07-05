@@ -42,7 +42,9 @@ export const LoginSchema = AuthSchema.pick({
 });
 
 export const RegisterSchema = AuthSchema.extend({
-  confirmPassword: z.string({ required_error: t("authValidation.confirmPasswordRequired") }),
+  confirmPassword: z.string({
+    required_error: t("authValidation.confirmPasswordRequired"),
+  }),
 }).refine((data) => data.password === data.confirmPassword, {
   message: t("authValidation.passwordsMismatch"),
   path: ["confirmPassword"],

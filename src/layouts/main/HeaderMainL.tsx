@@ -21,26 +21,39 @@ const segmentToI18nKey: Record<string, string> = {
   "audit-log": "breadcrumb.securityEvents",
   "security-incidents": "breadcrumb.securityIncidents",
   statistical: "breadcrumb.statistical",
+  login: "breadcrumb.login",
+};
+
+// helper đảm bảo trả về string
+const safeTranslate = (key: string, t: (k: string) => any) => {
+  const result = t(key);
+  return typeof result === "string" ? result : key;
 };
 
 // Sinh breadcrumb từ URL + theme
 const generateBreadcrumbItems = (
   pathname: string,
   isDark: boolean,
-  t: (key: string) => string
+  t: (key: string) => any
 ) => {
   const segments = pathname.split("/").filter(Boolean);
   const baseColor = isDark ? "text-white" : "text-black";
   const lastColor = "text-gray-400";
 
   return [
-    { title: <span className={baseColor}>{t("breadcrumb.home")}</span> },
+    {
+      title: (
+        <span className={baseColor}>{safeTranslate("breadcrumb.home", t)}</span>
+      ),
+    },
     ...segments.map((segment, idx) => {
       const isLast = idx === segments.length - 1;
       const labelKey = segmentToI18nKey[segment] || segment;
       return {
         title: (
-          <span className={isLast ? lastColor : baseColor}>{t(labelKey)}</span>
+          <span className={isLast ? lastColor : baseColor}>
+            {safeTranslate(labelKey, t)}
+          </span>
         ),
       };
     }),
@@ -56,7 +69,10 @@ const PageHeader = () => {
 
   const segments = location.pathname.split("/").filter(Boolean);
   const lastSegment = segments[segments.length - 1] || "home";
-  const pageTitle = t(segmentToI18nKey[lastSegment] || lastSegment);
+  const pageTitle = safeTranslate(
+    segmentToI18nKey[lastSegment] || lastSegment,
+    t
+  );
   const breadcrumbItems = generateBreadcrumbItems(location.pathname, isDark, t);
 
   return (
@@ -79,10 +95,8 @@ const PageHeader = () => {
 
       {/* RIGHT: Language + Theme + Avatar */}
       <div className="flex items-center gap-4">
-        {/* Language selector (left riêng) */}
         <LanguageSelectorMain />
 
-        {/* Theme toggle + Avatar group */}
         <div
           className={`flex items-center gap-3 px-4 py-1 rounded-full transition-all hover:shadow-lg h-11
           ${isDark ? "bg-[#1C1C2E] border border-[#343A40]" : "bg-[#F7F8F9]"}`}

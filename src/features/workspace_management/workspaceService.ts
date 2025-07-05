@@ -1,7 +1,15 @@
 import axiosInstance from "../../api/AxiosIntance";
 import { handleApiCall } from "../../api/HandApiCall";
 import { ENDPOINT } from "../../utils/constantEndPoint";
-import type { Workspace, CreateWorkspaceDTO, UpdateWorkspaceDTO, AddMemberDTO, RemoveMembersDTO, ChangePasswordDTO, WorkspaceDetail } from "./dto/workSpaceDTO";
+import type {
+  Workspace,
+  CreateWorkspaceDTO,
+  UpdateWorkspaceDTO,
+  AddMemberDTO,
+  RemoveMembersDTO,
+  ChangePasswordDTO,
+  WorkspaceDetail,
+} from "./dto/workSpaceDTO";
 
 export const workspaceService = {
   /**
@@ -25,15 +33,21 @@ export const workspaceService = {
       formData.append("workspaceName", payload.workspaceName);
       formData.append("ownerId", payload.ownerId);
 
-      if (payload.description) formData.append("description", payload.description);
+      if (payload.description)
+        formData.append("description", payload.description);
       if (payload.isPasswordRequired !== undefined)
-        formData.append("isPasswordRequired", String(payload.isPasswordRequired));
+        formData.append(
+          "isPasswordRequired",
+          String(payload.isPasswordRequired)
+        );
       if (payload.password) formData.append("password", payload.password);
-      if (payload.confirmPassword) formData.append("confirmPassword", payload.confirmPassword);
+      if (payload.confirmPassword)
+        formData.append("confirmPassword", payload.confirmPassword);
 
       if (payload.viewConfig) formData.append("viewConfig", payload.viewConfig);
       if (payload.editConfig) formData.append("editConfig", payload.editConfig);
-      if (payload.commentConfig) formData.append("commentConfig", payload.commentConfig);
+      if (payload.commentConfig)
+        formData.append("commentConfig", payload.commentConfig);
 
       const res = await axiosInstance.post<{ data: Workspace }>(
         ENDPOINT.WORKSPACELST,
@@ -46,7 +60,7 @@ export const workspaceService = {
       return res.data.data;
     }),
 
- getDetail: (id: string) =>
+  getDetail: (id: string) =>
     handleApiCall<WorkspaceDetail>(async () => {
       const res = await axiosInstance.get<{ data: WorkspaceDetail }>(
         `${ENDPOINT.WORKSPACELST}/${id}`
@@ -54,27 +68,33 @@ export const workspaceService = {
       return res.data.data;
     }),
 
-  update: (id: string, payload: Partial<WorkspaceDetail> & {
-    viewConfig?: File;
-    editConfig?: File;
-    commentConfig?: File;
-    password?: string;
-    confirmPassword?: string;
-  }) =>
+  update: (
+    id: string,
+    payload: Partial<WorkspaceDetail> & {
+      viewConfig?: File;
+      editConfig?: File;
+      commentConfig?: File;
+      password?: string;
+      confirmPassword?: string;
+    }
+  ) =>
     handleApiCall<WorkspaceDetail>(async () => {
       const formData = new FormData();
 
       formData.append("workspaceName", payload.workspaceName || "");
       formData.append("ownerId", payload.ownerId || "");
-      if (payload.description) formData.append("description", payload.description);
+      if (payload.description)
+        formData.append("description", payload.description);
       formData.append("isPasswordRequired", String(payload.isPasswordRequired));
 
       if (payload.password) formData.append("password", payload.password);
-      if (payload.confirmPassword) formData.append("confirmPassword", payload.confirmPassword);
+      if (payload.confirmPassword)
+        formData.append("confirmPassword", payload.confirmPassword);
 
       if (payload.viewConfig) formData.append("viewConfig", payload.viewConfig);
       if (payload.editConfig) formData.append("editConfig", payload.editConfig);
-      if (payload.commentConfig) formData.append("commentConfig", payload.commentConfig);
+      if (payload.commentConfig)
+        formData.append("commentConfig", payload.commentConfig);
 
       const res = await axiosInstance.patch<{ data: WorkspaceDetail }>(
         `${ENDPOINT.WORKSPACELST}/${id}`,
@@ -100,9 +120,12 @@ export const workspaceService = {
    */
   addMember: (workspaceId: string, user_id: string) =>
     handleApiCall(async () => {
-      const res = await axiosInstance.post(`system/workspaces/${workspaceId}/members`, {
-        user_id : user_id,
-      });
+      const res = await axiosInstance.post(
+        `system/workspaces/${workspaceId}/members`,
+        {
+          user_id: user_id,
+        }
+      );
       return res.data;
     }),
 
@@ -130,7 +153,7 @@ export const workspaceService = {
         {
           currentPassword: payload.currentPassword,
           password: payload.password,
-          confirmPassword:payload.confirmPassword
+          confirmPassword: payload.confirmPassword,
         }
       );
     }),

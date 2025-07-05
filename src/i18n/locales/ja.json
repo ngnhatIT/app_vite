@@ -111,15 +111,15 @@
     "basic_info": "基本情報",
     "permissions": "権限",
     "user": {
-      "created": "ユーザー作成成功！",
-      "updated": "ユーザー更新成功！"
+      "created": "ユーザーが作成されました！",
+      "updated": "ユーザーが更新されました！"
     },
     "role": {
-      "fetchFailed": "ロールの取得に失敗"
+      "fetchFailed": "ロールの取得に失敗しました"
     },
     "form": {
-      "submitFailed": "フォーム送信に失敗",
-      "fetchFailed": "ユーザー詳細の取得に失敗"
+      "submitFailed": "フォームの送信に失敗しました",
+      "fetchFailed": "ユーザー詳細の取得に失敗しました"
     },
     "button": {
       "back": "戻る",
@@ -194,6 +194,110 @@
       "required": "ロールは必須です！"
     }
   },
+  "workspace": {
+    "title": "ワークスペース管理",
+    "add": "ワークスペース追加",
+    "edit": "ワークスペース編集",
+    "update": "更新",
+    "save": "保存",
+    "deleted": "ワークスペース削除成功！",
+    "memberAdded": "メンバー追加成功！",
+    "membersRemoved": "メンバー削除成功！",
+    "updated": "ワークスペース更新成功！",
+    "passwordChanged": "パスワード変更成功！",
+    "passwordMismatch": "パスワードが一致しません",
+    "view_detail": "詳細表示",
+    "search_placeholder": "ワークスペースを検索",
+    "confirmDeleteTitle": "ワークスペース削除",
+    "confirmDeleteContent": "このワークスペースを削除してもよろしいですか？",
+    "fetchMembersFailed": "メンバーの取得に失敗しました",
+    "fetchUsersFailed": "ユーザーの取得に失敗しました",
+    "selectUser": "ユーザーを選択",
+    "ownerPlaceholder": "オーナーを選択",
+    "desc": "説明",
+    "descPlaceholder": "説明を入力",
+    "viewConfig": "設定ファイル表示",
+    "editConfig": "設定ファイル編集",
+    "commentConfig": "設定ファイルにコメント",
+    "enablePassword": "このワークスペースのパスワードを有効化",
+    "password": "パスワード",
+    "passwordPlaceholder": "パスワードを入力",
+    "confirm": "パスワード確認",
+    "confirmPlaceholder": "パスワードを確認",
+    "owner": "オーナー",
+    "name": "ワークスペース名",
+    "namePlaceholder": "ワークスペース名を入力",
+    "googleService": "Googleサービスアカウント",
+    "uploadGoogleService": "Googleサービスファイルをアップロード",
+    "createTitle": "ワークスペース作成",
+    "editTitle": "ワークスペース編集",
+    "memberListing": "メンバーリスト",
+    "addMember": "メンバー追加",
+    "changePassword": "パスワード変更",
+    "currentPassword": "現在のパスワード",
+    "newPassword": "新しいパスワード",
+    "confirmPassword": "パスワード確認",
+    "requiredFields": "すべての必須フィールドを入力してください！",
+    "username": "ユーザー名",
+    "columns": {
+      "workspaceName": "ワークスペース名",
+      "wspOwner": "オーナー",
+      "member": "メンバー",
+      "action": "アクション"
+    },
+    "tooltip": {
+      "permission": "メンバー管理",
+      "change_password": "パスワード変更",
+      "edit": "ワークスペース編集",
+      "delete": "ワークスペース削除"
+    },
+    "files": {
+      "addFile": "新しいファイルを追加",
+      "enterFilename": "ファイル名を入力",
+      "filenamePlaceholder": "ファイル名",
+      "create": "作成",
+      "cancel": "キャンセル",
+      "addSuccess": "ファイルの作成に成功しました",
+      "addFailed": "ファイルの作成に失敗しました",
+      "fetchFailed": "ファイルリストの取得に失敗しました",
+      "deleteFailed": "ファイルの削除に失敗しました",
+      "deleteSuccess": "ファイルの削除に成功しました",
+      "empty": "ファイルが見つかりません",
+      "filename": "ファイル名",
+      "status": "状態",
+      "active": "有効",
+      "inactive": "無効",
+      "createdAt": "作成日時",
+      "updatedAt": "更新日時",
+      "action": "操作",
+      "view": "表示",
+      "edit": "編集",
+      "comment": "コメント",
+      "addMembers": "メンバーを追加",
+      "delete": "削除",
+      "searchPlaceholder": "ファイル検索",
+      "settings": "設定",
+      "of": "の"
+    }
+  },
+  "common": {
+    "delete": "削除",
+    "cancel": "キャンセル",
+    "add": "追加",
+    "yes": "はい",
+    "no": "いいえ",
+    "error": "何か問題が発生しました",
+    "back": "戻る",
+    "action": "削除"
+  },
+  "sheet": {
+    "login": {
+      "subTitle": "作業を続けるにはワークスペースのパスワードを入力する必要があります",
+      "placeholderPassword": "ワークスペースのパスワード",
+      "loginWsp": "ワークスペースにログイン",
+      "loadingLogin": "ログイン中..."
+    }
+  },
   "menu": {
     "dashboard": "ダッシュボード",
     "users": "ユーザー",
@@ -233,7 +337,7 @@
     "emailInvalid": "無効なメール形式",
     "emailRequired": "メールは空にできません！",
     "fullnameMin": "フルネームは1文字以上でなければなりません",
-    "fullnameMax": "フルネームは50文字以内でなければなりません",
+    "fullnameMax": "フルネームは50文字以内です",
     "confirmPasswordRequired": "パスワードを確認してください！",
     "passwordsMismatch": "パスワードが一致しません！"
   }

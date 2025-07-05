@@ -8,7 +8,7 @@ import {
   userRoutes,
   workspaceRoutes,
 } from "./mainRoutes";
-import { ProtectedRoute } from "./protectedRoute";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 export const router = createHashRouter([
   {
