@@ -14,7 +14,7 @@ import {
   updateUserThunk,
   getUserDetailThunk,
 } from "../userThunk";
-import { UserSchema, type UserFormType } from "../userSchema";
+import { UserCreateSchema, UserUpdateSchema } from "../userSchema";
 import { userService } from "../userService";
 import type { RoleDTO } from "../dto/RoleDTO";
 import type { WorkSpaceDTO } from "../dto/WorkSpace.DTO";
@@ -49,11 +49,15 @@ const UserForm = () => {
         setWsps(wspsRes);
 
         if (mode === "edit" && userId) {
-          const detail = await dispatch(getUserDetailThunk(userId)).unwrap();
-          form.setFieldsValue(detail);
+          await dispatch(getUserDetailThunk(userId))
+            .unwrap()
+            .then((detail) => form.setFieldsValue(detail))
+            .catch((err) =>
+              message.error(err?.message || t("user_list.form.fetchFailed"))
+            );
         }
-      } catch {
-        message.error(t("user_list.role.fetchFailed"));
+      } catch (err: any) {
+        message.error(err?.message || t("user_list.role.fetchFailed"));
       } finally {
         setLoading(false);
       }
@@ -64,17 +68,26 @@ const UserForm = () => {
 
   const onFinish = async () => {
     const values = await form.validateFields();
-    const parsed = UserSchema.safeParse(values);
+    const schemaToUse = mode === "edit" ? UserUpdateSchema : UserCreateSchema;
+
+    const parsed = schemaToUse.safeParse(values);
 
     if (!parsed.success) {
-      const fieldErrors = parsed.error.flatten().fieldErrors;
+      const errorMap = parsed.error.format();
 
       form.setFields(
-        Object.entries(fieldErrors).map(([name, errors]) => ({
-          name: [name],
-          errors: errors || [],
-        }))
+        Object.entries(errorMap)
+          .filter(([key]) => key !== "_errors")
+          .map(([key, val]) => ({
+            name: key,
+            errors: Array.isArray(val) ? val : val?._errors ?? [],
+          }))
       );
+
+      if (errorMap._errors?.length) {
+        message.error(errorMap._errors.join(", "));
+      }
+
       return;
     }
 
@@ -85,18 +98,19 @@ const UserForm = () => {
     setIsSubmitting(true);
     try {
       if (mode === "edit" && userId) {
-        await dispatch(
-          updateUserThunk({ ...values, user_id: userId })
-        ).unwrap();
-        message.success(t("user_list.user.updated"));
+        await dispatch(updateUserThunk({ ...values, user_id: userId }))
+          .unwrap()
+          .then(() => message.success(t("user_list.user.updated")));
       } else {
-        await dispatch(createUserThunk(values)).unwrap();
-        message.success(t("user_list.user.created"));
+        await dispatch(createUserThunk(values))
+          .unwrap()
+          .then(() => message.success(t("user_list.user.created")));
       }
 
       navigate("/users");
     } catch (err: any) {
-      message.error(err?.message ?? t("user_list.form.submitFailed"));
+      console.error(err);
+      message.error(err?.message || t("user_list.form.submitFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -126,41 +140,63 @@ const UserForm = () => {
                 name="username"
                 label={
                   <LabelComponent
-                    label="user_list.form.username"
-                    required
-                    isDark={isDark}
-                  />
-                }
-              >
-                <InputComponent placeholder="Enter username" isDark={isDark} />
-              </Form.Item>
-
-              <Form.Item
-                name="email"
-                label={
-                  <LabelComponent
-                    label="user_list.form.email"
-                    required
-                    isDark={isDark}
-                  />
-                }
-              >
-                <InputComponent placeholder="Enter email" isDark={isDark} />
-              </Form.Item>
-
-              <Form.Item
-                name="password"
-                label={
-                  <LabelComponent
-                    label="user_list.form.password"
+                    label="user_form.username_label"
                     required
                     isDark={isDark}
                   />
                 }
               >
                 <InputComponent
+                  placeholder={t("user_form.username_placeholder")}
+                  isDark={isDark}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="email"
+                label={
+                  <LabelComponent
+                    label="user_form.email_label"
+                    required
+                    isDark={isDark}
+                  />
+                }
+              >
+                <InputComponent
+                  placeholder={t("user_form.email_placeholder")}
+                  isDark={isDark}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="fullname"
+                label={
+                  <LabelComponent
+                    label="user_form.fullname_label"
+                    required
+                    isDark={isDark}
+                  />
+                }
+              >
+                <InputComponent
+                  placeholder={t("user_form.fullname_placeholder")}
+                  isDark={isDark}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="password"
+                label={
+                  <LabelComponent
+                    label="user_form.password_label"
+                    required={mode === "create"}
+                    isDark={isDark}
+                  />
+                }
+              >
+                <InputComponent
                   type="password"
-                  placeholder="Enter password"
+                  placeholder={t("user_form.password_placeholder")}
                   isDark={isDark}
                 />
               </Form.Item>
@@ -169,15 +205,15 @@ const UserForm = () => {
                 name="confirm_password"
                 label={
                   <LabelComponent
-                    label="user_list.form.confirm_password"
-                    required
+                    label="user_form.confirm_password_label"
+                    required={mode === "create"}
                     isDark={isDark}
                   />
                 }
               >
                 <InputComponent
                   type="password"
-                  placeholder="Confirm password"
+                  placeholder={t("user_form.confirm_password_placeholder")}
                   isDark={isDark}
                 />
               </Form.Item>
@@ -196,14 +232,14 @@ const UserForm = () => {
                 name="role"
                 label={
                   <LabelComponent
-                    label="user_list.form.role"
+                    label="user_form.role_label"
                     required
                     isDark={isDark}
                   />
                 }
               >
                 <Select
-                  placeholder="Select role"
+                  placeholder={t("user_form.role_placeholder")}
                   size="large"
                   style={{ height: 42 }}
                   loading={!roles.length}
@@ -221,13 +257,13 @@ const UserForm = () => {
                 name="workspace"
                 label={
                   <LabelComponent
-                    label="user_list.form.workspace"
+                    label="user_form.workspace_label"
                     isDark={isDark}
                   />
                 }
               >
                 <Select
-                  placeholder="Select workspace"
+                  placeholder={t("user_form.workspace_placeholder")}
                   size="large"
                   loading={!wsps.length}
                   className="rounded-md w-full"
@@ -246,10 +282,7 @@ const UserForm = () => {
                 name="ip_check"
                 valuePropName="checked"
                 label={
-                  <LabelComponent
-                    label="user_list.form.ip_check"
-                    isDark={isDark}
-                  />
+                  <LabelComponent label="user_form.ip_check" isDark={isDark} />
                 }
               >
                 <Checkbox />

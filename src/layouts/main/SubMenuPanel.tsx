@@ -3,6 +3,7 @@ import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../app/store";
 import type { ReactNode } from "react";
+import LabelComponent from "../../components/LabelComponent";
 
 interface SubMenuItem {
   key: string;
@@ -98,7 +99,7 @@ const SubMenuPanel = ({
             >
               <div className="text-xl">{item.icon}</div>
               {!collapsed && (
-                <div className="text-xs mt-1 leading-tight">{item.title}</div>
+                <LabelComponent label={item.title} isDark={isDark} />
               )}
             </div>
           );

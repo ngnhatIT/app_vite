@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Table,
   Avatar,
@@ -52,17 +52,19 @@ const UserList = () => {
   const userStatus = useSelector((state: RootState) => state.user.status);
   const error = useSelector((state: RootState) => state.user.error);
 
-  useEffect(() => {
-    dispatch(fetchUsersThunk());
-  }, [dispatch]);
+  const hasFetched = useRef(false);
 
   useEffect(() => {
-    if (userStatus.toggleStatus === "succeeded") {
-      message.success(t("user_list.user.updated"));
-    } else if (userStatus.toggleStatus === "failed" && error) {
-      message.error(error || t("user_list.form.submitFailed"));
-    }
-  }, [userStatus.toggleStatus, error, t]);
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
+    dispatch(fetchUsersThunk())
+      .unwrap()
+      .catch((err) => {
+        console.error(err);
+        message.error(err?.message || t("user_list.fetchFailed"));
+      });
+  }, [dispatch, t]);
 
   const filteredUsers = users.filter(
     (u) =>
@@ -98,10 +100,17 @@ const UserList = () => {
       cancelText: t("user_list.modal.cancel"),
       onOk: async () => {
         setConfirmLoading(true);
-        await dispatch(
-          updateUserStatusThunk({ user_id: userId, is_active: !current })
-        );
-        setConfirmLoading(false);
+        try {
+          await dispatch(
+            updateUserStatusThunk({ user_id: userId, is_active: !current })
+          ).unwrap();
+          message.success(t("user_list.user.updated"));
+        } catch (err: any) {
+          console.error(err);
+          message.error(err?.message || t("user_list.form.submitFailed"));
+        } finally {
+          setConfirmLoading(false);
+        }
       },
     });
   };
@@ -293,35 +302,31 @@ const UserList = () => {
                 setCurrentPage(1);
               }}
               className={`
-    rounded-md border px-3 py-1 text-sm font-medium
-    min-w-[80px] cursor-pointer appearance-none
-    focus:outline-none
-    ${
-      isDark
-        ? "bg-gray-800 border-gray-600 text-white"
-        : "bg-white border-gray-300 text-black"
-    }
-  `}
+                rounded-md border px-3 py-1 text-sm font-medium
+                min-w-[80px] cursor-pointer appearance-none
+                focus:outline-none
+                ${
+                  isDark
+                    ? "bg-gray-800 border-gray-600 text-white"
+                    : "bg-white border-gray-300 text-black"
+                }
+              `}
               style={{
-                WebkitAppearance: "none", // Safari + Chrome
-                MozAppearance: "none", // Firefox
+                WebkitAppearance: "none",
+                MozAppearance: "none",
                 appearance: "none",
-                color: isDark ? "#fff" : "#000", // giá trị hiển thị chính
+                color: isDark ? "#fff" : "#000",
                 backgroundImage: `url("data:image/svg+xml,%3Csvg fill='%23${
                   isDark ? "ffffff" : "000000"
                 }' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E")`,
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "right 0.5rem center",
                 backgroundSize: "1rem",
-                WebkitTextFillColor: isDark ? "#fff" : "#000", // fix Webkit render
+                WebkitTextFillColor: isDark ? "#fff" : "#000",
               }}
             >
               {[8, 16, 24].map((size) => (
-                <option
-                  key={size}
-                  value={size}
-                  className="text-black" // option màu đen (trình duyệt tự lo)
-                >
+                <option key={size} value={size} className="text-black">
                   {size}
                 </option>
               ))}

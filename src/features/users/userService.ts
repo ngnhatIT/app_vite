@@ -34,7 +34,7 @@ export const userService = {
       return data;
     }),
 
-  toggleUserStatus: async (payload: UserStatusUpdateDTO): Promise<UserDTO> =>
+  updateUserStatus: async (payload: UserStatusUpdateDTO): Promise<UserDTO> =>
     handleApiCall(async () => {
       const { data } = await axiosInstance.put(ENDPOINT.UPDATESTATUS, payload);
       return data;
@@ -45,6 +45,7 @@ export const userService = {
       const { data } = await axiosInstance.get(ENDPOINT.ROLE);
       return data.data;
     }),
+
   getWorkSpaces: async (): Promise<WorkSpaceDTO[]> =>
     handleApiCall(async () => {
       const { data } = await axiosInstance.get(ENDPOINT.WORKSPACELST);

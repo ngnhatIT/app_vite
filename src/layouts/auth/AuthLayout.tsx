@@ -4,7 +4,7 @@ import type { RootState } from "../../app/store";
 import AuthLeftPanel from "./AuthLeftPanel";
 import "../../css/layout.css";
 import bgLight from "../../assets/bg-light.png";
-import LanguageSelector from "../../components/LanguageSelector";
+import LanguageSelectorMain from "../../components/LanguageSelectorMain";
 
 export const AuthLayout = () => {
   const isDark = useSelector((state: RootState) => state.theme.darkMode);
@@ -24,7 +24,18 @@ export const AuthLayout = () => {
           : undefined
       }
     >
-      <LanguageSelector />
+      {/* nút chọn ngôn ngữ fixed góc trên trái */}
+      <div
+        style={{
+          position: "fixed",
+          top: "16px",
+          left: "16px",
+          zIndex: 1000,
+        }}
+      >
+        <LanguageSelectorMain />
+      </div>
+
       {isDark && (
         <>
           <div className="ellipse" />

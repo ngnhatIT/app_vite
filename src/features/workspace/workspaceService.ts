@@ -13,6 +13,7 @@ import type {
   AddUserSheetDTO,
   DelUserSheetDTO,
   UpdateUserPermissionDTO,
+  WorkspaceListByUserResponseDto,
 } from "./dto/workspaceDTO";
 
 export const workspaceService = {
@@ -50,4 +51,9 @@ export const workspaceService = {
 
   removeUserFromSheet: (dto: DelUserSheetDTO): Promise<ResponseDTO> =>
     handleApiCall(() => axiosInstance.post("/googlesheet/del-user-sheet", dto)),
+
+  /** 🔷 BỔ SUNG: Lấy danh sách workspace theo user */
+  listWorkspacesByUser: (): Promise<
+    ResponseDTO<WorkspaceListByUserResponseDto[]>
+  > => handleApiCall(() => axiosInstance.get("/sub-menu")),
 };

@@ -5,8 +5,8 @@
     "signUp": "Sign up",
     "username": "Username",
     "password": "Password",
-    "usernameRequired": "Username is required.",
-    "passwordRequired": "Password is required.",
+    "usernameRequired": "Username is required!",
+    "passwordRequired": "Password is required!",
     "usernamePlaceholder": "Enter your username",
     "passwordPlaceholder": "Enter your password",
     "forgotPassword": "Forgot password?",
@@ -19,23 +19,23 @@
     "subTitle": "Already have an account?",
     "signIn": "Login",
     "username": "Username",
-    "fullname": "Fullname",
+    "fullname": "Full Name",
     "email": "Email",
     "password": "Password",
-    "confirmPassword": "Confirm password",
+    "confirmPassword": "Confirm Password",
     "usernamePlaceholder": "Enter your username",
     "emailPlaceholder": "Enter your email",
-    "fullnamePlaceholder": "Enter your fullname",
+    "fullnamePlaceholder": "Enter your full name",
     "passwordPlaceholder": "Enter your password",
-    "confirmPasswordPlaceholder": "Enter your confirm password",
+    "confirmPasswordPlaceholder": "Confirm your password",
     "back": "Back",
     "submit": "Register",
     "otpSent": "OTP sent successfully!",
-    "failed": "Register failed: {{reason}}"
+    "failed": "Registration failed: {{reason}}"
   },
   "forgot": {
-    "title": "Forgot password",
-    "subTitle": "Please enter your email to receive a password reset link.",
+    "title": "Forgot Password",
+    "subTitle": "Please enter your email to receive a password reset link",
     "email": "Email",
     "emailPlaceholder": "Enter your email",
     "back": "Back",
@@ -45,10 +45,10 @@
   },
   "reset": {
     "title": "Reset Password",
-    "subTitle": "Please enter your email to receive a password reset link.",
+    "subTitle": "Please enter your email to receive a password reset link",
     "newPassword": "New Password",
     "confirmPassword": "Confirm Password",
-    "confirmPasswordRequired": "Confirmation is required.",
+    "confirmPasswordRequired": "Confirmation is required!",
     "newPasswordPlaceholder": "Enter new password",
     "confirmPasswordPlaceholder": "Confirm new password",
     "back": "Back",
@@ -57,24 +57,24 @@
     "failed": "Reset password failed: {{reason}}"
   },
   "otp": {
-    "title": "Email verification",
-    "subTitle": "Enter the verification code we sent to: {{email}}.",
+    "title": "Email Verification",
+    "subTitle": "Enter the verification code we sent to: {{email}}",
     "expirePrefix": "OTP will expire after",
     "expireSuffix": "seconds",
-    "enterPrompt": "Type your 6 digit verification code",
+    "enterPrompt": "Type your 6-digit verification code",
     "resendTitle": "Haven’t received the verification code?",
     "back": "Back",
     "submit": "Confirm",
-    "registerSuccess": "Registration completed after OTP!",
+    "registerSuccess": "Registration completed after OTP verification!",
     "verified": "OTP verified!",
     "failed": "OTP verification failed: {{reason}}",
     "resent": "OTP resent successfully!",
     "resendFailed": "Failed to resend OTP: {{reason}}",
-    "invalidLength": "OTP must be 6 digits."
+    "invalidLength": "OTP must be 6 digits"
   },
   "checkMail": {
     "title": "Check Your Email",
-    "subTitle": "A confirmation email has been sent to your email address. Please check your inbox to verify your account. Thank you!",
+    "subTitle": "A confirmation email has been sent to your email address Please check your inbox to verify your account Thank you!",
     "skipNow": "Skip for Now",
     "resendTitle": "Didn't receive an email?",
     "resendLink": "Resend"
@@ -84,37 +84,53 @@
     "usernameMax": "Username must be at most 50 characters",
     "usernameNoSpace": "Username cannot contain spaces",
     "emailInvalid": "Invalid email format",
-    "emailRequired": "Email is required",
+    "emailRequired": "Email is required!",
     "fullnameMin": "Full name must be at least 2 characters",
     "fullnameMax": "Full name must be at most 100 characters",
     "passwordMin": "Password must be at least 8 characters",
     "passwordMax": "Password must be at most 12 characters",
-    "passwordInvalid": "Password must include uppercase, lowercase, number and special character",
-    "passwordsMismatch": "Passwords do not match",
-    "confirmPasswordRequired": "Please confirm your password"
+    "passwordInvalid": "Password must include uppercase, lowercase, number, and special character",
+    "passwordsMismatch": "Passwords do not match!",
+    "confirmPasswordRequired": "Please confirm your password!"
   },
   "captcha": {
     "label": "Slide to verify",
     "slideToVerify": "Swipe to complete verification",
-    "verified": "Verified",
+    "verified": "Verified!",
     "reset": "Reset"
   },
   "auth": {
     "title": "Google Sheet",
-    "subTitle": "Work Space",
-    "description1": "Product by Cloud.com Group Inc.",
-    "description2": "Welcome to the workspace, please log in to continue.",
-    "footer": "© Cloud.com Group Inc. 2025. All rights reserved"
+    "subTitle": "Workspace",
+    "description1": "Product by Cloud.com Group Inc",
+    "description2": "Welcome to the workspace Please log in to continue",
+    "footer": "© Cloud.com Group Inc 2025 All rights reserved"
   },
   "user_list": {
-    "title": "User Listing",
-    "search_placeholder": "Search by Username",
-    "add_user": "Add New User",
+    "title": "User Management",
+    "basic_info": "Basic Information",
+    "permissions": "Permissions",
+    "user": {
+      "created": "User created successfully!",
+      "updated": "User updated successfully!"
+    },
+    "role": {
+      "fetchFailed": "Failed to fetch role"
+    },
+    "form": {
+      "submitFailed": "Form submission failed",
+      "fetchFailed": "Failed to fetch user details"
+    },
+    "button": {
+      "back": "Back",
+      "create": "Create",
+      "update": "Update"
+    },
     "columns": {
       "name": "Name",
       "role": "Role",
       "status": "Status",
-      "ipCheck": "Check IP",
+      "ipCheck": "IP Check",
       "action": "Action"
     },
     "status": {
@@ -123,88 +139,104 @@
     },
     "tooltip": {
       "edit": "Edit",
-      "deactivate": "Deactivate",
-      "activate": "Approve"
+      "activate": "Activate",
+      "deactivate": "Deactivate"
     },
     "modal": {
-      "title_activate": "Approve this user?",
-      "title_deactivate": "Deactivate this user?",
+      "title_activate": "Activate User",
+      "title_deactivate": "Deactivate User",
       "confirm": "Are you sure you want to {{action}} this user?",
       "ok": "Yes",
       "cancel": "No"
     },
+    "search_placeholder": "Search by name or email",
+    "add_user": "Add User",
     "empty": "No users found",
     "pagination": {
-      "of": "of"
-    },
-    "basic_info": "Basic Information",
-    "permissions": "User Permissions",
-    "user": {
-      "created": "User created successfully",
-      "updated": "User updated successfully"
-    },
-    "form": {
-      "username": "Username",
-      "email": "Email",
-      "password": "Password",
-      "confirm_password": "Confirm Password",
-      "role": "Role",
-      "workspace": "Workspace",
-      "ip_check": "Enable IP Check",
-      "submitFailed": "Something went wrong, please try again",
-      "fetchFailed": "Failed to fetch data"
-    },
-    "button": {
-      "back": "Back",
-      "create": "Create User",
-      "update": "Update User"
-    },
-    "username.required": "Please enter a username",
-    "email.required": "Please enter an email",
-    "email.invalid": "Invalid email format",
-    "password.required": "Please enter a password",
-    "confirmPassword.required": "Please confirm your password",
-    "password.notMatch": "Passwords do not match",
-    "role.required": "Please select a role",
-    "role.fetchFailed": "Failed to load roles",
-    "Workspace": "Workspace",
-    "Select workspace": "Select a workspace"
+      "of": "/"
+    }
   },
   "user_form": {
+    "username_label": "Username",
+    "username_placeholder": "Enter username",
+    "email_label": "Email",
+    "email_placeholder": "Enter email",
+    "fullname_label": "Full Name",
+    "fullname_placeholder": "Enter full name",
+    "password_label": "Password",
+    "password_placeholder": "Enter password",
+    "confirm_password_label": "Confirm Password",
+    "confirm_password_placeholder": "Confirm password",
+    "workspace_label": "Workspace",
+    "workspace_placeholder": "Select workspace",
+    "role_label": "Role",
+    "role_placeholder": "Select role",
+    "ip_check": "Enable IP Check",
     "username": {
-      "required": "Username is required",
+      "required": "Username is required!",
       "no_space": "Username cannot contain spaces"
     },
     "email": {
-      "required": "Email is required",
-      "invalid": "Invalid email format (Google rules)"
+      "required": "Email is required!",
+      "invalid": "Invalid email address"
     },
     "fullname": {
       "min": "Full name must be at least 2 characters",
-      "max": "Full name must be at most 100 characters"
+      "max": "Full name cannot exceed 100 characters"
     },
     "password": {
-      "invalid": "Password must be 8–12 characters, include at least 1 uppercase letter, 1 special character, letters and numbers"
-    },
-    "role": {
-      "required": "Role is required"
+      "invalid": "Password does not meet complexity requirements"
     },
     "confirm_password": {
-      "mismatch": "Passwords do not match"
+      "mismatch": "Passwords do not match!"
+    },
+    "role": {
+      "required": "Role is required!"
     }
+  },
+  "workspace": {
+    "title": "Workspace Management",
+    "add": "Add Workspace",
+    "deleted": "Workspace deleted successfully",
+    "memberAdded": "Member added successfully",
+    "membersRemoved": "Members removed successfully",
+    "updated": "Workspace updated successfully",
+    "passwordChanged": "Password changed successfully",
+    "passwordMismatch": "Passwords do not match",
+    "view_detail": "View Details",
+    "search_placeholder": "Search workspace",
+    "confirmDeleteTitle": "Delete Workspace",
+    "confirmDeleteContent": "Are you sure you want to delete this workspace?",
+    "columns": {
+      "workspaceName": "Workspace Name",
+      "wspOwner": "Owner",
+      "member": "Members",
+      "action": "Action"
+    },
+    "tooltip": {
+      "permission": "Manage Members",
+      "change_password": "Change Password",
+      "edit": "Edit Workspace",
+      "delete": "Delete Workspace"
+    }
+  },
+  "common": {
+    "yes": "Yes",
+    "no": "No",
+    "error": "Something went wrong"
   },
   "menu": {
     "dashboard": "Dashboard",
     "users": "Users",
     "workspace": "Workspace",
-    "security": "Security & Monitoring",
-    "securityEvents": "Security Events",
+    "security": "Security",
+    "securityEvents": "Audit Log",
     "securityIncidents": "Security Incidents",
     "system": "System",
     "workspaceMng": "Workspace Management",
     "systemSettings": "System Settings",
     "deviceIpMng": "Device & IP Management",
-    "statistical": "Statistical",
+    "statistical": "Statistics",
     "logout": "Logout"
   },
   "breadcrumb": {
@@ -224,16 +256,16 @@
   "validation": {
     "usernameMin": "Username must be at least 8 characters",
     "usernameMax": "Username must be at most 50 characters",
-    "usernameRequired": "Username cannot be empty",
+    "usernameRequired": "Username cannot be empty!",
     "passwordMin": "Password must be at least 8 characters",
     "passwordMax": "Password must be at most 12 characters",
     "passwordInvalid": "Password must include at least 1 uppercase, 1 lowercase, 1 number, and 1 special character",
-    "passwordRequired": "Password cannot be empty",
+    "passwordRequired": "Password cannot be empty!",
     "emailInvalid": "Invalid email format",
-    "emailRequired": "Email cannot be empty",
-    "fullnameMin": "Fullname must be at least 1 character",
-    "fullnameMax": "Fullname must be at most 50 characters",
-    "confirmPasswordRequired": "Confirm Password cannot be empty",
-    "passwordsMismatch": "Passwords do not match"
+    "emailRequired": "Email cannot be empty!",
+    "fullnameMin": "Full name must be at least 1 character",
+    "fullnameMax": "Full name must be at most 50 characters",
+    "confirmPasswordRequired": "Confirm Password cannot be empty!",
+    "passwordsMismatch": "Passwords do not match!"
   }
 }

@@ -1,202 +1,205 @@
 {
   "login": {
     "title": "ログイン",
-    "subTitle": "アカウントをお持ちではありませんか？",
-    "signUp": "登録する",
+    "subTitle": "アカウントをお持ちでないですか？",
+    "signUp": "サインアップ",
     "username": "ユーザー名",
     "password": "パスワード",
-    "usernamePlaceholder": "ユーザー名を入力してください",
-    "passwordPlaceholder": "パスワードを入力してください",
-    "forgotPassword": "パスワードをお忘れですか？",
+    "usernameRequired": "ユーザー名は必須です！",
+    "passwordRequired": "パスワードは必須です！",
+    "usernamePlaceholder": "ユーザー名を入力",
+    "passwordPlaceholder": "パスワードを入力",
+    "forgotPassword": "パスワードを忘れましたか？",
     "submit": "ログイン",
     "success": "ログイン成功！",
-    "failed": "ログイン失敗: {{reason}}"
+    "failed": "ログイン失敗：{{reason}}"
   },
   "register": {
     "title": "登録",
     "subTitle": "すでにアカウントをお持ちですか？",
     "signIn": "ログイン",
     "username": "ユーザー名",
-    "email": "メールアドレス",
+    "fullname": "フルネーム",
+    "email": "メール",
     "password": "パスワード",
-    "fullnamePlaceholder": "氏名を入力してください",
-    "fullname": "氏名",
-    "confirmPassword": "パスワード（確認）",
-    "usernamePlaceholder": "ユーザー名を入力してください",
-    "emailPlaceholder": "メールアドレスを入力してください",
-    "passwordPlaceholder": "パスワードを入力してください",
-    "confirmPasswordPlaceholder": "確認用のパスワードを入力してください",
+    "confirmPassword": "パスワード確認",
+    "usernamePlaceholder": "ユーザー名を入力",
+    "emailPlaceholder": "メールアドレスを入力",
+    "fullnamePlaceholder": "フルネームを入力",
+    "passwordPlaceholder": "パスワードを入力",
+    "confirmPasswordPlaceholder": "パスワードを確認",
     "back": "戻る",
     "submit": "登録",
-    "otpSent": "OTPが正常に送信されました！",
-    "failed": "登録に失敗しました: {{reason}}"
+    "otpSent": "OTP送信成功！",
+    "failed": "登録失敗：{{reason}}"
   },
   "forgot": {
     "title": "パスワードを忘れた",
-    "subTitle": "パスワードリセットリンクを受け取るために、メールアドレスを入力してください。",
-    "email": "メールアドレス",
-    "emailPlaceholder": "メールアドレスを入力してください",
+    "subTitle": "パスワードリセットリンクを受け取るためにメールアドレスを入力してください",
+    "email": "メール",
+    "emailPlaceholder": "メールアドレスを入力",
     "back": "戻る",
-    "submit": "リクエストを送信",
-    "otpSent": "OTPが正常に送信されました！",
-    "failed": "パスワードリセットに失敗しました: {{reason}}"
+    "submit": "リセット送信",
+    "otpSent": "OTP送信成功！",
+    "failed": "パスワードリセット失敗：{{reason}}"
   },
   "reset": {
-    "title": "パスワードをリセット",
-    "subTitle": "新しいパスワードを入力してください。",
+    "title": "パスワードリセット",
+    "subTitle": "パスワードリセットリンクを受け取るためにメールアドレスを入力してください",
     "newPassword": "新しいパスワード",
-    "confirmPassword": "新しいパスワード（確認）",
-    "newPasswordPlaceholder": "新しいパスワードを入力してください",
-    "confirmPasswordPlaceholder": "もう一度新しいパスワードを入力してください",
+    "confirmPassword": "パスワード確認",
+    "confirmPasswordRequired": "確認が必要です！",
+    "newPasswordPlaceholder": "新しいパスワードを入力",
+    "confirmPasswordPlaceholder": "新しいパスワードを確認",
     "back": "戻る",
-    "submit": "パスワードをリセット",
-    "success": "パスワードが正常にリセットされました！",
-    "failed": "パスワードリセットに失敗しました: {{reason}}"
+    "submit": "パスワード変更",
+    "success": "パスワードリセット成功！",
+    "failed": "パスワードリセット失敗：{{reason}}"
   },
   "otp": {
-    "title": "メールアドレスを確認してください",
-    "subtitle": "{{email}} に送信された確認コードを入力してください",
-    "expirePrefix": "OTPは以下の時間後に期限切れになります：",
-    "expireSuffix": "秒",
-    "enterPrompt": "6桁の確認コードを入力してください",
-    "resendTitle": "確認コードが届いていない場合",
-    "resend": "確認コードを再送信",
-    "back": "キャンセル",
+    "title": "メール認証",
+    "subTitle": "次のアドレスに送信された認証コードを入力してください：{{email}}",
+    "expirePrefix": "OTPの有効期限は",
+    "expireSuffix": "秒後です",
+    "enterPrompt": "6桁の認証コードを入力してください",
+    "resendTitle": "認証コードを受け取っていませんか？",
+    "back": "戻る",
     "submit": "確認",
-    "registerSuccess": "OTP確認後に登録が完了しました！",
-    "verified": "OTPが確認されました！",
-    "failed": "OTP確認に失敗しました: {{reason}}",
-    "resent": "OTPが再送信されました！",
-    "resendFailed": "OTPの再送信に失敗しました: {{reason}}",
-    "invalidLength": "OTPは6桁である必要があります。"
+    "registerSuccess": "OTP認証後に登録が完了しました！",
+    "verified": "OTP認証済み！",
+    "failed": "OTP認証失敗：{{reason}}",
+    "resent": "OTP再送信成功！",
+    "resendFailed": "OTP再送信失敗：{{reason}}",
+    "invalidLength": "OTPは6桁でなければなりません"
   },
   "checkMail": {
-    "title": "メールを確認してください",
-    "subTitle": "確認メールがあなたのメールアドレスに送信されました。アカウントを確認するために受信トレイをチェックしてください。ありがとうございます！",
+    "title": "メールを確認",
+    "subTitle": "確認メールがあなたのメールアドレスに送信されました アカウントを認証するために受信トレイを確認してください ありがとう！",
     "skipNow": "今はスキップ",
-    "resendTitle": "メールが届いていませんか？",
+    "resendTitle": "メールを受け取っていませんか？",
     "resendLink": "再送信"
   },
-   "authValidation": {
-    "usernameMin": "ユーザー名は2文字以上である必要があります",
-    "usernameMax": "ユーザー名は50文字以内である必要があります",
+  "authValidation": {
+    "usernameMin": "ユーザー名は2文字以上でなければなりません",
+    "usernameMax": "ユーザー名は50文字以内でなければなりません",
     "usernameNoSpace": "ユーザー名にスペースを含めることはできません",
-    "emailInvalid": "メールアドレスの形式が正しくありません",
-    "emailRequired": "メールアドレスは必須です",
-    "fullnameMin": "氏名は2文字以上である必要があります",
-    "fullnameMax": "氏名は100文字以内である必要があります",
-    "passwordMin": "パスワードは8文字以上である必要があります",
-    "passwordMax": "パスワードは12文字以内である必要があります",
-    "passwordInvalid": "パスワードは大文字、小文字、数字、特殊文字を含める必要があります",
-    "passwordsMismatch": "パスワードが一致しません",
-    "confirmPasswordRequired": "パスワードの確認が必要です"
+    "emailInvalid": "無効なメール形式",
+    "emailRequired": "メールは必須です！",
+    "fullnameMin": "フルネームは2文字以上でなければなりません",
+    "fullnameMax": "フルネームは100文字を超えることはできません",
+    "passwordMin": "パスワードは8文字以上でなければなりません",
+    "passwordMax": "パスワードは12文字以内でなければなりません",
+    "passwordInvalid": "パスワードには大文字、小文字、数字、特殊文字を含める必要があります",
+    "passwordsMismatch": "パスワードが一致しません！",
+    "confirmPasswordRequired": "パスワードを確認してください！"
   },
   "captcha": {
-    "label": "スライドして確認",
-    "slideToVerify": "スライドして認証を完了してください",
-    "verified": "認証済み",
+    "label": "スライドして認証",
+    "slideToVerify": "スワイプして認証を完了",
+    "verified": "認証済み！",
     "reset": "リセット"
   },
   "auth": {
     "title": "Google Sheet",
     "subTitle": "ワークスペース",
-    "description1": "Cloud.comグループ株式会社の製品",
-    "description2": "ワークスペースへようこそ。続行するにはログインしてください。",
-    "footer": "© Cloud.comグループ株式会社 2025年。全著作権所有"
+    "description1": "Cloud.com Group Incの製品",
+    "description2": "ワークスペースへようこそ 続行するにはログインしてください",
+    "footer": "© Cloud.com Group Inc 2025 すべての権利を保持"
   },
   "user_list": {
-    "title": "ユーザー一覧",
-    "search_placeholder": "ユーザー名で検索",
-    "add_user": "新しいユーザーを追加",
-    "columns": {
-      "name": "名前",
-      "role": "役割",
-      "status": "ステータス",
-      "ipCheck": "IP確認",
-      "action": "操作"
-    },
-    "status": {
-      "active": "アクティブ",
-      "inactive": "非アクティブ"
-    },
-    "tooltip": {
-      "edit": "編集",
-      "deactivate": "無効化",
-      "activate": "承認"
-    },
-    "modal": {
-      "title_activate": "このユーザーを承認しますか？",
-      "title_deactivate": "このユーザーを無効にしますか？",
-      "confirm": "本当にこのユーザーを{{action}}しますか？",
-      "ok": "はい",
-      "cancel": "いいえ"
-    },
-    "empty": "ユーザーが見つかりません",
-    "pagination": {
-      "of": "/"
-    },
+    "title": "ユーザー管理",
     "basic_info": "基本情報",
-    "permissions": "ユーザー権限",
+    "permissions": "権限",
     "user": {
-      "created": "ユーザーが正常に作成されました",
-      "updated": "ユーザーが正常に更新されました"
+      "created": "ユーザー作成成功！",
+      "updated": "ユーザー更新成功！"
+    },
+    "role": {
+      "fetchFailed": "ロールの取得に失敗"
     },
     "form": {
-      "username": "ユーザー名",
-      "email": "メールアドレス",
-      "password": "パスワード",
-      "confirm_password": "パスワード確認",
-      "role": "役割",
-      "workspace": "ワークスペース",
-      "ip_check": "IPチェックを有効にする",
-      "submitFailed": "送信に失敗しました。再試行してください。",
-      "fetchFailed": "データの取得に失敗しました"
+      "submitFailed": "フォーム送信に失敗",
+      "fetchFailed": "ユーザー詳細の取得に失敗"
     },
     "button": {
       "back": "戻る",
-      "create": "ユーザーを作成",
-      "update": "ユーザーを更新"
+      "create": "作成",
+      "update": "更新"
     },
-    "username.required": "ユーザー名を入力してください",
-    "email.required": "メールアドレスを入力してください",
-    "email.invalid": "無効なメールアドレス形式",
-    "password.required": "パスワードを入力してください",
-    "confirmPassword.required": "パスワードを確認してください",
-    "password.notMatch": "パスワードが一致しません",
-    "role.required": "役割を選択してください",
-    "role.fetchFailed": "役割の読み込みに失敗しました",
-    "Workspace": "ワークスペース",
-    "Select workspace": "ワークスペースを選択"
+    "columns": {
+      "name": "名前",
+      "role": "ロール",
+      "status": "ステータス",
+      "ipCheck": "IPチェック",
+      "action": "アクション"
+    },
+    "status": {
+      "active": "有効",
+      "inactive": "無効"
+    },
+    "tooltip": {
+      "edit": "編集",
+      "activate": "有効化",
+      "deactivate": "無効化"
+    },
+    "modal": {
+      "title_activate": "ユーザーを有効化",
+      "title_deactivate": "ユーザーを無効化",
+      "confirm": "このユーザーを{{action}}しますか？",
+      "ok": "はい",
+      "cancel": "いいえ"
+    },
+    "search_placeholder": "名前またはメールで検索",
+    "add_user": "ユーザー追加",
+    "empty": "ユーザーが見つかりません",
+    "pagination": {
+      "of": "/"
+    }
   },
   "user_form": {
+    "username_label": "ユーザー名",
+    "username_placeholder": "ユーザー名を入力",
+    "email_label": "メール",
+    "email_placeholder": "メールアドレスを入力",
+    "fullname_label": "フルネーム",
+    "fullname_placeholder": "フルネームを入力",
+    "password_label": "パスワード",
+    "password_placeholder": "パスワードを入力",
+    "confirm_password_label": "パスワード確認",
+    "confirm_password_placeholder": "パスワードを確認",
+    "workspace_label": "ワークスペース",
+    "workspace_placeholder": "ワークスペースを選択",
+    "role_label": "ロール",
+    "role_placeholder": "ロールを選択",
+    "ip_check": "IPチェックを有効化",
     "username": {
-      "required": "ユーザー名は必須です",
+      "required": "ユーザー名は必須です！",
       "no_space": "ユーザー名にスペースを含めることはできません"
     },
     "email": {
-      "required": "メールアドレスは必須です",
-      "invalid": "メールアドレスの形式が正しくありません（Googleルール）"
+      "required": "メールは必須です！",
+      "invalid": "無効なメールアドレス"
     },
     "fullname": {
-      "min": "氏名は2文字以上である必要があります",
-      "max": "氏名は100文字以内である必要があります"
+      "min": "フルネームは2文字以上でなければなりません",
+      "max": "フルネームは100文字を超えることはできません"
     },
     "password": {
-      "invalid": "パスワードは8〜12文字で、少なくとも1つの大文字、1つの特殊文字、文字と数字を含める必要があります"
-    },
-    "role": {
-      "required": "役割は必須です"
+      "invalid": "パスワードが複雑さの要件を満たしていません"
     },
     "confirm_password": {
-      "mismatch": "パスワードが一致しません"
+      "mismatch": "パスワードが一致しません！"
+    },
+    "role": {
+      "required": "ロールは必須です！"
     }
   },
   "menu": {
     "dashboard": "ダッシュボード",
     "users": "ユーザー",
     "workspace": "ワークスペース",
-    "security": "セキュリティと監視",
-    "securityEvents": "セキュリティイベント",
+    "security": "セキュリティ",
+    "securityEvents": "監査ログ",
     "securityIncidents": "セキュリティインシデント",
     "system": "システム",
     "workspaceMng": "ワークスペース管理",
@@ -220,18 +223,18 @@
     "statistical": "統計"
   },
   "validation": {
-    "usernameMin": "ユーザー名は8文字以上である必要があります",
-    "usernameMax": "ユーザー名は50文字以下である必要があります",
-    "usernameRequired": "ユーザー名は必須です",
-    "passwordMin": "パスワードは8文字以上である必要があります",
-    "passwordMax": "パスワードは12文字以下である必要があります",
-    "passwordInvalid": "パスワードには大文字、小文字、数字、特殊文字を各1つ以上含める必要があります",
-    "passwordRequired": "パスワードは必須です",
-    "emailInvalid": "メールアドレスの形式が無効です",
-    "emailRequired": "メールアドレスは必須です",
-    "fullnameMin": "フルネームは1文字以上である必要があります",
-    "fullnameMax": "フルネームは50文字以下である必要があります",
-    "confirmPasswordRequired": "確認パスワードは必須です",
-    "passwordsMismatch": "パスワードが一致しません"
+    "usernameMin": "ユーザー名は8文字以上でなければなりません",
+    "usernameMax": "ユーザー名は50文字以内でなければなりません",
+    "usernameRequired": "ユーザー名は空にできません！",
+    "passwordMin": "パスワードは8文字以上でなければなりません",
+    "passwordMax": "パスワードは12文字以内でなければなりません",
+    "passwordInvalid": "パスワードには大文字、小文字、数字、特殊文字を少なくとも1つずつ含める必要があります",
+    "passwordRequired": "パスワードは空にできません！",
+    "emailInvalid": "無効なメール形式",
+    "emailRequired": "メールは空にできません！",
+    "fullnameMin": "フルネームは1文字以上でなければなりません",
+    "fullnameMax": "フルネームは50文字以内でなければなりません",
+    "confirmPasswordRequired": "パスワードを確認してください！",
+    "passwordsMismatch": "パスワードが一致しません！"
   }
 }

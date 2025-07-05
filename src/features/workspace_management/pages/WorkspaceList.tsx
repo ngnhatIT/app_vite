@@ -23,10 +23,7 @@ import {
   changePasswordThunk,
 } from "../workspaceThunk";
 
-import {
-  addMemberLocal,
-  removeMembersLocal,
-} from "../workspaceSlice";
+import { addMemberLocal, removeMembersLocal } from "../workspaceSlice";
 
 import InputComponent from "../../../components/InputComponent";
 import ButtonComponent from "../../../components/ButtonComponent";
@@ -62,8 +59,10 @@ const WorkspaceList = () => {
   const loading = status === "loading";
 
   useEffect(() => {
-    dispatch(fetchWorkspacesThunk());
-  }, [dispatch]);
+    dispatch(fetchWorkspacesThunk())
+      .unwrap()
+      .catch((err) => message.error(err?.message || t("common.error")));
+  }, [dispatch, t]);
 
   const filteredList = list.filter(
     (w) =>
@@ -94,8 +93,9 @@ const WorkspaceList = () => {
       cancelText: t("common.no"),
       onOk: () => {
         dispatch(deleteWorkspaceThunk(workspaceId))
+          .unwrap()
           .then(() => message.success(t("workspace.deleted")))
-          .catch((err) => message.error(err?.message || "Delete failed"));
+          .catch((err) => message.error(err?.message || t("common.error")));
       },
     });
   };
@@ -112,12 +112,19 @@ const WorkspaceList = () => {
       width: 50,
     },
     {
-      title: <LabelComponent label="workspace.columns.workspaceName" isDark={isDark} />,
+      title: (
+        <LabelComponent
+          label="workspace.columns.workspaceName"
+          isDark={isDark}
+        />
+      ),
       dataIndex: "workspaceName",
       render: (text: string) => <LabelComponent label={text} isDark={isDark} />,
     },
     {
-      title: <LabelComponent label="workspace.columns.wspOwner" isDark={isDark} />,
+      title: (
+        <LabelComponent label="workspace.columns.wspOwner" isDark={isDark} />
+      ),
       dataIndex: "wspOwner",
       render: (_: unknown, record: Workspace) => (
         <div className="flex items-center gap-2">
@@ -130,11 +137,13 @@ const WorkspaceList = () => {
       ),
     },
     {
-      title: <LabelComponent label="workspace.columns.member" isDark={isDark} />,
+      title: (
+        <LabelComponent label="workspace.columns.member" isDark={isDark} />
+      ),
       dataIndex: "members",
       render: (_: unknown, record: Workspace) => (
         <span>
-         {record.members.toString()} {" "}
+          {record.members.toString()}{" "}
           <a
             className="underline text-fuchsia-500 cursor-pointer"
             onClick={() => openModal("members", record)}
@@ -145,7 +154,9 @@ const WorkspaceList = () => {
       ),
     },
     {
-      title: <LabelComponent label="workspace.columns.action" isDark={isDark} />,
+      title: (
+        <LabelComponent label="workspace.columns.action" isDark={isDark} />
+      ),
       render: (_: unknown, record: Workspace) => (
         <div className="flex gap-2">
           <Tooltip title={t("workspace.tooltip.permission")}>
@@ -223,14 +234,63 @@ const WorkspaceList = () => {
         />
 
         {/* Pagination */}
-        <div className="mt-2 flex justify-between">
-          <Pagination
-            current={currentPage}
-            pageSize={pageSize}
-            total={list.length}
-            onChange={setCurrentPage}
-            showSizeChanger={false}
-          />
+        <div className="mt-2 flex items-center justify-between w-full flex-wrap gap-2">
+          <div className="flex items-center gap-2 text-white text-sm">
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className={`
+                rounded-md border px-3 py-1 text-sm font-medium
+                min-w-[80px] cursor-pointer appearance-none
+                focus:outline-none
+                ${
+                  isDark
+                    ? "bg-gray-800 border-gray-600 text-white"
+                    : "bg-white border-gray-300 text-black"
+                }
+              `}
+              style={{
+                WebkitAppearance: "none",
+                MozAppearance: "none",
+                appearance: "none",
+                color: isDark ? "#fff" : "#000",
+                backgroundImage: `url("data:image/svg+xml,%3Csvg fill='%23${
+                  isDark ? "ffffff" : "000000"
+                }' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E")`,
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "right 0.5rem center",
+                backgroundSize: "1rem",
+                WebkitTextFillColor: isDark ? "#fff" : "#000",
+              }}
+            >
+              {[8, 16, 24].map((size) => (
+                <option key={size} value={size} className="text-black">
+                  {size}
+                </option>
+              ))}
+            </select>
+
+            <span className="text-white/70">
+              {(currentPage - 1) * pageSize + 1}–
+              {Math.min(currentPage * pageSize, filteredList.length)}{" "}
+              {t("user_list.pagination.of")} {filteredList.length}
+            </span>
+          </div>
+
+          <div>
+            <Pagination
+              current={currentPage}
+              pageSize={pageSize}
+              total={filteredList.length}
+              onChange={setCurrentPage}
+              showSizeChanger={false}
+              showLessItems
+              className="custom-pagination"
+            />
+          </div>
         </div>
 
         {/* Modals */}
@@ -249,10 +309,18 @@ const WorkspaceList = () => {
                 .then(() => {
                   message.success(t("workspace.memberAdded"));
                   dispatch(
-                    addMemberLocal({ workspaceId: selectedWorkspace.workspaceId })
+                    addMemberLocal({
+                      workspaceId: selectedWorkspace.workspaceId,
+                    })
                   );
                 })
-                .catch(() => message.error(t("common.error")));
+                .catch((err: any) =>
+                  message.error(
+                    err && typeof err === "object" && "message" in err
+                      ? err.message
+                      : t("common.error")
+                  )
+                );
             }}
           />
         )}
@@ -270,7 +338,6 @@ const WorkspaceList = () => {
                     memberIds,
                   })
                 ).unwrap();
-
                 message.success(t("workspace.membersRemoved"));
                 dispatch(
                   removeMembersLocal({
@@ -279,8 +346,12 @@ const WorkspaceList = () => {
                   })
                 );
                 return "ok";
-              } catch {
-                message.error(t("common.error"));
+              } catch (err) {
+                message.error(
+                  err && typeof err === "object" && "message" in err
+                    ? (err as any).message
+                    : t("common.error")
+                );
                 return "error";
               }
             }}
@@ -303,7 +374,9 @@ const WorkspaceList = () => {
                 .then(() => {
                   message.success(t("workspace.updated"));
                 })
-                .catch(() => message.error(t("common.error")));
+                .catch((err) =>
+                  message.error(err?.message || t("common.error"))
+                );
             }}
           />
         )}
@@ -330,7 +403,9 @@ const WorkspaceList = () => {
                   message.success(t("workspace.passwordChanged"));
                   closeModal();
                 })
-                .catch(() => message.error(t("common.error")));
+                .catch((err) =>
+                  message.error(err?.message || t("common.error"))
+                );
             }}
           />
         )}

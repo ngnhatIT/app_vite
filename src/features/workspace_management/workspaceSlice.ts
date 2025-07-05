@@ -59,14 +59,17 @@ const workspaceSlice = createSlice({
       const { workspaceId } = action.payload;
       const idx = state.list.findIndex((w) => w.workspaceId === workspaceId);
       if (idx >= 0) {
-        state.list[idx].members += 1;
+        state.list[idx].members = Number(state.list[idx].members) + 1;
       }
     },
     removeMembersLocal(state, action) {
       const { workspaceId, count } = action.payload;
       const idx = state.list.findIndex((w) => w.workspaceId === workspaceId);
       if (idx >= 0) {
-        state.list[idx].members = Math.max(0, state.list[idx].members - count);
+        state.list[idx].members = Math.max(
+          0,
+          Number(state.list[idx].members) - count
+        );
       }
     },
   },

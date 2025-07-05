@@ -90,3 +90,8 @@ export interface UpdateUserPermissionDTO {
     permissions: string[];
   }[];
 }
+
+export interface WorkspaceListByUserResponseDto {
+  workspaceId: string;
+  workspaceName: string;
+}
